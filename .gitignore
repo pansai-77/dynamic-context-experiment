@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+qdrant_storage/*
+!qdrant_storage/.gitkeep
+results/*.xlsx
+results/*.csv
+results/*.json
+.DS_Store

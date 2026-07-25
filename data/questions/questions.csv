@@ -1,0 +1,21 @@
+Question ID,Question Type,Question,Ground Truth,Source
+Q01,Book,"According to the book, what two fundamental questions underpin Adaptive Business Intelligence?","What is likely to happen in the future, and what is the best decision right now?",Preface
+Q02,Book,How does the book define Adaptive Business Intelligence?,"It combines prediction, optimization and adaptability into a self-learning decisioning system.",Chapter 1
+Q03,Book,What is the difference between traditional business intelligence and Adaptive Business Intelligence?,"Traditional BI transforms data into knowledge and reports; Adaptive BI also predicts, optimizes and adapts to recommend decisions.",Chapter 1
+Q04,Book,What common characteristics make complex business problems difficult to solve?,"Large solution spaces, changing environments, constraints, multiple objectives and modeling difficulty.",Chapter 2
+Q05,Book,Why does the book often prefer an approximate solution to a precise model over a precise solution to an approximate model?,"An approximate model can hide important irregularities and thresholds, while a precise model preserves them.",Chapter 2
+Q06,Book,What result did the Polish pollution-control system achieve?,It reduced ecological damage by about 15–18% while maintaining energy output and aggregate operating cost.,Chapter 2
+Q07,Book,What is the central decision problem in the off-lease car distribution example?,"Assign returned cars to auction sites to maximize net value while considering prices, transport, inventory and market effects.",Chapter 3
+Q08,Book,What are the three core modules of an Adaptive Business Intelligence system?,"Prediction, optimization and adaptability.",Chapter 4
+Q09,Book,How does the adaptability module improve a prediction system?,It compares predicted and actual outcomes and tunes the model when errors are found.,Chapter 4
+Q10,Book,What three broad types of prediction problems are identified in the book?,"Classification, regression and time series.",Chapter 5
+Q11,General,What is machine learning?,Systems learn patterns from data to make predictions or decisions.,General
+Q12,General,What is a database?,"A structured collection of data that can be stored, queried and updated.",General
+Q13,General,What is an optimization problem?,Finding the best feasible solution according to an objective and constraints.,General
+Q14,General,What is the difference between supervised and unsupervised learning?,Supervised learning uses labeled targets; unsupervised learning discovers patterns without labels.,General
+Q15,General,What is data cleaning?,"Detecting and correcting missing, inaccurate, inconsistent or duplicated data.",General
+Q16,Rewrite,"Rewrite this sentence in simpler English: Adaptive Business Intelligence integrates predictive modeling, optimization and adaptability to support decision-making.","Adaptive Business Intelligence uses prediction, optimization and learning to help people make decisions.",Rewrite
+Q17,Rewrite,Rewrite this sentence professionally: The company has lots of data but managers still do not know what decision to make.,"Although the company has extensive data, managers still lack clear decision guidance.",Rewrite
+Q18,Rewrite,"Summarise this statement in one sentence: More information can increase confidence without improving decision accuracy, and irrelevant information may reduce decision effectiveness.","More information does not necessarily improve decisions, and irrelevant information can make them worse.",Rewrite
+Q19,Rewrite,Rewrite this sentence in plain English: A prediction model must be evaluated on independent data to estimate its performance on unseen cases.,Test the model on new data that was not used to build it.,Rewrite
+Q20,Rewrite,Improve the clarity of this sentence: The optimization module uses predictions to compare many possible decisions and recommend a near-optimal one.,The optimization module evaluates possible decisions using predictions and recommends a near-optimal choice.,Rewrite
