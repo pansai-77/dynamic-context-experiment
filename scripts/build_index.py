@@ -1,3 +1,5 @@
+import _bootstrap  # noqa: F401
+
 from src.config import settings
 from src.pdf_loader import chunk_pages, extract_pages
 from src.vector_store import LocalVectorStore

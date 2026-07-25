@@ -42,21 +42,26 @@ python scripts/run_experiments.py --include-optional
 
 Default runs use the five core methods. Add `--include-optional` to also run Query-Aware + Top-2.
 
-Outputs:
-- `results/detailed_results.xlsx`
-- `results/summary_results.xlsx`
-- `results/run_config.json`
+Each run creates a timestamped directory under `results/`, for example `results/20260726_093512/`, containing:
+- `detailed_results.xlsx`
+- `summary_results.xlsx`
+- `run_config.json`
 
 ## Manual scoring
-Score every answer in `Score(0-3)`:
+Score every answer in the run directory's `detailed_results.xlsx`, column `Score(0-3)`:
 - 3 correct and complete
 - 2 mostly correct
 - 1 partially correct
 - 0 incorrect
 
-Then regenerate summaries:
+Then regenerate summaries for the latest run:
 ```bash
 python scripts/summarise_results.py
+```
+
+Or target a specific run:
+```bash
+python scripts/summarise_results.py --run-dir 20260726_093512
 ```
 
 ## Experimental control

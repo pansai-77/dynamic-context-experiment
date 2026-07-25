@@ -1,9 +1,11 @@
 from __future__ import annotations
 import argparse
+import _bootstrap  # noqa: F401
+
 from src.config import settings
 from src.experiment import export_detailed_results, resolve_methods, run_experiments
 from src.reporting import create_summary_workbook
-from src.run_metadata import export_run_metadata
+from src.run_metadata import create_run_directory, export_run_metadata
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -19,13 +21,20 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     methods = resolve_methods(args.method, args.include_optional)
+    run_dir = create_run_directory(settings.results_dir)
     df = run_experiments(settings, args.limit, args.method, args.include_optional)
-    detailed = settings.results_dir / "detailed_results.xlsx"
-    summary = settings.results_dir / "summary_results.xlsx"
-    run_config = settings.results_dir / "run_config.json"
+    detailed = run_dir / "detailed_results.xlsx"
+    summary = run_dir / "summary_results.xlsx"
+    run_config = run_dir / "run_config.json"
     export_detailed_results(df, detailed)
     create_summary_workbook(detailed, summary)
-    export_run_metadata(settings, [method.name for method in methods], run_config)
+    export_run_metadata(
+        settings,
+        [method.name for method in methods],
+        run_config,
+        run_directory=run_dir,
+    )
+    print(f"Run directory: {run_dir}")
     print(f"Detailed results: {detailed}")
     print(f"Summary results: {summary}")
     print(f"Run metadata: {run_config}")

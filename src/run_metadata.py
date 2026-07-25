@@ -3,12 +3,15 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 import json
 import platform
+import re
 import sys
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
 from .config import Settings
+
+RUN_DIR_PATTERN = re.compile(r"^\d{8}_\d{6}$")
 
 PACKAGE_VERSIONS = (
     "mlx",
@@ -32,9 +35,36 @@ def _serialize_settings(settings: Settings) -> dict[str, Any]:
         serialized[key] = str(value) if isinstance(value, Path) else value
     return serialized
 
-def build_run_metadata(settings: Settings, methods: list[str]) -> dict[str, Any]:
+def create_run_directory(results_dir: Path, run_at: datetime | None = None) -> Path:
+    timestamp = (run_at or datetime.now()).strftime("%Y%m%d_%H%M%S")
+    run_dir = results_dir / timestamp
+    run_dir.mkdir(parents=True, exist_ok=False)
+    return run_dir
+
+def is_run_directory(path: Path) -> bool:
+    return path.is_dir() and RUN_DIR_PATTERN.fullmatch(path.name) is not None
+
+def find_latest_run_directory(results_dir: Path) -> Path:
+    run_dirs = sorted(
+        (path for path in results_dir.iterdir() if is_run_directory(path)),
+        key=lambda path: path.name,
+        reverse=True,
+    )
+    if not run_dirs:
+        raise FileNotFoundError(
+            f"No timestamped run directories found under {results_dir}. "
+            "Run scripts/run_experiments.py first."
+        )
+    return run_dirs[0]
+
+def build_run_metadata(
+    settings: Settings,
+    methods: list[str],
+    run_directory: Path | None = None,
+) -> dict[str, Any]:
     return {
         "run_timestamp_utc": datetime.now(UTC).isoformat(),
+        "run_directory": str(run_directory) if run_directory else None,
         "python_version": sys.version,
         "platform": platform.platform(),
         "methods": methods,
@@ -44,7 +74,12 @@ def build_run_metadata(settings: Settings, methods: list[str]) -> dict[str, Any]
         },
     }
 
-def export_run_metadata(settings: Settings, methods: list[str], output_path: Path) -> None:
+def export_run_metadata(
+    settings: Settings,
+    methods: list[str],
+    output_path: Path,
+    run_directory: Path | None = None,
+) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    metadata = build_run_metadata(settings, methods)
+    metadata = build_run_metadata(settings, methods, run_directory)
     output_path.write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
