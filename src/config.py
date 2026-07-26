@@ -14,7 +14,7 @@ class Settings:
     questions_file: Path = ROOT_DIR / "data" / "questions" / "questions.csv"
     qdrant_path: Path = ROOT_DIR / "qdrant_storage"
     results_dir: Path = ROOT_DIR / "results"
-    collection_name: str = "adaptive_business_intelligence"
+    collection_name: str = "islr_python_pages_1_143"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
     chunk_size: int = int(os.getenv("CHUNK_SIZE", "500"))

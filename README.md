@@ -10,7 +10,7 @@ Local feasibility experiment measuring how RAG context strategies affect token u
 5. Query-Aware: Book → Top-4, General/Rewrite → No RAG
 6. Query-Aware + Top-2: optional
 
-Knowledge base: first 100 pages of *Adaptive Business Intelligence*.
+Knowledge base: first 143 pages of *An Introduction to Statistical Learning with Applications in Python* (Chapters 1–3).
 
 ## Stack
 - Apple Silicon local inference

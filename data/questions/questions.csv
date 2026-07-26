@@ -1,21 +1,21 @@
 Question ID,Question Type,Question,Ground Truth,Source
-Q01,Book,"According to the book, what two fundamental questions underpin Adaptive Business Intelligence?","What is likely to happen in the future, and what is the best decision right now?",Preface
-Q02,Book,How does the book define Adaptive Business Intelligence?,"It combines prediction, optimization and adaptability into a self-learning decisioning system.",Chapter 1
-Q03,Book,What is the difference between traditional business intelligence and Adaptive Business Intelligence?,"Traditional BI transforms data into knowledge and reports; Adaptive BI also predicts, optimizes and adapts to recommend decisions.",Chapter 1
-Q04,Book,What common characteristics make complex business problems difficult to solve?,"Large solution spaces, changing environments, constraints, multiple objectives and modeling difficulty.",Chapter 2
-Q05,Book,Why does the book often prefer an approximate solution to a precise model over a precise solution to an approximate model?,"An approximate model can hide important irregularities and thresholds, while a precise model preserves them.",Chapter 2
-Q06,Book,What result did the Polish pollution-control system achieve?,It reduced ecological damage by about 15–18% while maintaining energy output and aggregate operating cost.,Chapter 2
-Q07,Book,What is the central decision problem in the off-lease car distribution example?,"Assign returned cars to auction sites to maximize net value while considering prices, transport, inventory and market effects.",Chapter 3
-Q08,Book,What are the three core modules of an Adaptive Business Intelligence system?,"Prediction, optimization and adaptability.",Chapter 4
-Q09,Book,How does the adaptability module improve a prediction system?,It compares predicted and actual outcomes and tunes the model when errors are found.,Chapter 4
-Q10,Book,What three broad types of prediction problems are identified in the book?,"Classification, regression and time series.",Chapter 5
+Q01,Book,"According to the book, what is statistical learning?","Statistical learning refers to a set of tools for understanding data and making sense of complex datasets.",Chapter 1
+Q02,Book,What is the difference between supervised and unsupervised statistical learning?,"Supervised learning builds a model to predict or estimate an output from inputs; unsupervised learning works with inputs alone, with no output variable.",Chapter 1
+Q03,Book,What is the difference between regression and classification problems?,"Regression problems involve a quantitative response, while classification problems involve a qualitative response.",Chapter 1
+Q04,Book,"In the statistical learning framework Y = f(X) + ε, what does f represent?","f represents the systematic information that X provides about Y.",Chapter 2
+Q05,Book,Why do we want to estimate f in statistical learning?,"We estimate f for prediction (predicting Y from X) and for inference (understanding the relationship between X and Y).",Chapter 2
+Q06,Book,What trade-off does the book describe between prediction accuracy and model interpretability?,"Flexible models may give more accurate predictions but are often less interpretable; less flexible models are easier to interpret but may predict less accurately.",Chapter 2
+Q07,Book,What is overfitting?,"Overfitting occurs when a method follows the training data too closely, including noise, and performs poorly on new observations.",Chapter 2
+Q08,Book,What is the bias-variance trade-off?,"As model flexibility increases, bias tends to decrease while variance increases; the best model balances both to minimize test error.",Chapter 2
+Q09,Book,What does R-squared measure in linear regression?,"R-squared is the proportion of variance in the response that is explained by the predictors.",Chapter 3
+Q10,Book,How does the book handle qualitative predictors in linear regression?,"Qualitative predictors are coded using dummy variables, with one level treated as the reference category.",Chapter 3
 Q11,General,What is machine learning?,Systems learn patterns from data to make predictions or decisions.,General
-Q12,General,What is a database?,"A structured collection of data that can be stored, queried and updated.",General
-Q13,General,What is an optimization problem?,Finding the best feasible solution according to an objective and constraints.,General
-Q14,General,What is the difference between supervised and unsupervised learning?,Supervised learning uses labeled targets; unsupervised learning discovers patterns without labels.,General
-Q15,General,What is data cleaning?,"Detecting and correcting missing, inaccurate, inconsistent or duplicated data.",General
-Q16,Rewrite,"Rewrite this sentence in simpler English: Adaptive Business Intelligence integrates predictive modeling, optimization and adaptability to support decision-making.","Adaptive Business Intelligence uses prediction, optimization and learning to help people make decisions.",Rewrite
-Q17,Rewrite,Rewrite this sentence professionally: The company has lots of data but managers still do not know what decision to make.,"Although the company has extensive data, managers still lack clear decision guidance.",Rewrite
-Q18,Rewrite,"Summarise this statement in one sentence: More information can increase confidence without improving decision accuracy, and irrelevant information may reduce decision effectiveness.","More information does not necessarily improve decisions, and irrelevant information can make them worse.",Rewrite
-Q19,Rewrite,Rewrite this sentence in plain English: A prediction model must be evaluated on independent data to estimate its performance on unseen cases.,Test the model on new data that was not used to build it.,Rewrite
-Q20,Rewrite,Improve the clarity of this sentence: The optimization module uses predictions to compare many possible decisions and recommend a near-optimal one.,The optimization module evaluates possible decisions using predictions and recommends a near-optimal choice.,Rewrite
+Q12,General,What is the difference between supervised and unsupervised learning?,Supervised learning uses labeled targets; unsupervised learning discovers structure without labeled outputs.,General
+Q13,General,What is a training set?,"A dataset used to fit or train a model before evaluating it on new data.",General
+Q14,General,What is cross-validation?,A resampling method for estimating how well a model will generalize to unseen data.,General
+Q15,General,What is regularization?,A technique that penalizes model complexity to reduce overfitting.,General
+Q16,Rewrite,"Rewrite this sentence in simpler English: Statistical learning refers to a vast set of tools for understanding data.","Statistical learning is a collection of methods used to understand data.",Rewrite
+Q17,Rewrite,Rewrite this sentence professionally: A flexible model can fit the training data really well but may do badly on new data.,"A highly flexible model may fit the training data closely yet generalize poorly to new observations.",Rewrite
+Q18,Rewrite,"Summarise this statement in one sentence: As flexibility increases, training error usually decreases but test error may eventually increase.","Increasing model flexibility usually lowers training error but can raise test error when the model overfits.",Rewrite
+Q19,Rewrite,Rewrite this sentence in plain English: Multiple linear regression extends simple linear regression to more than one predictor.,"Multiple linear regression uses several predictors instead of just one.",Rewrite
+Q20,Rewrite,Improve the clarity of this sentence: Overfitting happens when a model captures noise instead of the true underlying pattern.,"Overfitting occurs when a model learns noise in the training data rather than the true signal.",Rewrite
