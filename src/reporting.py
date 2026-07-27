@@ -3,6 +3,21 @@ from pathlib import Path
 import pandas as pd
 
 BASELINE_METHOD = "Baseline (Top-8)"
+SCORE_COLUMN = "Score(0-3)"
+
+
+def normalize_detailed_columns(detailed: pd.DataFrame) -> pd.DataFrame:
+    """Accept manual Excel edits such as 'Score (0-3)' with extra spaces."""
+    normalized = detailed.copy()
+    for name in normalized.columns:
+        if name.replace(" ", "") == SCORE_COLUMN:
+            if name != SCORE_COLUMN:
+                normalized = normalized.rename(columns={name: SCORE_COLUMN})
+            return normalized
+    raise KeyError(
+        f"Missing score column in detailed results. Expected '{SCORE_COLUMN}' "
+        f"or a spaced variant such as 'Score (0-3)'."
+    )
 
 SUMMARY_COLUMNS_WITH_BASELINE = [
     "Method",
@@ -45,7 +60,7 @@ def summarise(detailed: pd.DataFrame) -> pd.DataFrame:
         Avg_LLM_Time_ms=("LLM Time(ms)", "mean"),
         Avg_Total_Time_ms=("Total Time(ms)", "mean"),
         Avg_Estimated_Cost_USD=("Estimated Cost(USD)", "mean"),
-        Avg_Score=("Score(0-3)", "mean"),
+        Avg_Score=(SCORE_COLUMN, "mean"),
     ).reset_index()
 
     baseline = detailed[detailed["Method"] == BASELINE_METHOD]
@@ -59,7 +74,9 @@ def summarise(detailed: pd.DataFrame) -> pd.DataFrame:
     return summary[SUMMARY_COLUMNS_WITH_BASELINE]
 
 def create_summary_workbook(detailed_path: Path, summary_path: Path) -> None:
-    detailed = pd.read_excel(detailed_path, sheet_name="Detailed Results")
+    detailed = normalize_detailed_columns(
+        pd.read_excel(detailed_path, sheet_name="Detailed Results")
+    )
     with pd.ExcelWriter(summary_path, engine="openpyxl") as writer:
         summarise(detailed).to_excel(writer, index=False, sheet_name="Overall Summary")
         for qtype in ["Book", "General", "Rewrite"]:
