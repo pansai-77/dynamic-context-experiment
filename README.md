@@ -8,58 +8,72 @@
 
 ---
 
-## 2. 实验环境（技术栈）
+## 2. 实验环境与技术栈
 
 
-| 组件           | 选型                                            |
-| ------------ | --------------------------------------------- |
-| 平台           | MacBook Air（Apple M2，16 GB），本地跑               |
-| Python       | 3.11                                          |
-| LLM          | Qwen2.5-3B-Instruct-4bit                      |
-| 推理框架         | MLX / mlx-lm                                  |
-| Embedding 模型 | BAAI/bge-small-en-v1.5（sentence-transformers） |
-| 向量库          | Qdrant local（`qdrant_storage/`）               |
-| PDF 解析       | PyMuPDF                                       |
-| 输出           | pandas + Excel                                |
+| 组件           | 实际选型                            |
+| ------------ | ------------------------------- |
+| 运行平台         | MacBook Air M2，16 GB，本地运行       |
+| Python       | 3.11                            |
+| LLM 推理框架     | `mlx-lm`                        |
+| Embedding 框架 | `sentence-transformers`         |
+| 向量库          | Qdrant Local（`qdrant_storage/`） |
+| PDF 解析       | PyMuPDF                         |
+| 结果处理         | pandas + openpyxl               |
 
+
+**主要依赖**（完整列表见 `requirements.txt`）：
+
+```text
+transformers
+sentence-transformers
+torch
+qdrant-client
+mlx-lm
+PyMuPDF
+pandas
+openpyxl
+```
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**主要依赖**（见 `requirements.txt`），首次运行会从 Hugging Face 拉模型，需要网络。
+首次运行会从 Hugging Face 拉取 LLM 与 Embedding 模型，需要网络。`torch` 由 `sentence-transformers` 安装时自动引入。
 
 ---
 
 
 
-## 3. 模型与生成参数
+## 3. 模型与参数配置
 
 
-| 类型        | 模型                         | 说明                                                |
-| --------- | -------------------------- | ------------------------------------------------- |
-| LLM       | Qwen2.5-3B-Instruct（4-bit） | `mlx-community/Qwen2.5-3B-Instruct-4bit`，Mac 本地可跑 |
-| Embedding | BAAI/bge-small-en-v1.5     | 全程固定，实验期间不更换                                      |
+| 类型        | 模型                       | 说明                                                          |
+| --------- | ------------------------ | ----------------------------------------------------------- |
+| LLM       | Qwen2.5-3B-Instruct-4bit | 通过 MLX 在 Mac 本地运行（`mlx-community/Qwen2.5-3B-Instruct-4bit`） |
+| Embedding | BAAI/bge-small-en-v1.5   | 所有方法固定使用同一模型                                                |
 
+
+> **框架 vs 模型**：`mlx-lm` 是运行 LLM 的框架，`Qwen2.5-3B-Instruct-4bit` 才是具体 LLM；`sentence-transformers` 是 Embedding 框架，`BAAI/bge-small-en-v1.5` 才是具体 Embedding 模型。
 
 **生成参数**（`.env`）：
 
 
-| 参数             | 值   | 说明                    |
-| -------------- | --- | --------------------- |
-| TEMPERATURE    | 0   | 使用低随机性生成，使输出更稳定       |
-| MAX_NEW_TOKENS | 200 | 单次回答最多生成 200 个新 Token |
-| RANDOM_SEED    | 16  | 固定实验中的随机种子，提高运行一致性    |
+| 参数             | 值   | 说明           |
+| -------------- | --- | ------------ |
+| temperature    | 0   | 减少随机性，使输出更稳定 |
+| max_new_tokens | 200 | 限制最大输出长度     |
+| seed           | 16  | 固定随机种子       |
 
 
 **索引切块参数**（PDF → 向量库，见 `pdf_loader.py`）：
 
 
-| 参数            | 值          | 说明                                                                     |
-| ------------- | ---------- | ---------------------------------------------------------------------- |
-| CHUNK_SIZE    | 500        | 每页文本按空白分词（whitespace-separated words）切分，每块约 500 词（非 tokenizer Token 数） |
-| CHUNK_OVERLAP | 80         | 块间重叠约 80 词；每页独立滑动窗口切块                                                  |
-| 索引规模          | 175 chunks | 143 页 PDF 切块后约 175 块                                                   |
+| 参数            | 值          | 说明                                         |
+| ------------- | ---------- | ------------------------------------------ |
+| CHUNK_SIZE    | 500        | 每页文本按空白分词切分，每块约 500 词（非 tokenizer Token 数） |
+| CHUNK_OVERLAP | 80         | 块间重叠约 80 词；每页独立滑动窗口切块                      |
+| 索引规模          | 175 chunks | 143 页 PDF 切块后约 175 块                       |
 
 
 > 本实验中的 **Top-k** 指检索时返回的 chunk **数量**，与上述索引切块大小（CHUNK_SIZE）是不同概念。
@@ -231,6 +245,8 @@ python scripts/summarise_results.py
 | No RAG                  | 82               | 98%             | 3880                | 88%               | 2.55      | 输入 Token 最少，Book 题掉分明显          |
 | Query-Aware             | 1165             | 73%             | 11691               | 65%               | 2.75      | 按题型决定是否检索                       |
 | **Query-Aware + Top-2** | **654**          | **85%**         | **8860**            | **73%**           | **2.90**  | **综合最优：平均分最高，同时大幅降低 Token 与延迟** |
+
+
 
 
 ### 结论
