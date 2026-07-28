@@ -232,22 +232,21 @@ python scripts/summarise_results.py
 
 ### 最终统计表
 
-
-| Method                  | Avg Input Tokens | Token Reduction | Avg Total Time (ms) | Latency Reduction | Avg Score | 备注                              |
-| ----------------------- | ---------------- | --------------- | ------------------- | ----------------- | --------- | ------------------------------- |
-| Baseline (Top-8)        | 4387             | -               | 33247               | -                 | 2.70      | 对照组                             |
-| Standard RAG (Top-4)    | 2194             | 50%             | 18452               | 45%               | 2.50      | Token 减半，但均分最低                  |
-| Minimal RAG (Top-2)     | 1155             | 74%             | 12234               | 63%               | 2.85      | 检索 Top-2，质量较好                   |
-| No RAG                  | 82               | 98%             | 3880                | 88%               | 2.55      | 输入 Token 最少，Book 题掉分明显          |
-| Query-Aware             | 1165             | 73%             | 11691               | 65%               | 2.75      | 按题型决定是否检索                       |
-| **Query-Aware + Top-2** | **654**          | **85%**         | **8860**            | **73%**           | **2.90**  | **综合最优：平均分最高，同时大幅降低 Token 与延迟** |
+| Method | Avg Input Tokens | Token Reduction | Avg Total Time(ms) | Latency Reduction | Avg Score | 备注 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Baseline (Top-8) | 4387.1 | 0 | 33246.69 | 0 | 2.7 | base |
+| Standard RAG (Top-4) | 2193.6 | 49.99% | 18452.03 | 44.49% | 2.5 | Token 减半, 但均分最低 |
+| Minimal RAG (Top-2) | 1155.45 | 73.66% | 12233.94 | 63.20% | 2.85 | 检索 Top-2, 质量较好 |
+| No RAG | 81.75 | 98.13% | 3879.84 | 88.33% | 2.55 | 输入 Token 最少, Book 题掉分明显 |
+| Query-Aware | 1164.85 | 73.44% | 11690.69 | 64.83% | 2.75 | 按题型决定是否检索 |
+| **Query-Aware + Top-2** | **654.15** | **85.08%** | **8860.33** | **73.34%** | **2.9** | **综合最优：平均分最高，同时大幅降低Token与延迟** |
 
 
 
 
 ### 结论
 
-**Query-Aware + Top-2** 在本实验中最佳。与 Baseline Top-8 相比，它将平均输入 Token 减少 85%，平均总延迟减少 73%，同时获得最高平均质量分 2.90。**No RAG** 虽然速度最快、Token 使用最少（减少 98%），但其 Book QA 平均分仅为 2.20，说明书本问题仍然需要检索。对于 General 和 Rewrite 任务，无检索方法取得了相同或更高的质量分，表明这两类任务不需要额外 Context。在本实验中，增加检索 Chunk 数量没有进一步提高回答质量；Top-2 已能提供足够的相关 Context，而额外 chunk 可能引入无关信息（例如 Standard Top-4 均分 2.50，为各方法最低）。
+**Query-Aware + Top-2** 在本实验中最佳。与 Baseline Top-8 相比，它将平均输入 Token 减少 85.08%，平均总延迟减少 73.34%，同时获得最高平均质量分 2.9。**No RAG** 虽然速度最快、Token 使用最少（减少 98.13%），但其 Book QA 平均分仅为 2.2，说明书本问题仍然需要检索。对于 General 和 Rewrite 任务，无检索方法取得了相同或更高的质量分，表明这两类任务不需要额外 Context。在本实验中，增加检索 Chunk 数量没有进一步提高回答质量；Top-2 已能提供足够的相关 Context，而额外 chunk 可能引入无关信息（例如 Standard Top-4 均分 2.50，为各方法最低）。
 
 ### 其他-分题型均分
 
