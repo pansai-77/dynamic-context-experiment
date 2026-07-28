@@ -215,38 +215,30 @@ python scripts/summarise_results.py
 
 ## 8. 实验结果
 
-数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条）
+数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）
 
-结论：**Query-Aware + Top-2** 分数最高、Token 也省最多；No RAG 最快但 Book 题掉分明显；chunk 不是越多越好。
+### 最终统计表
 
-### 整体（相对 Baseline Top-8）
+| Method | Avg Input Tokens | Token Reduction | Avg Total Time (ms) | Latency Reduction | Avg Score | 备注 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Baseline (Top-8) | 4387 | - | 33247 | - | 2.70 | 对照组 |
+| Standard RAG (Top-4) | 2194 | 50% | 18452 | 45% | 2.50 | Token 减半，但均分最低 |
+| Minimal RAG (Top-2) | 1155 | 74% | 12234 | 63% | 2.85 | 质量较好，chunk 更少 |
+| No RAG | 82 | 98% | 3880 | 88% | 2.55 | 最快，Book 题掉分明显 |
+| Query-Aware | 1165 | 73% | 11691 | 65% | 2.75 | 按题型决定是否检索 |
+| **Query-Aware + Top-2** | **654** | **85%** | **8860** | **73%** | **2.90** | **综合最优：分数最高、Token 省最多** |
 
+结论：**Query-Aware + Top-2** 在质量与效率之间平衡最好；No RAG 虽最快，但不适合 Book 题；chunk 不是越多越好。
 
-| 方法                      | Avg Score | Input Tokens | Token 降幅 | 总耗时降幅   |
-| ----------------------- | --------- | ------------ | -------- | ------- |
-| Baseline (Top-8)        | 2.70      | 4387         | -        | -       |
-| Standard RAG (Top-4)    | 2.50      | 2194         | 50%      | 45%     |
-| Minimal RAG (Top-2)     | 2.85      | 1155         | 74%      | 63%     |
-| No RAG                  | 2.55      | 82           | 98%      | 88%     |
-| Query-Aware             | 2.75      | 1165         | 73%      | 65%     |
-| **Query-Aware + Top-2** | **2.90**  | **654**      | **85%**  | **73%** |
+### 分题型均分（补充）
 
-
-
-
-### 分题型均分
-
-
-| 方法                      | Book    | General | Rewrite |
-| ----------------------- | ------- | ------- | ------- |
-| Baseline                | 2.7     | 2.8     | 2.6     |
-| Standard                | 2.6     | 2.8     | 2.0     |
-| Minimal                 | **2.9** | 3.0     | 2.6     |
-| No RAG                  | 2.2     | 3.0     | 2.8     |
-| Query-Aware             | 2.6     | 3.0     | 2.8     |
+| Method | Book | General | Rewrite |
+| --- | --- | --- | --- |
+| Baseline | 2.7 | 2.8 | 2.6 |
+| Standard | 2.6 | 2.8 | 2.0 |
+| Minimal | 2.9 | 3.0 | 2.6 |
+| No RAG | 2.2 | 3.0 | 2.8 |
+| Query-Aware | 2.6 | 3.0 | 2.8 |
 | **Query-Aware + Top-2** | **2.9** | **3.0** | **2.8** |
-
-
-Book 题离不开检索；General / Rewrite 用 Query-Aware 跳过检索，质量和 No RAG 一样但 Book 题仍有检索兜底。
 
 详细数据见 `results/20260726_202759/summary_results.xlsx`。
