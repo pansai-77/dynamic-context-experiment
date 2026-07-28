@@ -4,7 +4,7 @@
 
 ## 1. 实验目的
 
-比较不同 Context 策略对 RAG 系统的影响，重点观察输入 Token 数量、响应延迟（Latency）、估算成本（Equivalent API pricing）与回答质量（0–3 人工评分）。
+比较不同 Context 策略对 RAG 系统的影响，重点观察输入 Token 数量、响应延迟（Latency）与回答质量（0–3 人工评分）。
 
 ---
 
@@ -232,7 +232,7 @@ python scripts/summarise_results.py
 
 ## 8. 实验结果
 
-数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）。`Estimated Cost(USD)` 按 `.env` 中的等价 API 单价（input/output per 1M tokens）估算，用于跨方法对比，**不代表真实 API 账单**。
+数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）。
 
 ### 最终统计表
 
