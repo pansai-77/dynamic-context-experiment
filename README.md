@@ -4,22 +4,23 @@
 
 ## 1. 实验目的
 
-比较不同 Context 策略对 RAG 系统的影响，重点观察Input Token 数量、Response Time（Latency）、回答质量（简单人工评分）
+比较不同 Context 策略对 RAG 系统的影响，重点观察输入 Token 数量、响应延迟（Latency）、估算成本（Equivalent API pricing）与回答质量（0–3 人工评分）。
 
 ---
 
 ## 2. 实验环境（技术栈）
 
 
-| 组件        | 选型                              |
-| --------- | ------------------------------- |
-| 平台        | MacBook Air（Apple M2，16 GB），本地跑 |
-| Python    | 3.11                            |
-| LLM       | mlx-lm                          |
-| Embedding | sentence-transformers           |
-| 向量库       | Qdrant local（`qdrant_storage/`） |
-| PDF 解析    | PyMuPDF                         |
-| 输出        | pandas + Excel                  |
+| 组件           | 选型                                            |
+| ------------ | --------------------------------------------- |
+| 平台           | MacBook Air（Apple M2，16 GB），本地跑               |
+| Python       | 3.11                                          |
+| LLM          | Qwen2.5-3B-Instruct-4bit                      |
+| 推理框架         | MLX / mlx-lm                                  |
+| Embedding 模型 | BAAI/bge-small-en-v1.5（sentence-transformers） |
+| 向量库          | Qdrant local（`qdrant_storage/`）               |
+| PDF 解析       | PyMuPDF                                       |
+| 输出           | pandas + Excel                                |
 
 
 ```bash
@@ -32,7 +33,7 @@ pip install -r requirements.txt
 
 
 
-## 3. 模型选择
+## 3. 模型与生成参数
 
 
 | 类型        | 模型                         | 说明                                                |
@@ -44,22 +45,24 @@ pip install -r requirements.txt
 **生成参数**（`.env`）：
 
 
-| 参数             | 值   | 说明         |
-| -------------- | --- | ---------- |
-| TEMPERATURE    | 0   | 贪心解码，保证可复现 |
-| MAX_NEW_TOKENS | 200 | 单次最大生成长度   |
-| RANDOM_SEED    | 16  | 固定随机种子     |
+| 参数             | 值   | 说明                    |
+| -------------- | --- | --------------------- |
+| TEMPERATURE    | 0   | 使用低随机性生成，使输出更稳定       |
+| MAX_NEW_TOKENS | 200 | 单次回答最多生成 200 个新 Token |
+| RANDOM_SEED    | 16  | 固定实验中的随机种子，提高运行一致性    |
 
 
-**切块参数**：
+**索引切块参数**（PDF → 向量库，见 `pdf_loader.py`）：
 
 
-| 参数            | 值          | 说明                   |
-| ------------- | ---------- | -------------------- |
-| CHUNK_SIZE    | 500        | 每块约 500 词            |
-| CHUNK_OVERLAP | 80         | 块间重叠 80 词            |
-| 索引规模          | 175 chunks | 143 页 PDF 切块后约 175 块 |
+| 参数            | 值          | 说明                                                                     |
+| ------------- | ---------- | ---------------------------------------------------------------------- |
+| CHUNK_SIZE    | 500        | 每页文本按空白分词（whitespace-separated words）切分，每块约 500 词（非 tokenizer Token 数） |
+| CHUNK_OVERLAP | 80         | 块间重叠约 80 词；每页独立滑动窗口切块                                                  |
+| 索引规模          | 175 chunks | 143 页 PDF 切块后约 175 块                                                   |
 
+
+> 本实验中的 **Top-k** 指检索时返回的 chunk **数量**，与上述索引切块大小（CHUNK_SIZE）是不同概念。
 
 ---
 
@@ -81,11 +84,11 @@ pip install -r requirements.txt
 **问题集**（`data/questions/questions.csv`，共 20 题）
 
 
-| 题型      | 数量  | 说明           |
-| ------- | --- | ------------ |
-| Book    | 10  | 必须能用书内内容回答   |
-| General | 5   | 通用概念，不强制检索   |
-| Rewrite | 5   | 改写句子，看表述不是检索 |
+| 题型      | 数量  | 说明                             |
+| ------- | --- | ------------------------------ |
+| Book    | 10  | 答案可直接从所提供的 PDF 范围内获得，用于测试检索能力  |
+| General | 5   | 通用知识问题，用于测试是否需要检索              |
+| Rewrite | 5   | 文本改写任务，用于测试无关 Context 是否影响指令执行 |
 
 
 ```bash
@@ -215,30 +218,36 @@ python scripts/summarise_results.py
 
 ## 8. 实验结果
 
-数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）
+数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）。`Estimated Cost(USD)` 按 `.env` 中的等价 API 单价（input/output per 1M tokens）估算，用于跨方法对比，**不代表真实 API 账单**。
 
 ### 最终统计表
 
-| Method | Avg Input Tokens | Token Reduction | Avg Total Time (ms) | Latency Reduction | Avg Score | 备注 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Baseline (Top-8) | 4387 | - | 33247 | - | 2.70 | 对照组 |
-| Standard RAG (Top-4) | 2194 | 50% | 18452 | 45% | 2.50 | Token 减半，但均分最低 |
-| Minimal RAG (Top-2) | 1155 | 74% | 12234 | 63% | 2.85 | 质量较好，chunk 更少 |
-| No RAG | 82 | 98% | 3880 | 88% | 2.55 | 最快，Book 题掉分明显 |
-| Query-Aware | 1165 | 73% | 11691 | 65% | 2.75 | 按题型决定是否检索 |
-| **Query-Aware + Top-2** | **654** | **85%** | **8860** | **73%** | **2.90** | **综合最优：分数最高、Token 省最多** |
 
-结论：**Query-Aware + Top-2** 在质量与效率之间平衡最好；No RAG 虽最快，但不适合 Book 题；chunk 不是越多越好。
+| Method                  | Avg Input Tokens | Token Reduction | Avg Total Time (ms) | Latency Reduction | Avg Score | 备注                              |
+| ----------------------- | ---------------- | --------------- | ------------------- | ----------------- | --------- | ------------------------------- |
+| Baseline (Top-8)        | 4387             | -               | 33247               | -                 | 2.70      | 对照组                             |
+| Standard RAG (Top-4)    | 2194             | 50%             | 18452               | 45%               | 2.50      | Token 减半，但均分最低                  |
+| Minimal RAG (Top-2)     | 1155             | 74%             | 12234               | 63%               | 2.85      | 检索 Top-2，质量较好                   |
+| No RAG                  | 82               | 98%             | 3880                | 88%               | 2.55      | 输入 Token 最少，Book 题掉分明显          |
+| Query-Aware             | 1165             | 73%             | 11691               | 65%               | 2.75      | 按题型决定是否检索                       |
+| **Query-Aware + Top-2** | **654**          | **85%**         | **8860**            | **73%**           | **2.90**  | **综合最优：平均分最高，同时大幅降低 Token 与延迟** |
 
-### 分题型均分（补充）
 
-| Method | Book | General | Rewrite |
-| --- | --- | --- | --- |
-| Baseline | 2.7 | 2.8 | 2.6 |
-| Standard | 2.6 | 2.8 | 2.0 |
-| Minimal | 2.9 | 3.0 | 2.6 |
-| No RAG | 2.2 | 3.0 | 2.8 |
-| Query-Aware | 2.6 | 3.0 | 2.8 |
+### 结论
+
+**Query-Aware + Top-2** 在本实验中最佳。与 Baseline Top-8 相比，它将平均输入 Token 减少 85%，平均总延迟减少 73%，同时获得最高平均质量分 2.90。**No RAG** 虽然速度最快、Token 使用最少（减少 98%），但其 Book QA 平均分仅为 2.20，说明书本问题仍然需要检索。对于 General 和 Rewrite 任务，无检索方法取得了相同或更高的质量分，表明这两类任务不需要额外 Context。在本实验中，增加检索 Chunk 数量没有进一步提高回答质量；Top-2 已能提供足够的相关 Context，而额外 chunk 可能引入无关信息（例如 Standard Top-4 均分 2.50，为各方法最低）。
+
+### 其他-分题型均分
+
+
+| Method                  | Book    | General | Rewrite |
+| ----------------------- | ------- | ------- | ------- |
+| Baseline                | 2.7     | 2.8     | 2.6     |
+| Standard                | 2.6     | 2.8     | 2.0     |
+| Minimal                 | 2.9     | 3.0     | 2.6     |
+| No RAG                  | 2.2     | 3.0     | 2.8     |
+| Query-Aware             | 2.6     | 3.0     | 2.8     |
 | **Query-Aware + Top-2** | **2.9** | **3.0** | **2.8** |
+
 
 详细数据见 `results/20260726_202759/summary_results.xlsx`。
