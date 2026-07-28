@@ -54,10 +54,6 @@ pip install -r requirements.txt
 | Embedding | BAAI/bge-small-en-v1.5   | 所有方法固定使用同一模型                                                |
 
 
-> **框架 vs 模型**：`mlx-lm` 是运行 LLM 的框架，`Qwen2.5-3B-Instruct-4bit` 才是具体 LLM；`sentence-transformers` 是 Embedding 框架，`BAAI/bge-small-en-v1.5` 才是具体 Embedding 模型。
-
-**生成参数**（`.env`）：
-
 
 | 参数             | 值   | 说明           |
 | -------------- | --- | ------------ |
