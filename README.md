@@ -1,7 +1,5 @@
 # 动态 Context 优化 RAG 实验
 
-本地 RAG 可行性实验：固定模型和问题集，只换 Context 检索策略，看 Token、延迟和回答质量怎么变。结果输出到 Excel，方便打分和写报告。
-
 ---
 
 ## 1. 实验目的
@@ -224,14 +222,14 @@ python scripts/summarise_results.py
 ### 整体（相对 Baseline Top-8）
 
 
-| 方法                   | Avg Score | Input Tokens | Token 降幅 | 总耗时降幅 |
-| -------------------- | --------- | ------------ | -------- | ----- |
-| Baseline (Top-8)     | 2.70      | 4387         | -        | -     |
-| Standard RAG (Top-4) | 2.50      | 2194         | 50%      | 45%   |
-| Minimal RAG (Top-2)  | 2.85      | 1155         | 74%      | 63%   |
-| No RAG               | 2.55      | 82           | 98%      | 88%   |
-| Query-Aware          | 2.75      | 1165         | 73%      | 65%   |
-| **Query-Aware + Top-2** | **2.90** | **654** | **85%** | **73%** |
+| 方法                      | Avg Score | Input Tokens | Token 降幅 | 总耗时降幅   |
+| ----------------------- | --------- | ------------ | -------- | ------- |
+| Baseline (Top-8)        | 2.70      | 4387         | -        | -       |
+| Standard RAG (Top-4)    | 2.50      | 2194         | 50%      | 45%     |
+| Minimal RAG (Top-2)     | 2.85      | 1155         | 74%      | 63%     |
+| No RAG                  | 2.55      | 82           | 98%      | 88%     |
+| Query-Aware             | 2.75      | 1165         | 73%      | 65%     |
+| **Query-Aware + Top-2** | **2.90**  | **654**      | **85%**  | **73%** |
 
 
 
@@ -239,13 +237,13 @@ python scripts/summarise_results.py
 ### 分题型均分
 
 
-| 方法                  | Book | General | Rewrite |
-| ------------------- | ---- | ------- | ------- |
-| Baseline            | 2.7  | 2.8     | 2.6     |
-| Standard            | 2.6  | 2.8     | 2.0     |
-| Minimal             | **2.9** | 3.0  | 2.6     |
-| No RAG              | 2.2  | 3.0     | 2.8     |
-| Query-Aware         | 2.6  | 3.0     | 2.8     |
+| 方法                      | Book    | General | Rewrite |
+| ----------------------- | ------- | ------- | ------- |
+| Baseline                | 2.7     | 2.8     | 2.6     |
+| Standard                | 2.6     | 2.8     | 2.0     |
+| Minimal                 | **2.9** | 3.0     | 2.6     |
+| No RAG                  | 2.2     | 3.0     | 2.8     |
+| Query-Aware             | 2.6     | 3.0     | 2.8     |
 | **Query-Aware + Top-2** | **2.9** | **3.0** | **2.8** |
 
 
