@@ -1,5 +1,5 @@
 from src.models import Chunk, RetrievedChunk
-from src.prompts import build_prompt
+from src.prompts import SYSTEM_PROMPT, build_prompt
 
 def _chunk(page_number: int = 12, text: str = "示例上下文") -> RetrievedChunk:
     return RetrievedChunk(
@@ -13,6 +13,10 @@ def _chunk(page_number: int = 12, text: str = "示例上下文") -> RetrievedChu
         score=0.8123,
     )
 
+def test_system_prompt_does_not_restrict_book_without_context():
+    assert "Book" not in SYSTEM_PROMPT
+    assert "上下文" not in SYSTEM_PROMPT
+
 def test_no_retrieval_prompt_asks_to_follow_task():
     prompt = build_prompt("示例任务", "Rewrite", [])
     assert "请严格按照任务要求作答。" in prompt
@@ -21,10 +25,15 @@ def test_no_retrieval_prompt_asks_to_follow_task():
 
 def test_book_prompt_uses_novel_context_instruction():
     prompt = build_prompt("福贵为什么买牛？", "Book", [_chunk()])
-    assert "请依据提供的小说上下文回答问题。" in prompt
+    assert "请仅依据提供的小说上下文回答问题。" in prompt
     assert "请仅依据下列上下文回答问题" not in prompt
     assert "检索上下文：" in prompt
     assert "相似度" not in prompt
+
+def test_no_retrieval_book_prompt_does_not_require_context():
+    prompt = build_prompt("福贵为什么买牛？", "Book", [])
+    assert "上下文" not in prompt
+    assert "请严格按照任务要求作答。" in prompt
 
 def test_general_prompt_allows_ignoring_irrelevant_context():
     prompt = build_prompt("Top-k 是什么？", "General", [_chunk()])

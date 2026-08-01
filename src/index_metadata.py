@@ -68,6 +68,12 @@ def verify_index_metadata(settings: Settings) -> IndexMetadata:
         mismatches.append(
             f"chunk_overlap: index={stored.chunk_overlap}, config={settings.chunk_overlap}"
         )
+    if settings.book_file is not None:
+        expected_source_files = sorted([settings.book_file.name])
+        if sorted(stored.source_files) != expected_source_files:
+            mismatches.append(
+                f"source_files: index={stored.source_files!r}, config={expected_source_files!r}"
+            )
 
     if mismatches:
         raise ValueError(

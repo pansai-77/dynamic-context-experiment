@@ -64,6 +64,10 @@ pip install -r requirements.txt
 | 知识库 | `data/book/活着.pdf` |
 | 问题集 | `data/questions/questions.csv`（20 题：Book 10 / General 5 / Rewrite 5） |
 
+| 参数 | 值 | 说明 |
+| --- | --- | --- |
+| BOOK_FILE | `data/book/活着.pdf` | 指定唯一索引 PDF |
+
 ---
 
 ## 项目结构
@@ -87,11 +91,14 @@ dynamic-context-experiment/
 │   ├── prompts.py                    # 中文 system / user prompt
 │   ├── llm_mlx.py                    # 本地 Qwen 推理（mlx-lm）
 │   ├── experiment.py                 # 6 种 RAG 方法与指标采集
+│   ├── index_metadata.py             # 索引元数据写入与校验
 │   ├── reporting.py                  # 汇总 Excel
 │   └── run_metadata.py               # 时间戳 run 目录与 run_config.json
 ├── tests/
 │   ├── test_logic.py                 # 方法路由与实验逻辑
 │   ├── test_pdf_loader.py            # 字符切块
+│   ├── test_prompts.py               # 题型 Prompt 构建
+│   ├── test_index_metadata.py        # 索引元数据校验
 │   ├── test_reporting.py             # 汇总与 Score 列
 │   └── test_run_metadata.py          # run 目录辅助函数
 ├── qdrant_storage/                   # 本地向量索引（build_index 生成）

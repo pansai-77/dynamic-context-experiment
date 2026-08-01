@@ -2,11 +2,9 @@ from __future__ import annotations
 from .models import RetrievedChunk
 
 SYSTEM_PROMPT = """你是一名严谨的研究助手。
-请严格按用户要求作答。
-对于 Book 类问题，只能依据提供的上下文回答。
-若上下文不足以作答，请明确说明。
+请严格按照用户的任务要求作答。
 不要编造事实或引用。
-回答应简洁且完整。"""
+回答应简洁、准确且完整。"""
 
 def build_prompt(
     question: str,
@@ -33,7 +31,7 @@ def build_prompt(
 
     if normalized_type == "book":
         instruction = (
-            "请依据提供的小说上下文回答问题。"
+            "请仅依据提供的小说上下文回答问题。"
             "如果上下文不足，请明确说明，不要编造。"
         )
     elif normalized_type == "general":

@@ -53,6 +53,20 @@ def test_verify_index_metadata_raises_on_mismatch(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="does not match current settings"):
         verify_index_metadata(settings)
 
+def test_verify_index_metadata_raises_on_source_file_mismatch(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    write_index_metadata(
+        settings.qdrant_path,
+        IndexMetadata(
+            embedding_model=settings.embedding_model,
+            chunk_size=settings.chunk_size,
+            chunk_overlap=settings.chunk_overlap,
+            source_files=["old-book.pdf"],
+        ),
+    )
+    with pytest.raises(ValueError, match="source_files"):
+        verify_index_metadata(settings)
+
 def test_verify_index_metadata_accepts_matching_config(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
     write_index_metadata(settings.qdrant_path, expected_metadata(settings, ["活着.pdf"]))
