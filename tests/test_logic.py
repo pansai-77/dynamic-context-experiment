@@ -2,7 +2,6 @@ from src.experiment import (
     CORE_METHODS,
     METHODS,
     OPTIONAL_METHODS,
-    calculate_estimated_cost,
     resolve_methods,
     should_retrieve,
 )
@@ -29,9 +28,6 @@ def test_no_rag_never_retrieves():
     method = next(m for m in METHODS if m.name == "No RAG")
     for question_type in ["Book", "General", "Rewrite"]:
         assert should_retrieve(question_type, method) is False
-
-def test_cost_calculation():
-    assert calculate_estimated_cost(1_000_000, 500_000, 1.0, 2.0) == 2.0
 
 def test_default_methods_exclude_optional():
     methods = resolve_methods()

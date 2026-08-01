@@ -20,7 +20,6 @@ DETAILED_COLUMN_RENAMES = {
     "llm_time_ms": "LLM Time(ms)",
     "total_time_ms": "Total Time(ms)",
     "tokens_per_second": "Output Tokens/sec",
-    "estimated_cost_usd": "Estimated Cost(USD)",
     "answer": "Answer",
     "retrieved_chunks": "Retrieved Chunks",
     "retrieved_sources": "Retrieved Sources",

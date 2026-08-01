@@ -45,6 +45,9 @@ class LocalVectorStore:
             ]
             self.client.upsert(collection_name=self.collection_name, points=points, wait=True)
 
+    def warm_up(self) -> None:
+        self.search("预热检索", top_k=1)
+
     def search(self, query: str, top_k: int) -> tuple[list[RetrievedChunk], float]:
         if top_k <= 0:
             return [], 0.0

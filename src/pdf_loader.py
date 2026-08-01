@@ -10,10 +10,21 @@ def _clean_text(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
-def extract_pages(book_dir: Path) -> list[dict]:
+def resolve_pdf_files(book_dir: Path, book_file: Path | None = None) -> list[Path]:
+    if book_file is not None:
+        if not book_file.exists():
+            raise FileNotFoundError(f"Book file not found: {book_file}")
+        return [book_file]
+
     pdf_files = sorted(book_dir.glob("*.pdf"))
     if not pdf_files:
         raise FileNotFoundError(f"No PDF files found in {book_dir}")
+    return pdf_files
+
+def extract_pages(book_dir: Path, book_file: Path | None = None) -> list[dict]:
+    pdf_files = resolve_pdf_files(book_dir, book_file)
+    print("Indexing PDFs:", [path.name for path in pdf_files])
+
     pages = []
     global_page = 0
     for pdf_path in pdf_files:

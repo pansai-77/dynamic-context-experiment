@@ -30,7 +30,6 @@ SUMMARY_COLUMNS_WITH_BASELINE = [
     "Avg_LLM_Time_ms",
     "Avg_Total_Time_ms",
     "Latency Reduction",
-    "Avg_Estimated_Cost_USD",
     "Avg_Score",
 ]
 
@@ -43,7 +42,6 @@ SUMMARY_COLUMNS_WITHOUT_BASELINE = [
     "Avg_Retrieval_Time_ms",
     "Avg_LLM_Time_ms",
     "Avg_Total_Time_ms",
-    "Avg_Estimated_Cost_USD",
     "Avg_Score",
 ]
 
@@ -59,7 +57,6 @@ def summarise(detailed: pd.DataFrame) -> pd.DataFrame:
         Avg_Retrieval_Time_ms=("Retrieval Time(ms)", "mean"),
         Avg_LLM_Time_ms=("LLM Time(ms)", "mean"),
         Avg_Total_Time_ms=("Total Time(ms)", "mean"),
-        Avg_Estimated_Cost_USD=("Estimated Cost(USD)", "mean"),
         Avg_Score=(SCORE_COLUMN, "mean"),
     ).reset_index()
 

@@ -12,7 +12,6 @@ def _sample_row(method: str, question_id: str = "Q01", question_type: str = "Boo
         "Retrieval Time(ms)": 100.0,
         "LLM Time(ms)": 2000.0,
         "Total Time(ms)": 2100.0,
-        "Estimated Cost(USD)": 0.0001,
         "Score(0-3)": None,
     }
 
@@ -24,6 +23,7 @@ def test_summarise_includes_reductions_when_baseline_present():
     summary = summarise(detailed)
     assert "Token Reduction" in summary.columns
     assert "Latency Reduction" in summary.columns
+    assert "Avg_Estimated_Cost_USD" not in summary.columns
 
 def test_normalize_detailed_columns_accepts_spaced_score_header():
     detailed = pd.DataFrame([
@@ -37,7 +37,6 @@ def test_normalize_detailed_columns_accepts_spaced_score_header():
             "Retrieval Time(ms)": 100.0,
             "LLM Time(ms)": 2000.0,
             "Total Time(ms)": 2100.0,
-            "Estimated Cost(USD)": 0.0001,
             "Score (0-3)": 3,
         }
     ])

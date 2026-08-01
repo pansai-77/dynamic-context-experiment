@@ -45,7 +45,6 @@ class ExperimentRow:
     llm_time_ms: float
     total_time_ms: float
     tokens_per_second: float
-    estimated_cost_usd: float
     answer: str
     retrieved_chunks: int
     retrieved_sources: str

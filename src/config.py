@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -7,10 +7,18 @@ from dotenv import load_dotenv
 ROOT_DIR = Path(__file__).resolve().parents[1]
 load_dotenv(ROOT_DIR / ".env")
 
+def _optional_path_from_env(env_key: str) -> Path | None:
+    value = os.getenv(env_key)
+    if not value:
+        return None
+    path = Path(value)
+    return path if path.is_absolute() else ROOT_DIR / path
+
 @dataclass(frozen=True)
 class Settings:
     root_dir: Path = ROOT_DIR
     book_dir: Path = ROOT_DIR / "data" / "book"
+    book_file: Path | None = field(default_factory=lambda: _optional_path_from_env("BOOK_FILE"))
     questions_file: Path = ROOT_DIR / "data" / "questions" / "questions.csv"
     qdrant_path: Path = ROOT_DIR / "qdrant_storage"
     results_dir: Path = ROOT_DIR / "results"
@@ -22,7 +30,5 @@ class Settings:
     max_new_tokens: int = int(os.getenv("MAX_NEW_TOKENS", "200"))
     temperature: float = float(os.getenv("TEMPERATURE", "0"))
     random_seed: int = int(os.getenv("RANDOM_SEED", "42"))
-    equivalent_input_price_per_1m: float = float(os.getenv("EQUIVALENT_INPUT_PRICE_PER_1M", "0"))
-    equivalent_output_price_per_1m: float = float(os.getenv("EQUIVALENT_OUTPUT_PRICE_PER_1M", "0"))
 
 settings = Settings()

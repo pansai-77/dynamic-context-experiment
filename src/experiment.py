@@ -7,6 +7,7 @@ import mlx.core as mx
 import numpy as np
 import pandas as pd
 from .config import Settings
+from .index_metadata import verify_index_metadata
 from .llm_mlx import QwenMLX
 from .models import ExperimentMethod, ExperimentRow
 from .prompts import build_prompt
@@ -33,9 +34,6 @@ def should_retrieve(question_type: str, method: ExperimentMethod) -> bool:
     if method.query_aware:
         return question_type.strip().lower() == "book"
     return method.top_k > 0
-
-def calculate_estimated_cost(input_tokens: int, output_tokens: int, input_price_per_1m: float, output_price_per_1m: float) -> float:
-    return input_tokens / 1_000_000 * input_price_per_1m + output_tokens / 1_000_000 * output_price_per_1m
 
 def set_random_seeds(seed: int) -> None:
     random.seed(seed)
@@ -74,6 +72,16 @@ def run_experiments(
     vector_store = LocalVectorStore(
         settings.qdrant_path, settings.collection_name, settings.embedding_model
     )
+    index_metadata = verify_index_metadata(settings)
+    print(
+        "Index metadata:",
+        f"embedding={index_metadata.embedding_model},",
+        f"chunk_size={index_metadata.chunk_size},",
+        f"chunk_overlap={index_metadata.chunk_overlap},",
+        f"sources={index_metadata.source_files}",
+    )
+    print("Warming up vector store...")
+    vector_store.warm_up()
     llm = QwenMLX(settings.llm_model, settings.max_new_tokens, settings.temperature)
     print("Warming up Qwen model...")
     llm.warm_up()
@@ -97,12 +105,6 @@ def run_experiments(
             prompt = build_prompt(question, question_type, retrieved)
             generation = llm.answer(prompt)
             total_ms = (time.perf_counter() - total_started) * 1000
-            estimated_cost = calculate_estimated_cost(
-                generation.input_tokens,
-                generation.output_tokens,
-                settings.equivalent_input_price_per_1m,
-                settings.equivalent_output_price_per_1m,
-            )
             rows.append(ExperimentRow(
                 question_id=question_id,
                 question_type=question_type,
@@ -117,7 +119,6 @@ def run_experiments(
                 llm_time_ms=round(generation.llm_time_ms, 3),
                 total_time_ms=round(total_ms, 3),
                 tokens_per_second=round(generation.tokens_per_second, 3),
-                estimated_cost_usd=round(estimated_cost, 8),
                 answer=generation.answer,
                 retrieved_chunks=len(retrieved),
                 retrieved_sources="; ".join(
