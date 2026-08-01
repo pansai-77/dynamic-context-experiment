@@ -2,7 +2,9 @@
 .idea/
 __pycache__/
 *.pyc
-book/
+/book/
+data/book/*
+!data/book/.gitkeep
 .env
 qdrant_storage/*
 !qdrant_storage/.gitkeep
