@@ -32,7 +32,7 @@ class QwenMLX:
         generate(
             self.model,
             self.tokenizer,
-            prompt=self._chat_prompt("Reply with OK."),
+            prompt=self._chat_prompt("请回复：好的。"),
             max_tokens=8,
             sampler=self.sampler,
             verbose=False,

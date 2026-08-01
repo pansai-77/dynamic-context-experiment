@@ -10,6 +10,7 @@ from .config import Settings
 from .llm_mlx import QwenMLX
 from .models import ExperimentMethod, ExperimentRow
 from .prompts import build_prompt
+from .results_io import format_detailed_dataframe, filter_questions
 from .vector_store import LocalVectorStore
 
 CORE_METHODS = [
@@ -62,9 +63,10 @@ def run_experiments(
     limit: int | None = None,
     selected_methods: list[str] | None = None,
     include_optional: bool = False,
+    question_ids: list[str] | None = None,
 ) -> pd.DataFrame:
     set_random_seeds(settings.random_seed)
-    questions = pd.read_csv(settings.questions_file)
+    questions = filter_questions(pd.read_csv(settings.questions_file), question_ids)
     if limit:
         questions = questions.head(limit)
     methods = resolve_methods(selected_methods, include_optional)
@@ -126,25 +128,6 @@ def run_experiments(
 
 def export_detailed_results(dataframe: pd.DataFrame, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    exported = dataframe.rename(columns={
-        "question_id": "Question ID",
-        "question_type": "Question Type",
-        "question": "Question",
-        "method": "Method",
-        "top_k": "Top-k",
-        "used_retrieval": "Used Retrieval",
-        "input_tokens": "Input Tokens",
-        "output_tokens": "Output Tokens",
-        "total_tokens": "Total Tokens",
-        "retrieval_time_ms": "Retrieval Time(ms)",
-        "llm_time_ms": "LLM Time(ms)",
-        "total_time_ms": "Total Time(ms)",
-        "tokens_per_second": "Output Tokens/sec",
-        "estimated_cost_usd": "Estimated Cost(USD)",
-        "answer": "Answer",
-        "retrieved_chunks": "Retrieved Chunks",
-        "retrieved_sources": "Retrieved Sources",
-        "score_0_3": "Score(0-3)",
-        "notes": "Notes",
-    })
-    exported.to_excel(output_path, index=False, sheet_name="Detailed Results")
+    format_detailed_dataframe(dataframe).to_excel(
+        output_path, index=False, sheet_name="Detailed Results"
+    )

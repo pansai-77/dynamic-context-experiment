@@ -2,267 +2,102 @@
 
 ---
 
-## 1. 实验目的
+## 介绍
 
-比较不同 Context 策略对 RAG 系统的影响，重点观察输入 Token 数量、响应延迟（Latency）与回答质量（0–3 人工评分）。
+比较不同 Context 检索策略对 RAG 系统的影响，重点观察输入 Token 数量、响应延迟（Latency）与回答质量（0–3 人工评分）。
 
----
+**技术栈**
 
-## 2. 实验环境与技术栈
-
-
-| 组件           | 实际选型                            |
-| ------------ | ------------------------------- |
-| 运行平台         | MacBook Air M2，16 GB，本地运行       |
-| Python       | 3.11                            |
-| LLM 推理框架     | `mlx-lm`                        |
-| Embedding 框架 | `sentence-transformers`         |
-| 向量库          | Qdrant Local（`qdrant_storage/`） |
-| PDF 解析       | PyMuPDF                         |
-| 结果处理         | pandas + openpyxl               |
-
-
-**主要依赖**（完整列表见 `requirements.txt`）：
-
-```text
-transformers
-sentence-transformers
-torch
-qdrant-client
-mlx-lm
-PyMuPDF
-pandas
-openpyxl
-```
+| 组件 | 选型 |
+| --- | --- |
+| 运行平台 | MacBook Air M2，16 GB，本地运行 |
+| Python | 3.11 |
+| LLM 推理 | `mlx-lm` |
+| Embedding | `sentence-transformers` |
+| 向量库 | Qdrant Local（`qdrant_storage/`） |
+| PDF 解析 | PyMuPDF |
+| 结果处理 | pandas + openpyxl |
 
 ```bash
 pip install -r requirements.txt
 ```
 
-首次运行会从 Hugging Face 拉取 LLM 与 Embedding 模型，需要网络。`torch` 由 `sentence-transformers` 安装时自动引入。
+首次运行会从 Hugging Face 拉取 LLM 与 Embedding 模型，需要网络。
 
 ---
 
+## 配置
 
+复制 `.env.example` 为 `.env` 后可按需修改。主要项如下。
 
-## 3. 模型与参数配置
+### 模型
 
+| 类型 | 模型 | 说明 |
+| --- | --- | --- |
+| LLM | Qwen2.5-3B-Instruct-4bit | `mlx-community/Qwen2.5-3B-Instruct-4bit` |
+| Embedding | BAAI/bge-small-zh-v1.5 | 所有方法固定使用同一模型 |
 
-| 类型        | 模型                       | 说明                                                          |
-| --------- | ------------------------ | ----------------------------------------------------------- |
-| LLM       | Qwen2.5-3B-Instruct-4bit | 通过 MLX 在 Mac 本地运行（`mlx-community/Qwen2.5-3B-Instruct-4bit`） |
-| Embedding | BAAI/bge-small-en-v1.5   | 所有方法固定使用同一模型                                                |
+### 生成参数
 
+| 参数 | 值 | 说明 |
+| --- | --- | --- |
+| temperature | 0 | 减少随机性 |
+| max_new_tokens | 200 | 最大输出长度 |
+| seed | 16 | 固定随机种子 |
 
+### 索引切块
 
-| 参数             | 值   | 说明           |
-| -------------- | --- | ------------ |
-| temperature    | 0   | 减少随机性，使输出更稳定 |
-| max_new_tokens | 200 | 限制最大输出长度     |
-| seed           | 16  | 固定随机种子       |
+参数见 `pdf_loader.py` / `.env`。
 
+| 参数 | 值 | 说明 |
+| --- | --- | --- |
+| CHUNK_SIZE | 500 | 按字符切分，每块约 500 字 |
+| CHUNK_OVERLAP | 80 | 块间重叠约 80 字 |
+| collection_name | huozhe | Qdrant 集合名 |
 
-**索引切块参数**（PDF → 向量库，见 `pdf_loader.py`）：
+> 实验中的 **Top-k** 指检索返回的 chunk **数量**，与 CHUNK_SIZE 是不同概念。
 
+### 知识库与问题集
 
-| 参数            | 值          | 说明                                         |
-| ------------- | ---------- | ------------------------------------------ |
-| CHUNK_SIZE    | 500        | 每页文本按空白分词切分，每块约 500 词（非 tokenizer Token 数） |
-| CHUNK_OVERLAP | 80         | 块间重叠约 80 词；每页独立滑动窗口切块                      |
-| 索引规模          | 175 chunks | 143 页 PDF 切块后约 175 块                       |
-
-
-> 本实验中的 **Top-k** 指检索时返回的 chunk **数量**，与上述索引切块大小（CHUNK_SIZE）是不同概念。
-
----
-
-
-
-## 4. 数据集 / 数据准备
-
-**知识库**
-
-
-| 项目   | 说明                                                                        |
-| ---- | ------------------------------------------------------------------------- |
-| 书名   | An Introduction to Statistical Learning with Applications in Python（ISLP） |
-| 使用范围 | PDF 前 143 页（Ch1-3）                                                        |
-| 文件路径 | `data/book/ISLR_Python_Pages_1_to_143.pdf`                                |
-| 集合名  | `islr_python_pages_1_143`                                                 |
-
-
-**问题集**（`data/questions/questions.csv`，共 20 题）
-
-
-| 题型      | 数量  | 说明                             |
-| ------- | --- | ------------------------------ |
-| Book    | 10  | 答案可直接从所提供的 PDF 范围内获得，用于测试检索能力  |
-| General | 5   | 通用知识问题，用于测试是否需要检索              |
-| Rewrite | 5   | 文本改写任务，用于测试无关 Context 是否影响指令执行 |
-
-
-```bash
-python scripts/build_index.py
-```
+| 项目 | 路径 |
+| --- | --- |
+| 知识库 | `data/book/活着.pdf` |
+| 问题集 | `data/questions/questions.csv`（20 题：Book 10 / General 5 / Rewrite 5） |
 
 ---
 
-
-
-## 5. 实验内容
-
-
-
-### 5.1 六种 RAG 策略
-
-
-| 序号  | 方法                  | Top-k  | 规则                          |
-| --- | ------------------- | ------ | --------------------------- |
-| 1   | Baseline RAG        | 8      | 每次都检索（baseline）             |
-| 2   | Standard RAG        | 4      | 每次都检索                       |
-| 3   | Minimal RAG         | 2      | 每次都检索                       |
-| 4   | No RAG              | 0      | 不检索                         |
-| 5   | Query-Aware         | Book 4 | Book 检索，General/Rewrite 不检索 |
-| 6   | Query-Aware + Top-2 | Book 2 | 同上，Book 只用 Top-2            |
-
-
-默认跑前 5 种（100 条）；加 `--include-optional` 跑满 6 种（120 条）。
-
-### 5.2 运行命令
-
-```bash
-python scripts/run_experiments.py
-python scripts/run_experiments.py --include-optional
-python scripts/run_experiments.py --method "Query-Aware + Top-2"
-python scripts/summarise_results.py --run-dir 20260726_202759
-```
-
-
-
-### 5.3 输出文件
-
-每次运行会在 `results/YYYYMMDD_HHMMSS/` 下生成：
-
-
-| 文件                      | 说明          |
-| ----------------------- | ----------- |
-| `detailed_results.xlsx` | 每题 x 每方法明细  |
-| `summary_results.xlsx`  | 汇总（打分后重新生成） |
-| `run_config.json`       | 配置快照        |
-
-
-
-
-### 5.4 实验流程
-
-1. `build_index.py` 构建向量索引
-2. `run_experiments.py` 跑实验并生成明细
-3. 在 Excel 中手动打分
-4. `summarise_results.py` 重新生成汇总
-
----
-
-
-
-## 6. 项目结构
+## 项目结构
 
 ```
 dynamic-context-experiment/
 ├── data/
-│   ├── book/                         # ISLR PDF knowledge base
+│   ├── book/                         # 《活着》PDF 知识库
 │   └── questions/
-│       └── questions.csv             # 20-question benchmark
+│       └── questions.csv             # 20 题基准问题集
 ├── scripts/
-│   ├── _bootstrap.py                 # add project root to sys.path
-│   ├── build_index.py                # PDF to chunks to Qdrant
-│   ├── run_experiments.py             # main experiment runner
-│   └── summarise_results.py          # rebuild summary after scoring
+│   ├── _bootstrap.py                 # 脚本运行时加入项目根目录到 sys.path
+│   ├── build_index.py                # PDF → chunks → Qdrant
+│   ├── run_experiments.py            # 主实验入口
+│   └── summarise_results.py          # 打分后重新生成汇总
 ├── src/
-│   ├── config.py                     # load settings from .env
-│   ├── models.py                     # Chunk, ExperimentRow dataclasses
-│   ├── pdf_loader.py                 # extract text and chunk PDF pages
-│   ├── vector_store.py               # embedding and Qdrant search
-│   ├── prompts.py                    # system prompt and prompt builder
-│   ├── llm_mlx.py                    # local Qwen inference via mlx-lm
-│   ├── experiment.py                 # 6 RAG methods and metric collection
-│   ├── reporting.py                  # build summary Excel workbooks
-│   └── run_metadata.py               # timestamped run dirs and run_config.json
+│   ├── config.py                     # 从 .env 加载配置
+│   ├── models.py                     # Chunk、ExperimentRow 等数据结构
+│   ├── pdf_loader.py                 # PDF 提取与字符切块
+│   ├── vector_store.py               # Embedding 与 Qdrant 检索
+│   ├── prompts.py                    # 中文 system / user prompt
+│   ├── llm_mlx.py                    # 本地 Qwen 推理（mlx-lm）
+│   ├── experiment.py                 # 6 种 RAG 方法与指标采集
+│   ├── reporting.py                  # 汇总 Excel
+│   └── run_metadata.py               # 时间戳 run 目录与 run_config.json
 ├── tests/
-│   ├── test_logic.py                 # method routing and experiment logic
-│   ├── test_reporting.py             # summary and score column handling
-│   └── test_run_metadata.py          # run directory helpers
-├── qdrant_storage/                   # local vector index (generated)
-├── results/                          # timestamped experiment outputs
-├── .env.example                      # config template
-├── run_first_time.sh                 # first-time setup script
-├── requirements.txt                  # Python dependencies
+│   ├── test_logic.py                 # 方法路由与实验逻辑
+│   ├── test_pdf_loader.py            # 字符切块
+│   ├── test_reporting.py             # 汇总与 Score 列
+│   └── test_run_metadata.py          # run 目录辅助函数
+├── qdrant_storage/                   # 本地向量索引（build_index 生成）
+├── results/                          # 实验输出（按时间戳分子目录）
+├── .env.example                      # 配置模板
+├── run_first_time.sh                 # 首次环境搭建脚本
+├── requirements.txt
 └── README.md
 ```
-
----
-
-
-
-## 7. 回答评分标准
-
-在 `detailed_results.xlsx` 的 Score (0-3) 列手动打分：
-
-
-| 分数  | 含义       |
-| --- | -------- |
-| 3   | 对且完整     |
-| 2   | 大体对，有小问题 |
-| 1   | 只对一部分    |
-| 0   | 错或未答     |
-
-
-打完分运行：
-
-```bash
-python scripts/summarise_results.py
-```
-
----
-
-
-
-## 8. 实验结果
-
-数据来自 `results/20260726_202759/`（20 题 x 6 方法 = 120 条，相对 Baseline Top-8 计算降幅）。
-
-### 最终统计表
-
-| Method | Avg Input Tokens | Token Reduction | Avg Total Time(ms) | Latency Reduction | Avg Score | 备注 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Baseline (Top-8) | 4387.1 | 0 | 33246.69 | 0 | 2.7 | base |
-| Standard RAG (Top-4) | 2193.6 | 49.99% | 18452.03 | 44.49% | 2.5 | Token 减半, 但均分最低 |
-| Minimal RAG (Top-2) | 1155.45 | 73.66% | 12233.94 | 63.20% | 2.85 | 检索 Top-2, 质量较好 |
-| No RAG | 81.75 | 98.13% | 3879.84 | 88.33% | 2.55 | 输入 Token 最少, Book 题掉分明显 |
-| Query-Aware | 1164.85 | 73.44% | 11690.69 | 64.83% | 2.75 | 按题型决定是否检索 |
-| **Query-Aware + Top-2** | **654.15** | **85.08%** | **8860.33** | **73.34%** | **2.9** | **综合最优：平均分最高，同时大幅降低Token与延迟** |
-
-
-
-
-### 结论
-
-**Query-Aware + Top-2** 综合最好：均分 2.9，输入 Token 降 85%，延迟降 73%。
-
-**No RAG** 最快、Token 最少，但 Book 题均分只有 2.2，说明书本问题仍需要检索；General 和 Rewrite 不检索也够用。
-
-在本实验中，检索 chunk 不是越多越好；Top-2 通常已足够（Standard Top-4 均分最低，为 2.5）。
-
-### 其他-分题型均分
-
-
-| Method                  | Book    | General | Rewrite |
-| ----------------------- | ------- | ------- | ------- |
-| Baseline                | 2.7     | 2.8     | 2.6     |
-| Standard                | 2.6     | 2.8     | 2.0     |
-| Minimal                 | 2.9     | 3.0     | 2.6     |
-| No RAG                  | 2.2     | 3.0     | 2.8     |
-| Query-Aware             | 2.6     | 3.0     | 2.8     |
-| **Query-Aware + Top-2** | **2.9** | **3.0** | **2.8** |
-
-
-详细数据见 `results/20260726_202759/summary_results.xlsx`。

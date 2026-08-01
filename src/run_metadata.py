@@ -57,6 +57,35 @@ def find_latest_run_directory(results_dir: Path) -> Path:
         )
     return run_dirs[0]
 
+def resolve_run_directory(run_dir: Path, results_dir: Path) -> Path:
+    if not run_dir.is_absolute():
+        run_dir = results_dir / run_dir
+    if not is_run_directory(run_dir):
+        raise ValueError(f"Not a timestamped run directory: {run_dir}")
+    return run_dir
+
+def record_partial_rerun(
+    config_path: Path,
+    question_ids: list[str],
+    methods: list[str],
+) -> None:
+    if config_path.exists():
+        metadata = json.loads(config_path.read_text(encoding="utf-8"))
+    else:
+        metadata = {}
+    reruns = metadata.setdefault("partial_reruns", [])
+    reruns.append(
+        {
+            "timestamp_utc": datetime.now(UTC).isoformat(),
+            "question_ids": question_ids,
+            "methods": methods,
+        }
+    )
+    config_path.write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
 def build_run_metadata(
     settings: Settings,
     methods: list[str],

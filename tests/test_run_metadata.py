@@ -8,6 +8,8 @@ from src.run_metadata import (
     create_run_directory,
     export_run_metadata,
     find_latest_run_directory,
+    record_partial_rerun,
+    resolve_run_directory,
 )
 
 def test_build_run_metadata_includes_settings_and_dependencies(tmp_path: Path) -> None:
@@ -40,3 +42,17 @@ def test_find_latest_run_directory(tmp_path: Path) -> None:
     (tmp_path / "20260726_093512").mkdir()
     (tmp_path / "20260726_120000").mkdir()
     assert find_latest_run_directory(tmp_path).name == "20260726_120000"
+
+def test_resolve_run_directory_accepts_relative_name(tmp_path: Path) -> None:
+    run_dir = tmp_path / "20260726_093512"
+    run_dir.mkdir()
+    resolved = resolve_run_directory(Path("20260726_093512"), tmp_path)
+    assert resolved == run_dir
+
+def test_record_partial_rerun_appends_history(tmp_path: Path) -> None:
+    config_path = tmp_path / "run_config.json"
+    config_path.write_text('{"methods": ["No RAG"]}\n', encoding="utf-8")
+    record_partial_rerun(config_path, ["Q16", "Q17"], ["No RAG"])
+    payload = json.loads(config_path.read_text(encoding="utf-8"))
+    assert payload["methods"] == ["No RAG"]
+    assert payload["partial_reruns"][0]["question_ids"] == ["Q16", "Q17"]

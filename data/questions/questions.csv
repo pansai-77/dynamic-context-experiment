@@ -1,21 +1,41 @@
 Question ID,Question Type,Question,Ground Truth,Source
-Q01,Book,"According to the book, what is statistical learning?",Statistical learning refers to a vast set of tools for understanding data.,Chapter 1
-Q02,Book,What is the difference between supervised and unsupervised statistical learning?,Supervised learning has inputs and associated responses; unsupervised learning has inputs but no associated response and seeks relationships or structure in the data.,Chapter 1
-Q03,Book,What is the difference between regression and classification problems?,Regression involves a quantitative response; classification involves a qualitative response.,Chapter 1
-Q04,Book,"In the statistical learning framework Y = f(X) + ε, what does f represent?",f is the fixed but unknown function representing the systematic information that X provides about Y.,Chapter 2
-Q05,Book,Why do we want to estimate f in statistical learning?,We estimate f for two main reasons: prediction and inference.,Chapter 2
-Q06,Book,What trade-off does the book describe between prediction accuracy and model interpretability?,"Increasing flexibility generally decreases interpretability. Flexible models may improve prediction when the relationship is complex, but they can also overfit, so greater flexibility does not always produce better predictions.",Chapter 2
-Q07,Book,What is overfitting?,Overfitting occurs when a model follows training noise or random patterns too closely and consequently performs poorly on new observations.,Chapter 2
-Q08,Book,What is the bias-variance trade-off?,"As flexibility increases, bias generally decreases while variance increases; good test performance requires balancing low bias and low variance.",Chapter 2
-Q09,Book,What does R-squared measure in linear regression?,R-squared measures the proportion of variance in the response explained by the regression model.,Chapter 3
-Q10,Book,How does the book handle qualitative predictors in linear regression?,"Qualitative predictors are represented using dummy variables. A predictor with L levels normally uses L−1 dummy variables, with the omitted level treated as the baseline or reference category.",Chapter 3
-Q11,General,What is machine learning?,Machine learning involves using data to train systems or methods to identify patterns and make predictions or decisions.,General
-Q12,General,What is the difference between supervised and unsupervised learning?,"Supervised learning uses data with associated response labels, whereas unsupervised learning uses data without response labels to discover relationships, groups or structure.",General
-Q13,General,What is a training set?,A training set is a collection of observations used to train a statistical learning method to estimate the unknown function f.,General
-Q14,General,What is cross-validation?,"Cross-validation is a method for estimating test error, such as test MSE, using the available training data.",General
-Q15,General,What is regularization?,Regularization reduces model complexity and overfitting by adding a penalty or constraint to the model-fitting process. Ridge regression and the lasso are examples.,General
-Q16,Rewrite,Rewrite this sentence in simpler English: Statistical learning refers to a vast set of tools for understanding data.,Statistical learning is a collection of methods used to understand data.,Rewrite
-Q17,Rewrite,Rewrite this sentence professionally: A flexible model can fit the training data really well but may do badly on new data.,A highly flexible model may fit the training data closely but generalize poorly to new observations.,Rewrite
-Q18,Rewrite,"Summarise this statement in one sentence: As flexibility increases, training error usually decreases but test error may eventually increase.","Increasing model flexibility usually reduces training error, but test error may eventually increase because of overfitting.",Rewrite
-Q19,Rewrite,Rewrite this sentence in plain English: Multiple linear regression extends simple linear regression to more than one predictor.,Multiple linear regression uses several input variables to predict an outcome instead of using only one.,Rewrite
-Q20,Rewrite,Improve the clarity of this sentence: Overfitting happens when a model captures noise instead of the true underlying pattern.,Overfitting occurs when a model learns random noise in the training data rather than the underlying pattern that applies to new data.,Rewrite
+
+Q01,Book,福贵是怎样把徐家全部家产输光的？,沉迷赌博，在赌坊里不断输钱，最后把田地房屋全部输掉。,正文
+
+Q02,Book,有庆是怎么死的？,给县长女人献血时被过量抽血，最终死亡。,正文
+
+Q03,Book,凤霞是怎么死的？,生孩子时大出血，最终死亡。,正文
+
+Q04,Book,福贵晚年买的那头老牛叫什么名字？,福贵。,正文
+
+Q05,Book,福贵输光家产后，家珍为什么仍回到他身边？,她认定自己是福贵的人，愿意和他共同生活。,正文
+
+Q06,Book,福贵为什么买下那头即将被宰的老牛？,不忍心看它辛苦一生后被宰杀；也需要它干活和陪伴。,正文
+
+Q07,Book,福贵和家珍为什么把凤霞送给别人？,家里穷，想省钱让有庆上学，也希望凤霞去别处过更好生活。,正文
+
+Q08,Book,龙二为什么说自己是替福贵死的？,龙二赢走福贵产业后当地主被枪毙；若福贵仍是地主，被枪毙的可能就是福贵。,正文
+
+Q09,Book,家珍为什么起初不让春生进门，后来又劝他活下去？,因有庆之死怨恨春生；后来知他受迫害想轻生，劝他为自己和有庆活下去。,正文
+
+Q10,Book,福贵为什么觉得输光家产反而救了自己一命？,输光后不再是地主；龙二作为地主被枪毙时，福贵认为自己躲过了这一劫。,正文
+
+Q11,General,RAG系统在生成回答前通常会执行什么操作？,根据问题从外部知识库检索相关内容，再将其加入生成上下文。,General
+
+Q12,General,Top-k检索中的k表示什么？,返回或选取相关性最高的k个检索结果。,General
+
+Q13,General,增大RAG中的Top-k可能同时带来哪些好处和问题？,可能提高相关信息召回率；同时增加Token、延迟、成本和无关信息干扰。,General
+
+Q14,General,为什么RAG系统即使检索到相关文档，仍然可能生成错误回答？,相关文档可能信息不足、模型理解/整合失败、上下文含噪声或生成幻觉。,General
+
+Q15,General,在什么情况下，RAG系统应该跳过检索并直接调用语言模型回答？请说明至少两种情况。,问题可由模型可靠回答；属于改写/摘要/格式转换；检索库不相关；检索无法提供额外价值。,General
+
+Q16,Rewrite,"请将下面的话改写得更加简洁，保持原意：""福贵在经历了许多苦难以后，仍然选择继续生活下去，没有因为亲人的离世而完全放弃生活。""",经历苦难和亲人离世后，福贵仍选择继续生活。,简洁改写
+
+Q17,Rewrite,"请将下面的话改写成正式的书面语，保持原意：""家珍虽然吃了很多苦，但她一直都没有离开福贵。""",尽管饱经苦难，家珍始终没有离开福贵。,书面语改写
+
+Q18,Rewrite,"请将下面两句话合并成一句不超过25个汉字的话，标点不计入字数，并保持因果关系：""有庆被抽取了过多的血。有庆最终失去了生命。""",有庆因被抽取过多血液而失去了生命。,合并句子
+
+Q19,Rewrite,"请将下面的话改写成客观、中性的书面表达，删除带有侮辱性的措辞，并保持核心事实：""抽血的是个乌龟王八蛋，把我儿子的血差不多都抽干了。""",抽血人员抽取了过多血液，导致有庆严重失血。,中性改写
+
+Q20,Rewrite,"请用第三人称将下面的话改写成不超过35个汉字的一句话，标点不计入字数，并保留买牛的两个原因：""我买下这头牛，是因为不忍心看它被宰杀，也想让它陪着我。""",福贵因不忍老牛被宰杀，也希望得到陪伴，便买下了它。,第三人称改写

@@ -13,9 +13,22 @@ def test_query_aware_retrieves_only_book_questions():
     assert should_retrieve("General", method) is False
     assert should_retrieve("Rewrite", method) is False
 
+def test_query_aware_top_2_retrieves_only_book_questions():
+    method = next(m for m in METHODS if m.name == "Query-Aware + Top-2")
+    assert should_retrieve("Book", method) is True
+    assert should_retrieve("General", method) is False
+    assert should_retrieve("Rewrite", method) is False
+
+def test_fixed_rag_methods_always_retrieve_when_top_k_positive():
+    for name in ["Baseline (Top-8)", "Standard RAG (Top-4)", "Minimal RAG (Top-2)"]:
+        method = next(m for m in METHODS if m.name == name)
+        for question_type in ["Book", "General", "Rewrite"]:
+            assert should_retrieve(question_type, method) is True
+
 def test_no_rag_never_retrieves():
     method = next(m for m in METHODS if m.name == "No RAG")
-    assert should_retrieve("Book", method) is False
+    for question_type in ["Book", "General", "Rewrite"]:
+        assert should_retrieve(question_type, method) is False
 
 def test_cost_calculation():
     assert calculate_estimated_cost(1_000_000, 500_000, 1.0, 2.0) == 2.0
