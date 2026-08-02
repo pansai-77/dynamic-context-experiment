@@ -58,6 +58,19 @@ def test_extract_json_object_from_fenced_response():
     assert payload["topics"] == ["death_loss"]
 
 
+def test_metadata_generator_rejects_out_of_range_importance():
+    for importance in (0, 9):
+        payload = {
+            "characters": ["有庆"],
+            "topics": ["death_loss"],
+            "keywords": ["献血"],
+            "importance": importance,
+        }
+        metadata, invalid = normalize_metadata_payload(payload, {"death_loss"})
+        assert metadata is None
+        assert invalid == []
+
+
 def test_metadata_generator_rejects_invalid_importance():
     payload = {
         "characters": ["有庆"],

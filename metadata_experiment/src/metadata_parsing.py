@@ -24,10 +24,15 @@ def parse_importance(value) -> int | None:
     if isinstance(value, bool):
         raise ValueError("importance must be an integer, not a boolean.")
     if isinstance(value, int):
+        if not 1 <= value <= 5:
+            raise ValueError("importance must be between 1 and 5.")
         return value
     if isinstance(value, float):
         if value.is_integer():
-            return int(value)
+            parsed_int = int(value)
+            if not 1 <= parsed_int <= 5:
+                raise ValueError("importance must be between 1 and 5.")
+            return parsed_int
         raise ValueError("importance must be an integer.")
     if isinstance(value, str):
         stripped = value.strip()
@@ -35,7 +40,10 @@ def parse_importance(value) -> int | None:
             raise ValueError("importance must be an integer.")
         parsed = float(stripped)
         if parsed.is_integer():
-            return int(parsed)
+            parsed_int = int(parsed)
+            if not 1 <= parsed_int <= 5:
+                raise ValueError("importance must be between 1 and 5.")
+            return parsed_int
         raise ValueError("importance must be an integer.")
     raise ValueError("importance must be an integer.")
 
