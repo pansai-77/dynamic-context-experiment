@@ -1,6 +1,6 @@
 {
-  "run_timestamp_utc": "2026-07-30T08:17:43.197051+00:00",
-  "run_directory": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/results/20260730_195806",
+  "run_timestamp_utc": "2026-08-01T05:45:19.942500+00:00",
+  "run_directory": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/results/20260801_172448",
   "python_version": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.6.3.2)]",
   "platform": "macOS-26.5.2-arm64-arm-64bit",
   "methods": [
@@ -14,19 +14,18 @@
   "settings": {
     "root_dir": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment",
     "book_dir": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/data/book",
+    "book_file": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/data/book/活着.pdf",
     "questions_file": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/data/questions/questions.csv",
     "qdrant_path": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/qdrant_storage",
     "results_dir": "/Users/pansai/Downloads/3_study_content/00_MY PRO/02-CODE/dynamic-context-experiment/results",
-    "collection_name": "jieyou_zahuodian",
+    "collection_name": "huozhe",
     "embedding_model": "BAAI/bge-small-zh-v1.5",
     "llm_model": "mlx-community/Qwen2.5-3B-Instruct-4bit",
     "chunk_size": 500,
     "chunk_overlap": 80,
     "max_new_tokens": 200,
     "temperature": 0.0,
-    "random_seed": 16,
-    "equivalent_input_price_per_1m": 0.1,
-    "equivalent_output_price_per_1m": 0.3
+    "random_seed": 16
   },
   "dependencies": {
     "mlx": "0.22.1",
