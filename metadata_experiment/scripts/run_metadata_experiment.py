@@ -3,8 +3,6 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-import pandas as pd
-
 import _bootstrap  # noqa: F401
 
 from config import settings
@@ -13,7 +11,6 @@ from experiment import (
     export_run_config,
     format_detailed_dataframe,
     run_metadata_experiment,
-    summarize_benchmark,
 )
 from reporting import create_summary_workbook
 from src.results_io import parse_question_ids
@@ -29,9 +26,9 @@ def parse_args() -> argparse.Namespace:
         help="Comma-separated question IDs, e.g. Q01,Q02.",
     )
     parser.add_argument(
-        "--skip-benchmark",
+        "--with-fallback",
         action="store_true",
-        help="Skip the 25x retrieval benchmark (debug only).",
+        help="Enable Top-2→Top-3/4 topic expansion for supplementary runs only.",
     )
     return parser.parse_args()
 
@@ -43,18 +40,14 @@ def main() -> None:
 
     run_dir = create_run_directory(settings.results_dir)
     detailed_path = run_dir / "detailed_results.xlsx"
-    benchmark_path = run_dir / "retrieval_benchmark.xlsx"
-    benchmark_summary_path = run_dir / "retrieval_benchmark_summary.xlsx"
-    scoring_path = run_dir / "scoring_sheet.xlsx"
-    mapping_path = run_dir / "scoring_mapping.csv"
     summary_path = run_dir / "summary_results.xlsx"
     run_config_path = run_dir / "run_config.json"
 
-    detailed_df, benchmark_df, scoring_df, mapping_df = run_metadata_experiment(
+    detailed_df = run_metadata_experiment(
         settings,
         question_ids=question_ids,
         selected_methods=methods,
-        skip_benchmark=args.skip_benchmark,
+        allow_topic_expansion=args.with_fallback,
     )
 
     format_detailed_dataframe(detailed_df).to_excel(
@@ -62,29 +55,13 @@ def main() -> None:
         index=False,
         sheet_name="Detailed Results",
     )
-    if not benchmark_df.empty:
-        benchmark_summary = summarize_benchmark(benchmark_df)
-        with pd.ExcelWriter(benchmark_path, engine="openpyxl") as writer:
-            benchmark_df.to_excel(writer, index=False, sheet_name="Benchmark Runs")
-            benchmark_summary.to_excel(writer, index=False, sheet_name="Benchmark Summary")
-        benchmark_summary.to_excel(benchmark_summary_path, index=False, sheet_name="Benchmark Summary")
-    else:
-        benchmark_summary_path = None
-
-    scoring_df.to_excel(scoring_path, index=False, sheet_name="Scoring")
-    mapping_df.to_csv(mapping_path, index=False)
 
     method_names = sorted(detailed_df["method"].unique().tolist())
-    export_run_config(settings, method_names, run_config_path, run_dir)
-    create_summary_workbook(
-        detailed_path,
-        summary_path,
-        benchmark_path if benchmark_path.exists() else None,
-    )
+    export_run_config(settings, method_names, run_config_path, run_dir, args.with_fallback)
+    create_summary_workbook(detailed_path, summary_path)
 
     print(f"Run directory: {run_dir}")
     print(f"Detailed results: {detailed_path}")
-    print(f"Scoring sheet: {scoring_path}")
     print(f"Summary results: {summary_path}")
 
 

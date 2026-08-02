@@ -1,0 +1,31 @@
+{
+  "total_chunks": 293,
+  "metadata_ok_count": 288,
+  "metadata_failed_count": 5,
+  "empty_topic_ok_count": 7,
+  "avg_topics_per_chunk": 0.9693,
+  "topic_counts": {
+    "death_loss": 59,
+    "disease_medical": 0,
+    "family_decline_gambling": 33,
+    "land_reform_politics": 14,
+    "marriage_family": 0,
+    "parent_child": 23,
+    "poverty_livelihood": 1,
+    "rural_labor": 1,
+    "suffering_survival": 0,
+    "war_conscription": 153
+  },
+  "topic_coverage": {
+    "death_loss": 0.2014,
+    "disease_medical": 0.0,
+    "family_decline_gambling": 0.1126,
+    "land_reform_politics": 0.0478,
+    "marriage_family": 0.0,
+    "parent_child": 0.0785,
+    "poverty_livelihood": 0.0034,
+    "rural_labor": 0.0034,
+    "suffering_survival": 0.0,
+    "war_conscription": 0.5222
+  }
+}

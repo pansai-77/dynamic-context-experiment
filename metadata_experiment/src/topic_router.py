@@ -39,7 +39,11 @@ class TopicRouter:
             raise ValueError(f"Missing topic embeddings for: {sorted(missing)}")
         return cls(topics=topics, topic_embeddings=embeddings, top_n=top_n)
 
-    def route(self, query_vector: np.ndarray) -> tuple[list[TopicPrediction], float]:
+    def route(
+        self,
+        query_vector: np.ndarray,
+        top_n: int | None = None,
+    ) -> tuple[list[TopicPrediction], float]:
         import time
 
         started = time.perf_counter()
@@ -61,7 +65,11 @@ class TopicRouter:
 
         predictions.sort(key=lambda item: item.score, reverse=True)
         elapsed_ms = (time.perf_counter() - started) * 1000
-        return predictions[: self.top_n], elapsed_ms
+        limit = self.top_n if top_n is None else top_n
+        return predictions[:limit], elapsed_ms
+
+    def rank_all(self, query_vector: np.ndarray) -> tuple[list[TopicPrediction], float]:
+        return self.route(query_vector, top_n=len(self.topics))
 
     def build_or_filter(self, predictions: list[TopicPrediction]) -> tuple[Filter | None, float]:
         import time

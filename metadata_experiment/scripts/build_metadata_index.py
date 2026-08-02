@@ -10,6 +10,7 @@ from metadata_retriever import MetadataVectorStore, build_topic_embeddings
 from prompts import load_allowed_topics
 from src.llm_mlx import QwenMLX
 from src.pdf_loader import chunk_pages, extract_pages, resolve_pdf_files
+from topic_coverage import build_topic_coverage_report, topic_coverage_warnings
 
 def main() -> None:
     pdf_files = resolve_pdf_files(settings.book_dir, settings.book_file)
@@ -88,6 +89,16 @@ def main() -> None:
     )
     print(f"Wrote index build report to {settings.index_build_report_file}")
     print(json.dumps(report, indent=2, ensure_ascii=False))
+
+    coverage_report = build_topic_coverage_report(metadata_by_chunk_id, allowed_ids)
+    settings.topic_coverage_report_file.write_text(
+        json.dumps(coverage_report, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote topic coverage report to {settings.topic_coverage_report_file}")
+    print(json.dumps(coverage_report, indent=2, ensure_ascii=False))
+    for warning in topic_coverage_warnings(coverage_report):
+        print(warning)
     print("Metadata index built successfully.")
 
 if __name__ == "__main__":

@@ -30,10 +30,10 @@ def test_book_prompt_uses_novel_context_instruction():
     assert "检索上下文：" in prompt
     assert "相似度" not in prompt
 
-def test_no_retrieval_book_prompt_does_not_require_context():
+def test_no_retrieval_book_prompt_requests_insufficient_context():
     prompt = build_prompt("福贵为什么买牛？", "Book", [])
-    assert "上下文" not in prompt
-    assert "请严格按照任务要求作答。" in prompt
+    assert "未检索到任何上下文" in prompt
+    assert "上下文不足" in prompt
 
 def test_general_prompt_allows_ignoring_irrelevant_context():
     prompt = build_prompt("Top-k 是什么？", "General", [_chunk()])

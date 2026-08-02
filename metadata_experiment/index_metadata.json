@@ -1,0 +1,10 @@
+{
+  "embedding_model": "BAAI/bge-small-zh-v1.5",
+  "chunk_size": 500,
+  "chunk_overlap": 80,
+  "source_files": [
+    "活着.pdf"
+  ],
+  "collection_name": "huozhe_meta",
+  "chunk_embedding_policy": "text_only"
+}

@@ -52,17 +52,12 @@ class MetadataExperimentRow:
     question_type: str
     question: str
     method: str
-    top_k: int
-    used_retrieval: bool
+    retrieved_chunks: int
     input_tokens: int
     output_tokens: int
     total_tokens: int
-    qa_retrieval_time_ms: float
-    benchmark_median_retrieval_ms: float | None
+    retrieval_time_ms: float
     llm_time_ms: float
     total_time_ms: float
-    tokens_per_second: float
     answer: str
-    retrieved_chunk_ids: str
-    retrieved_sources: str
     score_0_3: Any = None

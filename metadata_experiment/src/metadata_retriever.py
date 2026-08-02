@@ -131,7 +131,11 @@ class MetadataVectorStore:
         query_vector: np.ndarray,
         router: TopicRouter,
         top_k: int,
+        allow_topic_expansion: bool = False,
     ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str]]:
+        if allow_topic_expansion:
+            return self._search_with_metadata_expanded(query_vector, router, top_k)
+
         predictions, router_ms = router.route(query_vector)
         topic_ids = [prediction.topic_id for prediction in predictions]
         query_filter, filter_ms = router.build_or_filter(predictions)
@@ -143,7 +147,53 @@ class MetadataVectorStore:
                 retrieval_total_ms=router_ms + filter_ms,
             )
             return [], timing, topic_ids
-        retrieved, search_ms = self.search_by_vector(query_vector, top_k=top_k, query_filter=query_filter)
+
+        retrieved, search_ms = self.search_by_vector(
+            query_vector,
+            top_k=top_k,
+            query_filter=query_filter,
+        )
+        total_ms = router_ms + filter_ms + search_ms
+        timing = RetrievalTiming(
+            router_time_ms=router_ms,
+            filter_build_time_ms=filter_ms,
+            vector_search_time_ms=search_ms,
+            retrieval_total_ms=total_ms,
+        )
+        return retrieved, timing, topic_ids
+
+    def _search_with_metadata_expanded(
+        self,
+        query_vector: np.ndarray,
+        router: TopicRouter,
+        top_k: int,
+    ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str]]:
+        all_predictions, router_ms = router.rank_all(query_vector)
+        if not all_predictions:
+            return [], RetrievalTiming(router_time_ms=router_ms), []
+
+        max_topics = min(len(all_predictions), max(router.top_n + 2, router.top_n))
+        attempt_limits = list(range(router.top_n, max_topics + 1))
+
+        retrieved: list[RetrievedChunk] = []
+        search_ms = 0.0
+        filter_ms = 0.0
+        topic_ids: list[str] = []
+
+        for limit in attempt_limits:
+            predictions = all_predictions[:limit]
+            topic_ids = [prediction.topic_id for prediction in predictions]
+            query_filter, filter_ms = router.build_or_filter(predictions)
+            if query_filter is None:
+                continue
+            retrieved, search_ms = self.search_by_vector(
+                query_vector,
+                top_k=top_k,
+                query_filter=query_filter,
+            )
+            if retrieved:
+                break
+
         total_ms = router_ms + filter_ms + search_ms
         timing = RetrievalTiming(
             router_time_ms=router_ms,

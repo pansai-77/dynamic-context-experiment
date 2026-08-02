@@ -14,6 +14,14 @@ def build_prompt(
     normalized_type = question_type.strip().lower()
 
     if not retrieved_chunks:
+        if normalized_type == "book":
+            return (
+                f"题型：{question_type}\n"
+                f"任务：{question}\n\n"
+                "请仅依据提供的小说上下文回答问题。"
+                "当前未检索到任何上下文，请明确说明上下文不足，不要编造。\n\n"
+                "回答："
+            )
         return (
             f"题型：{question_type}\n"
             f"任务：{question}\n\n"

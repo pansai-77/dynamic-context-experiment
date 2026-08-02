@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "description": "Fixed 40-chunk metadata semantic acceptance set. Generate metadata only; do not write to Qdrant.",
+  "categories": [
+    {
+      "id": "war",
+      "label": "真正战争/抓壮丁/战场",
+      "expected_topics": ["war_conscription"],
+      "notes": "片段核心应为抓壮丁、军队、战场、行军、战斗、战时逃难。",
+      "chunk_ids": [
+        "p048-c002",
+        "p052-c001",
+        "p055-c002",
+        "p046-c001",
+        "p053-c002"
+      ]
+    },
+    {
+      "id": "marriage",
+      "label": "婚姻/婚礼/夫妻关系",
+      "expected_topics": ["marriage_family"],
+      "notes": "片段核心应为嫁娶、婚礼、夫妻扶持、分家/重聚（非纯亲子送别）。",
+      "chunk_ids": [
+        "p122-c002",
+        "p124-c001",
+        "p117-c001",
+        "p127-c001",
+        "p043-c002"
+      ]
+    },
+    {
+      "id": "parent_child",
+      "label": "父母与子女",
+      "expected_topics": ["parent_child"],
+      "notes": "片段核心应为亲子保护、送别、遗弃、丧子、为子女做选择。",
+      "chunk_ids": [
+        "p063-c001",
+        "p084-c002",
+        "p066-c001",
+        "p033-c001",
+        "p065-c001"
+      ]
+    },
+    {
+      "id": "medical",
+      "label": "医疗/献血/生产",
+      "expected_topics": ["disease_medical"],
+      "notes": "片段核心应为疾病、献血、医疗、生产/接生、医疗事故。",
+      "chunk_ids": [
+        "p102-c001",
+        "p101-c002",
+        "p104-c001",
+        "p111-c001",
+        "p137-c001"
+      ]
+    },
+    {
+      "id": "rural_labor",
+      "label": "农村劳动/买牛/耕田",
+      "expected_topics": ["rural_labor"],
+      "notes": "片段核心应为耕作、牲畜、农具、田间劳动、买牛养牛。",
+      "chunk_ids": [
+        "p109-c002",
+        "p154-c002",
+        "p151-c001",
+        "p119-c002",
+        "p038-c001"
+      ]
+    },
+    {
+      "id": "poverty",
+      "label": "贫困与生计",
+      "expected_topics": ["poverty_livelihood"],
+      "notes": "片段核心应为饥饿、借粮、换米、为生计做出的具体选择。",
+      "chunk_ids": [
+        "p096-c002",
+        "p089-c002",
+        "p092-c001",
+        "p093-c001",
+        "p036-c002"
+      ]
+    },
+    {
+      "id": "politics",
+      "label": "土改/文革等政治运动",
+      "expected_topics": ["land_reform_politics"],
+      "notes": "片段核心应为土改、阶级成分、政治运动、批斗、没收财产等。",
+      "chunk_ids": [
+        "p059-c002",
+        "p071-c001",
+        "p129-c001",
+        "p130-c001",
+        "p128-c001"
+      ]
+    },
+    {
+      "id": "survival",
+      "label": "晚年生存与人生感悟",
+      "expected_topics": ["suffering_survival"],
+      "notes": "片段核心应为晚年如何活下去、忍耐、人与牛、生存感悟（非具体死亡事件）。",
+      "chunk_ids": [
+        "p155-c002",
+        "p007-c002",
+        "p010-c001",
+        "p141-c002",
+        "p061-c001"
+      ]
+    }
+  ]
+}

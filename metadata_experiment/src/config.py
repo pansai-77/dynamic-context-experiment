@@ -49,13 +49,14 @@ class MetadataSettings:
     allowed_topics_file: Path = EXPERIMENT_DIR / "data" / "allowed_topics.json"
     topic_embeddings_file: Path = EXPERIMENT_DIR / "data" / "topic_embeddings.json"
     index_build_report_file: Path = EXPERIMENT_DIR / "index_build_report.json"
+    topic_coverage_report_file: Path = EXPERIMENT_DIR / "topic_coverage_report.json"
+    metadata_acceptance_samples_file: Path = EXPERIMENT_DIR / "data" / "metadata_acceptance_samples.json"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
     chunk_size: int = int(os.getenv("CHUNK_SIZE", "500"))
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "80"))
     top_k: int = 4
     topic_routing_top_n: int = int(os.getenv("TOPIC_ROUTING_TOP_N", "2"))
-    benchmark_repeats: int = int(os.getenv("RETRIEVAL_BENCHMARK_REPEATS", "25"))
     metadata_gen_max_retries: int = int(os.getenv("METADATA_GEN_MAX_RETRIES", "1"))
     max_new_tokens: int = int(os.getenv("MAX_NEW_TOKENS", "200"))
     temperature: float = float(os.getenv("TEMPERATURE", "0"))
