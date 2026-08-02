@@ -10,6 +10,7 @@ METHOD_A = "Query-Aware Top-4"
 PRIMARY_COLUMNS = [
     "Method",
     "Questions",
+    "Book Questions",
     "Book Score",
     "Overall Score",
     "Median Retrieval(ms)",
@@ -17,9 +18,12 @@ PRIMARY_COLUMNS = [
     "Avg QA Retrieval(ms)",
     "Avg LLM Time(ms)",
     "Avg Total Time(ms)",
-    "Avg Input Tokens",
-    "Avg Output Tokens",
-    "Avg Total Tokens",
+    "Book Avg Input Tokens",
+    "Book Avg Output Tokens",
+    "Book Avg Total Tokens",
+    "Overall Avg Input Tokens",
+    "Overall Avg Output Tokens",
+    "Overall Avg Total Tokens",
 ]
 
 BENCHMARK_TOTAL_COLUMN = "Retrieval Total(ms)"
@@ -35,6 +39,10 @@ def normalize_detailed_columns(detailed: pd.DataFrame) -> pd.DataFrame:
     if SCORE_COLUMN not in normalized.columns:
         normalized[SCORE_COLUMN] = None
     return normalized
+
+
+def _book_rows(method_df: pd.DataFrame) -> pd.DataFrame:
+    return method_df[method_df["Question Type"].str.lower() == "book"]
 
 
 def summarize_benchmark_global(benchmark_runs: pd.DataFrame) -> pd.DataFrame:
@@ -64,7 +72,7 @@ def summarize_primary(
     rows = []
     for method in detailed["Method"].drop_duplicates():
         method_df = detailed[detailed["Method"] == method]
-        book_df = method_df[method_df["Question Type"].str.lower() == "book"]
+        book_df = _book_rows(method_df)
 
         median_retrieval = None
         p95_retrieval = None
@@ -76,8 +84,8 @@ def summarize_primary(
 
         qa_retrieval_column = "QA Retrieval Time(ms)"
         avg_qa_retrieval = (
-            method_df[qa_retrieval_column].mean()
-            if qa_retrieval_column in method_df.columns
+            book_df[qa_retrieval_column].mean()
+            if qa_retrieval_column in book_df.columns and not book_df.empty
             else None
         )
 
@@ -87,6 +95,7 @@ def summarize_primary(
             {
                 "Method": method,
                 "Questions": len(method_df),
+                "Book Questions": len(book_df),
                 "Book Score": book_score,
                 "Overall Score": overall_score,
                 "Median Retrieval(ms)": median_retrieval,
@@ -94,9 +103,12 @@ def summarize_primary(
                 "Avg QA Retrieval(ms)": avg_qa_retrieval,
                 "Avg LLM Time(ms)": method_df["LLM Time(ms)"].mean(),
                 "Avg Total Time(ms)": method_df["Total Time(ms)"].mean(),
-                "Avg Input Tokens": method_df["Input Tokens"].mean(),
-                "Avg Output Tokens": method_df["Output Tokens"].mean(),
-                "Avg Total Tokens": method_df["Total Tokens"].mean(),
+                "Book Avg Input Tokens": book_df["Input Tokens"].mean(),
+                "Book Avg Output Tokens": book_df["Output Tokens"].mean(),
+                "Book Avg Total Tokens": book_df["Total Tokens"].mean(),
+                "Overall Avg Input Tokens": method_df["Input Tokens"].mean(),
+                "Overall Avg Output Tokens": method_df["Output Tokens"].mean(),
+                "Overall Avg Total Tokens": method_df["Total Tokens"].mean(),
             }
         )
     return pd.DataFrame(rows)[PRIMARY_COLUMNS]

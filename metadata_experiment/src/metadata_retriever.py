@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import time
 from pathlib import Path
@@ -153,21 +154,37 @@ class MetadataVectorStore:
         return retrieved, timing, topic_ids
 
 
+def topic_catalog_fingerprint(
+    topics: list[TopicDefinition],
+    allowed_topics_file: Path,
+) -> dict[str, str]:
+    payload = json.loads(allowed_topics_file.read_text(encoding="utf-8"))
+    catalog = [{"id": topic.id, "embedding_text": topic.embedding_text} for topic in topics]
+    catalog_json = json.dumps(catalog, ensure_ascii=False, sort_keys=True)
+    return {
+        "topics_version": str(payload.get("version", "")),
+        "topic_catalog_hash": hashlib.sha256(catalog_json.encode("utf-8")).hexdigest(),
+    }
+
+
 def build_topic_embeddings(
     store: MetadataVectorStore,
     topics: list[TopicDefinition],
     output_path: Path,
     embedding_model_name: str,
+    allowed_topics_file: Path,
 ) -> dict[str, np.ndarray]:
     texts = [topic.embedding_text for topic in topics]
     vectors = store.embedding_model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
     embeddings = {topic.id: vectors[index] for index, topic in enumerate(topics)}
+    fingerprint = topic_catalog_fingerprint(topics, allowed_topics_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(
             {
                 "embedding_model": embedding_model_name,
                 "text_format": "{label}：{description}",
+                **fingerprint,
                 "embeddings": {topic_id: vector.tolist() for topic_id, vector in embeddings.items()},
             },
             indent=2,
@@ -179,6 +196,24 @@ def build_topic_embeddings(
     return embeddings
 
 
+def topic_embeddings_cache_is_stale(
+    topic_embeddings_file: Path,
+    allowed_topics_file: Path,
+    embedding_model_name: str,
+    topics: list[TopicDefinition],
+) -> bool:
+    if not topic_embeddings_file.exists():
+        return True
+    payload = json.loads(topic_embeddings_file.read_text(encoding="utf-8"))
+    if payload.get("embedding_model") != embedding_model_name:
+        return True
+    fingerprint = topic_catalog_fingerprint(topics, allowed_topics_file)
+    for key, value in fingerprint.items():
+        if payload.get(key) != value:
+            return True
+    return False
+
+
 def build_router_from_settings(
     store: MetadataVectorStore,
     allowed_topics_file: Path,
@@ -187,10 +222,17 @@ def build_router_from_settings(
     embedding_model_name: str,
 ) -> TopicRouter:
     topics = load_allowed_topics(allowed_topics_file)
-    needs_rebuild = not topic_embeddings_file.exists()
-    if not needs_rebuild:
-        payload = json.loads(topic_embeddings_file.read_text(encoding="utf-8"))
-        needs_rebuild = payload.get("embedding_model") != embedding_model_name
-    if needs_rebuild:
-        build_topic_embeddings(store, topics, topic_embeddings_file, embedding_model_name)
+    if topic_embeddings_cache_is_stale(
+        topic_embeddings_file,
+        allowed_topics_file,
+        embedding_model_name,
+        topics,
+    ):
+        build_topic_embeddings(
+            store,
+            topics,
+            topic_embeddings_file,
+            embedding_model_name,
+            allowed_topics_file,
+        )
     return TopicRouter.from_files(allowed_topics_file, topic_embeddings_file, top_n=top_n)

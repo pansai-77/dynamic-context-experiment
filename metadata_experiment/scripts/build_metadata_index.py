@@ -59,7 +59,13 @@ def main() -> None:
     )
     print("Building metadata index (text-only embeddings)...")
     store.rebuild(chunks, metadata_by_chunk_id)
-    build_topic_embeddings(store, topics, settings.topic_embeddings_file, settings.embedding_model)
+    build_topic_embeddings(
+        store,
+        topics,
+        settings.topic_embeddings_file,
+        settings.embedding_model,
+        settings.allowed_topics_file,
+    )
 
     metadata = expected_metadata(settings, [path.name for path in pdf_files])
     write_index_metadata(settings.index_metadata_path, metadata)

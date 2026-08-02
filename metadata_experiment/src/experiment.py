@@ -256,6 +256,12 @@ def export_run_config(
         "run_directory": str(run_directory),
         "experiment": "metadata_rag_phase_1",
         "methods": methods,
+        "timing_notes": {
+            "total_time_scope": "Per QA run from retrieval through generation; excludes the shared query-embedding step computed once per question before method loops.",
+            "qa_retrieval_time_scope": "Book questions only in summary averages; General/Rewrite rows remain 0 because retrieval is skipped by design.",
+            "benchmark_retrieval_scope": "Independent 25-repeat benchmark on Book questions only; used for Median/P95 in summary.",
+            "token_summary_scope": "Book Avg tokens use Book questions only; Overall Avg tokens include all 20 questions.",
+        },
         "settings": {
             "collection_name": cfg.collection_name,
             "index_metadata_path": str(cfg.index_metadata_path),

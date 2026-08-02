@@ -18,7 +18,7 @@ def test_summarize_benchmark_global_uses_all_runs():
     assert summary.loc[0, "P95"] == 38.5
 
 
-def test_summarize_primary_uses_global_benchmark_stats():
+def test_summarize_primary_uses_global_benchmark_and_book_only_averages():
     detailed = pd.DataFrame(
         {
             "Method": ["A", "A"],
@@ -26,9 +26,9 @@ def test_summarize_primary_uses_global_benchmark_stats():
             "QA Retrieval Time(ms)": [12.0, 0.0],
             "LLM Time(ms)": [100.0, 90.0],
             "Total Time(ms)": [112.0, 90.0],
-            "Input Tokens": [100, 50],
+            "Input Tokens": [1000, 100],
             "Output Tokens": [20, 10],
-            "Total Tokens": [120, 60],
+            "Total Tokens": [1020, 110],
         }
     )
     benchmark_runs = pd.DataFrame(
@@ -41,4 +41,7 @@ def test_summarize_primary_uses_global_benchmark_stats():
     summary = summarize_primary(detailed, benchmark_runs)
     assert summary.loc[0, "Median Retrieval(ms)"] == 20.0
     assert summary.loc[0, "P95 Retrieval(ms)"] == 29.0
-    assert summary.loc[0, "Avg QA Retrieval(ms)"] == 6.0
+    assert summary.loc[0, "Avg QA Retrieval(ms)"] == 12.0
+    assert summary.loc[0, "Book Avg Input Tokens"] == 1000.0
+    assert summary.loc[0, "Overall Avg Input Tokens"] == 550.0
+    assert summary.loc[0, "Book Questions"] == 1
