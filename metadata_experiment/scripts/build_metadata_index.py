@@ -20,7 +20,11 @@ def main() -> None:
     allowed_ids = {topic.id for topic in topics}
 
     print(f"Extracted {len(pages)} pages; created {len(chunks)} chunks.")
-    llm = QwenMLX(settings.llm_model, max_new_tokens=256, temperature=settings.temperature)
+    llm = QwenMLX(
+        settings.llm_model,
+        max_new_tokens=settings.metadata_max_new_tokens,
+        temperature=settings.temperature,
+    )
     print("Warming up metadata LLM...")
     llm.warm_up()
 

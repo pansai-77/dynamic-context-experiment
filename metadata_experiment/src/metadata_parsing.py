@@ -5,6 +5,9 @@ import re
 
 from models import ChunkMetadata
 
+KEYWORD_COUNT = 3
+MAX_TOPICS = 1
+
 
 def extract_json_object(text: str) -> dict:
     stripped = text.strip()
@@ -18,34 +21,11 @@ def extract_json_object(text: str) -> dict:
     return json.loads(stripped[start : end + 1])
 
 
-def parse_importance(value) -> int | None:
-    if value is None:
-        return None
-    if isinstance(value, bool):
-        raise ValueError("importance must be an integer, not a boolean.")
-    if isinstance(value, int):
-        if not 1 <= value <= 5:
-            raise ValueError("importance must be between 1 and 5.")
-        return value
-    if isinstance(value, float):
-        if value.is_integer():
-            parsed_int = int(value)
-            if not 1 <= parsed_int <= 5:
-                raise ValueError("importance must be between 1 and 5.")
-            return parsed_int
-        raise ValueError("importance must be an integer.")
-    if isinstance(value, str):
-        stripped = value.strip()
-        if not stripped:
-            raise ValueError("importance must be an integer.")
-        parsed = float(stripped)
-        if parsed.is_integer():
-            parsed_int = int(parsed)
-            if not 1 <= parsed_int <= 5:
-                raise ValueError("importance must be between 1 and 5.")
-            return parsed_int
-        raise ValueError("importance must be an integer.")
-    raise ValueError("importance must be an integer.")
+def normalize_keywords(keywords: list) -> list[str]:
+    if not isinstance(keywords, list):
+        return []
+    cleaned = [str(item).strip() for item in keywords if str(item).strip()]
+    return cleaned[:KEYWORD_COUNT]
 
 
 def normalize_metadata_payload(
@@ -63,20 +43,13 @@ def normalize_metadata_payload(
     characters = payload.get("characters") or []
     if not isinstance(characters, list):
         characters = []
-    keywords = payload.get("keywords") or []
-    if not isinstance(keywords, list):
-        keywords = []
-
-    try:
-        importance = parse_importance(payload.get("importance"))
-    except (ValueError, TypeError):
-        return None, []
+    keywords = normalize_keywords(payload.get("keywords") or [])
 
     metadata = ChunkMetadata(
-        characters=[str(item).strip() for item in characters if str(item).strip()],
-        topics=topic_ids[:2],
-        keywords=[str(item).strip() for item in keywords if str(item).strip()],
-        importance=importance,
+        characters=[str(item).strip() for item in characters if str(item).strip()][:4],
+        topics=topic_ids[:MAX_TOPICS],
+        keywords=keywords,
+        importance=None,
         metadata_status="ok",
     )
     return metadata, []

@@ -5,10 +5,13 @@ from collections import Counter
 from models import ChunkMetadata
 
 CORE_TOPICS_FOR_REVIEW = (
-    "death_loss",
-    "suffering_survival",
-    "parent_child",
-    "marriage_family",
+    "war",
+    "politics",
+    "gambling",
+    "family",
+    "medical",
+    "labor",
+    "livelihood",
 )
 
 WARNING_SINGLE_TOPIC_THRESHOLD = 0.70

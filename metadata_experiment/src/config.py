@@ -57,7 +57,8 @@ class MetadataSettings:
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "80"))
     top_k: int = 4
     topic_routing_top_n: int = int(os.getenv("TOPIC_ROUTING_TOP_N", "2"))
-    metadata_gen_max_retries: int = int(os.getenv("METADATA_GEN_MAX_RETRIES", "1"))
+    metadata_gen_max_retries: int = int(os.getenv("METADATA_GEN_MAX_RETRIES", "2"))
+    metadata_max_new_tokens: int = int(os.getenv("METADATA_MAX_NEW_TOKENS", "384"))
     max_new_tokens: int = int(os.getenv("MAX_NEW_TOKENS", "200"))
     temperature: float = float(os.getenv("TEMPERATURE", "0"))
     random_seed: int = int(os.getenv("RANDOM_SEED", "16"))

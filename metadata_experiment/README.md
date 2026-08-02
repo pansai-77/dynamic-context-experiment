@@ -45,33 +45,38 @@ cp .env.example .env
 pip install -r requirements.txt
 ```
 
+## Metadata v3 (Current)
+
+- **Ontology:** 7 event-level topics — `war`, `politics`, `gambling`, `family`, `medical`, `labor`, `livelihood`
+- **Prompt:** short rules + few-shot examples; `topics` 0–1; `keywords` ×3; no `importance`
+- **Pilot v2.1 index:** diagnostic only; do not use for formal H1–H3
+
 ## Recommended Execution Order
 
-1. Keep existing **Pilot v2.1** index and reports (diagnostic only).
-2. Run fixed-chunk metadata acceptance after topic/prompt updates.
-3. Manually review acceptance JSON; pass before full rebuild.
+1. Keep **Pilot v2.1** index and reports (diagnostic only).
+2. Run **v3 acceptance** on the 40-chunk development set.
+3. Analyze pass rate + confusion matrix; target **≥70% pass** before full rebuild.
 4. Full rebuild, then coverage + filter stats + Top-4 spot-check.
 5. Run formal A/B (no `--with-fallback`).
 
 ```text
 Pilot v2.1 (keep)
 → run_metadata_acceptance.py
-→ manual semantic review (40 chunks)
+→ analyze_acceptance.py
 → build_metadata_index.py
 → topic_coverage_report.json
 → analyze_filter_stats.py
 → Top-4 spot-check
 → run_metadata_experiment.py
-→ fill Score(0-3)
-→ summarise_results.py
 ```
 
 ## Commands
 
-Fixed-chunk metadata acceptance (generate only, no Qdrant write):
+v3 metadata acceptance (generate only, no Qdrant write):
 
 ```bash
 python metadata_experiment/scripts/run_metadata_acceptance.py
+python metadata_experiment/scripts/analyze_acceptance.py
 ```
 
 Build the metadata index (offline LLM metadata + text-only embeddings):
@@ -120,11 +125,10 @@ pytest metadata_experiment/tests/
 ## Metadata Semantics
 
 - `topics=[]` with `metadata_status="ok"`: no sufficiently clear topic for this chunk.
-- `topics=[]` with `metadata_status="failed"`: JSON parse / field validation failure.
-- **Pilot v2.1** index is for diagnostic use only; do not use for formal H1–H3 conclusions.
-- Full rebuild requires passing the **40-chunk acceptance set** first.
-
-Acceptance manifest: `metadata_experiment/data/metadata_acceptance_samples.json`
+- `metadata_status="failed"`: JSON parse / field validation failure.
+- Acceptance uses `acceptable_topics` (multiple valid label sets), not strict single gold labels.
+- Config: `metadata_experiment/data/allowed_topics.json` (v3.0)
+- Manifest: `metadata_experiment/data/metadata_acceptance_samples.json` (v3.0)
 
 ## Outputs
 
