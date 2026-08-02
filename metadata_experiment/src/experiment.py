@@ -121,7 +121,8 @@ def run_qa_experiments(
             total_started = time.perf_counter()
             effective_top_k = cfg.top_k if use_retrieval else 0
             retrieved = []
-            retrieval_ms = 0.0
+            qa_retrieval_ms = 0.0
+            benchmark_median_ms: float | None = None
             if use_retrieval and query_vector is not None:
                 if method.use_metadata_filter:
                     retrieved, timing, _ = vector_store.search_with_metadata(
@@ -129,14 +130,14 @@ def run_qa_experiments(
                         router,
                         top_k=cfg.top_k,
                     )
-                    retrieval_ms = timing.retrieval_total_ms
+                    qa_retrieval_ms = timing.retrieval_total_ms
                 else:
                     retrieved, timing = vector_store.search_full(query_vector, top_k=cfg.top_k)
-                    retrieval_ms = timing.retrieval_total_ms
+                    qa_retrieval_ms = timing.retrieval_total_ms
 
                 benchmark_key = (question_id, method.name)
                 if benchmark_key in median_lookup:
-                    retrieval_ms = median_lookup[benchmark_key]
+                    benchmark_median_ms = median_lookup[benchmark_key]
 
             prompt = build_prompt(question, question_type, retrieved)
             generation = llm.answer(prompt)
@@ -152,7 +153,10 @@ def run_qa_experiments(
                     input_tokens=generation.input_tokens,
                     output_tokens=generation.output_tokens,
                     total_tokens=generation.total_tokens,
-                    retrieval_time_ms=round(retrieval_ms, 3),
+                    qa_retrieval_time_ms=round(qa_retrieval_ms, 3),
+                    benchmark_median_retrieval_ms=(
+                        round(benchmark_median_ms, 3) if benchmark_median_ms is not None else None
+                    ),
                     llm_time_ms=round(generation.llm_time_ms, 3),
                     total_time_ms=round(total_ms, 3),
                     tokens_per_second=round(generation.tokens_per_second, 3),
@@ -176,7 +180,8 @@ def format_detailed_dataframe(detailed: pd.DataFrame) -> pd.DataFrame:
         "input_tokens": "Input Tokens",
         "output_tokens": "Output Tokens",
         "total_tokens": "Total Tokens",
-        "retrieval_time_ms": "Retrieval Time(ms)",
+        "qa_retrieval_time_ms": "QA Retrieval Time(ms)",
+        "benchmark_median_retrieval_ms": "Benchmark Median Retrieval(ms)",
         "llm_time_ms": "LLM Time(ms)",
         "total_time_ms": "Total Time(ms)",
         "tokens_per_second": "Output Tokens/sec",

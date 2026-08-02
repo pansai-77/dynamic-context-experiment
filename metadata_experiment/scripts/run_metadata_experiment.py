@@ -79,7 +79,7 @@ def main() -> None:
     create_summary_workbook(
         detailed_path,
         summary_path,
-        benchmark_summary_path,
+        benchmark_path if benchmark_path.exists() else None,
     )
 
     print(f"Run directory: {run_dir}")

@@ -31,7 +31,7 @@ def generate_chunk_metadata(
     invalid_topic_ids: list[str] = []
 
     attempts = max_retries + 1
-    for _ in range(attempts):
+    for attempt_index in range(attempts):
         prompt = build_metadata_prompt(chunk_text, topics)
         generation = llm.answer(prompt)
         last_raw = generation.answer
@@ -39,7 +39,8 @@ def generate_chunk_metadata(
             payload = extract_json_object(generation.answer)
         except (ValueError, json.JSONDecodeError):
             saw_json_failure = True
-            retries_used += 1
+            if attempt_index < attempts - 1:
+                retries_used += 1
             continue
 
         metadata, invalid_topic_ids = normalize_metadata_payload(payload, allowed_topic_ids)
@@ -52,7 +53,8 @@ def generate_chunk_metadata(
                 retries_used=retries_used,
                 raw_response=last_raw,
             )
-        retries_used += 1
+        if attempt_index < attempts - 1:
+            retries_used += 1
 
     return MetadataGenerationResult(
         metadata=failed_metadata(),

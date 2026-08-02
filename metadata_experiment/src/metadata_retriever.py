@@ -134,6 +134,14 @@ class MetadataVectorStore:
         predictions, router_ms = router.route(query_vector)
         topic_ids = [prediction.topic_id for prediction in predictions]
         query_filter, filter_ms = router.build_or_filter(predictions)
+        if query_filter is None:
+            timing = RetrievalTiming(
+                router_time_ms=router_ms,
+                filter_build_time_ms=filter_ms,
+                vector_search_time_ms=0.0,
+                retrieval_total_ms=router_ms + filter_ms,
+            )
+            return [], timing, topic_ids
         retrieved, search_ms = self.search_by_vector(query_vector, top_k=top_k, query_filter=query_filter)
         total_ms = router_ms + filter_ms + search_ms
         timing = RetrievalTiming(
@@ -179,6 +187,10 @@ def build_router_from_settings(
     embedding_model_name: str,
 ) -> TopicRouter:
     topics = load_allowed_topics(allowed_topics_file)
-    if not topic_embeddings_file.exists():
+    needs_rebuild = not topic_embeddings_file.exists()
+    if not needs_rebuild:
+        payload = json.loads(topic_embeddings_file.read_text(encoding="utf-8"))
+        needs_rebuild = payload.get("embedding_model") != embedding_model_name
+    if needs_rebuild:
         build_topic_embeddings(store, topics, topic_embeddings_file, embedding_model_name)
     return TopicRouter.from_files(allowed_topics_file, topic_embeddings_file, top_n=top_n)

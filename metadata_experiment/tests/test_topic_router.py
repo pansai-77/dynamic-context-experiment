@@ -32,3 +32,12 @@ def test_topic_router_builds_or_filter():
     )
     assert elapsed >= 0.0
     assert query_filter is not None
+
+
+def test_topic_router_builds_no_filter_when_no_predictions():
+    topics = [TopicDefinition("death_loss", "死亡与失去", "亲人离世")]
+    embeddings = {"death_loss": np.array([1.0], dtype=np.float32)}
+    router = TopicRouter(topics=topics, topic_embeddings=embeddings, top_n=1)
+    query_filter, elapsed = router.build_or_filter([])
+    assert elapsed >= 0.0
+    assert query_filter is None

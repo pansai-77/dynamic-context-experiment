@@ -31,14 +31,14 @@ def main() -> None:
     scoring_path = run_dir / "scoring_sheet.xlsx"
     mapping_path = run_dir / "scoring_mapping.csv"
     summary_path = run_dir / "summary_results.xlsx"
-    benchmark_summary_path = run_dir / "retrieval_benchmark_summary.xlsx"
+    benchmark_path = run_dir / "retrieval_benchmark.xlsx"
 
     merged = merge_scoring_sheet(detailed_path, scoring_path, mapping_path)
     merged.to_excel(detailed_path, index=False, sheet_name="Detailed Results")
     create_summary_workbook(
         detailed_path,
         summary_path,
-        benchmark_summary_path if benchmark_summary_path.exists() else None,
+        benchmark_path if benchmark_path.exists() else None,
     )
     print(f"Updated detailed results: {detailed_path}")
     print(f"Updated summary results: {summary_path}")

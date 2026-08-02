@@ -57,7 +57,8 @@ class MetadataExperimentRow:
     input_tokens: int
     output_tokens: int
     total_tokens: int
-    retrieval_time_ms: float
+    qa_retrieval_time_ms: float
+    benchmark_median_retrieval_ms: float | None
     llm_time_ms: float
     total_time_ms: float
     tokens_per_second: float

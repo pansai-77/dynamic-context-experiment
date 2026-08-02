@@ -18,6 +18,28 @@ def extract_json_object(text: str) -> dict:
     return json.loads(stripped[start : end + 1])
 
 
+def parse_importance(value) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise ValueError("importance must be an integer, not a boolean.")
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        if value.is_integer():
+            return int(value)
+        raise ValueError("importance must be an integer.")
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("importance must be an integer.")
+        parsed = float(stripped)
+        if parsed.is_integer():
+            return int(parsed)
+        raise ValueError("importance must be an integer.")
+    raise ValueError("importance must be an integer.")
+
+
 def normalize_metadata_payload(
     payload: dict,
     allowed_topic_ids: set[str],
@@ -37,9 +59,10 @@ def normalize_metadata_payload(
     if not isinstance(keywords, list):
         keywords = []
 
-    importance = payload.get("importance")
-    if importance is not None:
-        importance = int(importance)
+    try:
+        importance = parse_importance(payload.get("importance"))
+    except (ValueError, TypeError):
+        return None, []
 
     metadata = ChunkMetadata(
         characters=[str(item).strip() for item in characters if str(item).strip()],
