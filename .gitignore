@@ -11,4 +11,8 @@ qdrant_storage/*
 results/*.xlsx
 results/*.csv
 results/*.json
+metadata_experiment/data/topic_embeddings.json
+metadata_experiment/index_build_report.json
+metadata_experiment/results/*
+!metadata_experiment/results/.gitkeep
 .DS_Store

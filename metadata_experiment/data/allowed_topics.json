@@ -1,0 +1,55 @@
+{
+  "version": "2.0",
+  "topics": [
+    {
+      "id": "family_decline_gambling",
+      "label": "家道衰落与赌博",
+      "description": "家族财产流失、赌博、地主身份变化与命运转折"
+    },
+    {
+      "id": "war_conscription",
+      "label": "战争与征兵",
+      "description": "内战、抓壮丁、战场经历与逃亡"
+    },
+    {
+      "id": "land_reform_politics",
+      "label": "土地改革与政治运动",
+      "description": "土改、阶级成分、政治运动对人物命运的影响"
+    },
+    {
+      "id": "poverty_livelihood",
+      "label": "贫困与家庭生计",
+      "description": "贫困、饥饿、劳役、为生计做出的选择"
+    },
+    {
+      "id": "marriage_family",
+      "label": "婚姻与家庭关系",
+      "description": "夫妻、亲属关系、分离、重聚与相互扶持"
+    },
+    {
+      "id": "parent_child",
+      "label": "父母与子女关系",
+      "description": "父母对子女的保护、牺牲、送别与丧子之痛"
+    },
+    {
+      "id": "disease_medical",
+      "label": "疾病与医疗",
+      "description": "疾病、献血、医疗事故与身体伤害"
+    },
+    {
+      "id": "death_loss",
+      "label": "死亡与失去",
+      "description": "亲人离世、丧葬、哀悼与面对失去"
+    },
+    {
+      "id": "rural_labor",
+      "label": "乡村生活与劳动",
+      "description": "农村日常、耕作、牲畜、农具与体力劳动"
+    },
+    {
+      "id": "suffering_survival",
+      "label": "苦难与生存",
+      "description": "持续苦难、忍耐、继续活下去的意义与晚年心态"
+    }
+  ]
+}
