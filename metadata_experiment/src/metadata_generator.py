@@ -32,7 +32,7 @@ def generate_chunk_metadata(
 
     attempts = max_retries + 1
     for attempt_index in range(attempts):
-        prompt = build_metadata_prompt(chunk_text, topics)
+        prompt = build_metadata_prompt(chunk_text, topics, retry=attempt_index > 0)
         generation = llm.answer(prompt)
         last_raw = generation.answer
         try:

@@ -6,7 +6,7 @@ import re
 from models import ChunkMetadata
 
 KEYWORD_COUNT = 3
-MAX_TOPICS = 1
+MAX_TOPICS = 2
 
 
 def extract_json_object(text: str) -> dict:

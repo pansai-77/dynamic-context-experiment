@@ -8,6 +8,7 @@ from index_metadata import expected_metadata, write_index_metadata
 from metadata_generator import generate_chunk_metadata
 from metadata_retriever import MetadataVectorStore, build_topic_embeddings
 from prompts import load_allowed_topics
+from router_diagnostics import load_book_gold_chunks
 from src.llm_mlx import QwenMLX
 from src.pdf_loader import chunk_pages, extract_pages, resolve_pdf_files
 from topic_coverage import build_topic_coverage_report, topic_coverage_warnings
@@ -35,6 +36,7 @@ def main() -> None:
     llm.warm_up()
 
     metadata_by_chunk_id = {}
+    failed_chunk_ids: list[str] = []
     json_parse_failures = 0
     invalid_topic_count = 0
     retry_count = 0
@@ -62,6 +64,32 @@ def main() -> None:
             unknown = [topic_id for topic_id in metadata.topics if topic_id not in allowed_ids]
             if unknown:
                 raise RuntimeError(f"Invalid topic ids stored for {chunk.chunk_id}: {unknown}")
+        else:
+            failed_chunk_ids.append(chunk.chunk_id)
+
+    gold_manifest = settings.experiment_dir / "data" / "book_gold_chunks.json"
+    if gold_manifest.exists():
+        gold_by_question = load_book_gold_chunks(gold_manifest)
+        gold_ids = {
+            chunk_id
+            for entry in gold_by_question.values()
+            for chunk_id in entry["gold_chunk_ids"]
+        }
+        gold_failures = []
+        for chunk_id in sorted(gold_ids):
+            metadata = metadata_by_chunk_id.get(chunk_id)
+            if metadata is None:
+                gold_failures.append(f"{chunk_id}: missing metadata")
+            elif metadata.metadata_status != "ok":
+                gold_failures.append(f"{chunk_id}: metadata_status=failed")
+            elif not metadata.topics:
+                gold_failures.append(f"{chunk_id}: empty topics")
+        if gold_failures:
+            raise RuntimeError(
+                "Gold chunk metadata check failed before indexing:\n- "
+                + "\n- ".join(gold_failures)
+            )
+        print(f"Gold chunk metadata check passed ({len(gold_ids)} chunks).")
 
     store = MetadataVectorStore(
         settings.qdrant_path,
@@ -92,6 +120,8 @@ def main() -> None:
         "invalid_topic_count": invalid_topic_count,
         "retry_count": retry_count,
         "chunk_embedding_policy": "text_only",
+        "failed_chunk_ids": failed_chunk_ids,
+        "max_topics_per_chunk": 2,
     }
     settings.index_build_report_file.write_text(
         json.dumps(report, indent=2, ensure_ascii=False) + "\n",

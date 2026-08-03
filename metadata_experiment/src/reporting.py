@@ -18,6 +18,22 @@ TIMING_COLUMNS = [
     "End-to-End Time (ms)",
 ]
 
+DIAGNOSTIC_COLUMNS = [
+    "Selected Topics",
+    "Topic Scores",
+    "Score Gap",
+    "Candidates Before",
+    "Candidates After",
+    "Candidate Reduction Rate",
+    "Gold Chunk IDs",
+    "Gold Retained After Filter",
+    "Retrieved Chunk IDs",
+    "Retrieved Similarities",
+    "Hit@4",
+    "First Gold Rank",
+    "MRR@4",
+]
+
 DETAILED_COLUMNS = [
     "Question ID",
     "Question Type",
@@ -26,6 +42,7 @@ DETAILED_COLUMNS = [
     "Answer",
     "Retrieved Chunks",
     *TIMING_COLUMNS,
+    *DIAGNOSTIC_COLUMNS,
     "Input Tokens",
     "Output Tokens",
     "Total Tokens",

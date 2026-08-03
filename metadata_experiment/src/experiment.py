@@ -15,6 +15,11 @@ from index_metadata import verify_index_metadata
 from logic import resolve_methods, should_retrieve
 from metadata_retriever import MetadataVectorStore, build_router_from_settings
 from models import MetadataExperimentMethod, MetadataExperimentRow, RetrievalTiming
+from router_diagnostics import (
+    first_gold_rank,
+    load_book_gold_chunks,
+    mrr_at_k,
+)
 from src.llm_mlx import QwenMLX
 from src.prompts import build_prompt
 from src.results_io import filter_questions
@@ -41,6 +46,14 @@ def run_qa_experiments(
     rows: list[MetadataExperimentRow] = []
     total_runs = len(questions) * len(methods)
     run_number = 0
+    gold_manifest_path = cfg.experiment_dir / "data" / "book_gold_chunks.json"
+    gold_by_question = load_book_gold_chunks(gold_manifest_path) if gold_manifest_path.exists() else {}
+    total_chunks = (
+        vector_store.client.count(collection_name=cfg.collection_name, exact=True).count
+        if gold_by_question
+        else 0
+    )
+
     for _, question_row in questions.iterrows():
         question_id = str(question_row["Question ID"])
         question_type = str(question_row["Question Type"])
@@ -48,10 +61,41 @@ def run_qa_experiments(
         use_retrieval = should_retrieve(question_type)
         embed_query_ms = 0.0
         query_vector = None
+        book_context: dict | None = None
         if use_retrieval:
             embed_started = time.perf_counter()
             query_vector = vector_store.embed_query(question)
             embed_query_ms = (time.perf_counter() - embed_started) * 1000
+
+            if question_id in gold_by_question:
+                gold_ids = list(gold_by_question[question_id]["gold_chunk_ids"])
+                predictions, _ = router.route(query_vector)
+                top2 = predictions[: cfg.topic_routing_top_n]
+                top2_ids = [prediction.topic_id for prediction in top2]
+                filtered_ids = vector_store.filtered_chunk_ids(top2_ids)
+                candidates_after = len(filtered_ids)
+                score_gap = None
+                if len(predictions) >= 2:
+                    score_gap = round(predictions[0].score - predictions[1].score, 4)
+                book_context = {
+                    "gold_ids": gold_ids,
+                    "gold_chunk_ids": ", ".join(gold_ids),
+                    "selected_topics": ", ".join(top2_ids),
+                    "topic_scores": ", ".join(
+                        f"{prediction.topic_id}:{prediction.score:.4f}" for prediction in top2
+                    ),
+                    "score_gap": score_gap,
+                    "candidates_before": total_chunks,
+                    "candidates_after": candidates_after,
+                    "candidate_reduction_rate": round(
+                        1 - candidates_after / total_chunks, 4
+                    )
+                    if total_chunks
+                    else None,
+                    "gold_retained_after_filter": any(
+                        chunk_id in filtered_ids for chunk_id in gold_ids
+                    ),
+                }
 
         for method in methods:
             run_number += 1
@@ -86,6 +130,34 @@ def run_qa_experiments(
             generation = llm.answer(prompt)
             generation_ms = generation.llm_time_ms
             end_to_end_ms = online_retrieval_ms + generation_ms
+
+            retrieved_ids = [item.chunk.chunk_id for item in retrieved]
+            retrieved_scores = [round(item.score, 4) for item in retrieved]
+            diagnostics = {}
+            if book_context is not None:
+                gold_ids = book_context["gold_ids"]
+                diagnostics = {
+                    "selected_topics": book_context["selected_topics"],
+                    "topic_scores": book_context["topic_scores"],
+                    "score_gap": book_context["score_gap"],
+                    "candidates_before": book_context["candidates_before"],
+                    "candidates_after": book_context["candidates_after"]
+                    if method.use_metadata_filter
+                    else book_context["candidates_before"],
+                    "candidate_reduction_rate": book_context["candidate_reduction_rate"]
+                    if method.use_metadata_filter
+                    else 0.0,
+                    "gold_chunk_ids": book_context["gold_chunk_ids"],
+                    "gold_retained_after_filter": book_context["gold_retained_after_filter"]
+                    if method.use_metadata_filter
+                    else None,
+                    "retrieved_chunk_ids": ", ".join(retrieved_ids),
+                    "retrieved_similarities": ", ".join(str(score) for score in retrieved_scores),
+                    "hit_at_4": any(chunk_id in retrieved_ids for chunk_id in gold_ids),
+                    "first_gold_rank": first_gold_rank(retrieved_ids, gold_ids),
+                    "mrr_at_4": round(mrr_at_k(retrieved_ids, gold_ids, cfg.top_k), 4),
+                }
+
             rows.append(
                 MetadataExperimentRow(
                     question_id=question_id,
@@ -105,6 +177,7 @@ def run_qa_experiments(
                     generation_time_ms=round(generation_ms, 3),
                     end_to_end_time_ms=round(end_to_end_ms, 3),
                     answer=generation.answer,
+                    **diagnostics,
                 )
             )
     return pd.DataFrame([asdict(row) for row in rows])
@@ -131,6 +204,19 @@ def format_detailed_dataframe(detailed: pd.DataFrame) -> pd.DataFrame:
         "end_to_end_time_ms": "End-to-End Time (ms)",
         "answer": "Answer",
         "score_0_3": "Score(0-3)",
+        "selected_topics": "Selected Topics",
+        "topic_scores": "Topic Scores",
+        "score_gap": "Score Gap",
+        "candidates_before": "Candidates Before",
+        "candidates_after": "Candidates After",
+        "candidate_reduction_rate": "Candidate Reduction Rate",
+        "gold_chunk_ids": "Gold Chunk IDs",
+        "gold_retained_after_filter": "Gold Retained After Filter",
+        "retrieved_chunk_ids": "Retrieved Chunk IDs",
+        "retrieved_similarities": "Retrieved Similarities",
+        "hit_at_4": "Hit@4",
+        "first_gold_rank": "First Gold Rank",
+        "mrr_at_4": "MRR@4",
     }
     formatted = formatted.rename(columns=rename_map)
     if "Score(0-3)" not in formatted.columns:

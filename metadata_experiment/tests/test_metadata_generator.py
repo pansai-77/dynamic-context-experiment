@@ -52,7 +52,7 @@ def test_metadata_generator_accepts_single_topic_and_no_importance():
     assert metadata.metadata_status == "ok"
 
 
-def test_metadata_generator_limits_to_one_topic():
+def test_metadata_generator_keeps_up_to_two_topics():
     payload = {
         "characters": ["有庆"],
         "topics": ["medical", "family"],
@@ -61,7 +61,7 @@ def test_metadata_generator_limits_to_one_topic():
     metadata, invalid = normalize_metadata_payload(payload, {"medical", "family"})
     assert invalid == []
     assert metadata is not None
-    assert metadata.topics == ["medical"]
+    assert metadata.topics == ["medical", "family"]
 
 
 def test_extract_json_object_from_fenced_response():

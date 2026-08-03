@@ -70,3 +70,16 @@ class MetadataExperimentRow:
     end_to_end_time_ms: float
     answer: str
     score_0_3: Any = None
+    selected_topics: str = ""
+    topic_scores: str = ""
+    score_gap: float | None = None
+    candidates_before: int = 0
+    candidates_after: int = 0
+    candidate_reduction_rate: float | None = None
+    gold_chunk_ids: str = ""
+    gold_retained_after_filter: bool | None = None
+    retrieved_chunk_ids: str = ""
+    retrieved_similarities: str = ""
+    hit_at_4: bool | None = None
+    first_gold_rank: int | None = None
+    mrr_at_4: float | None = None

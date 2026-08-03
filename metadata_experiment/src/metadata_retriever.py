@@ -38,6 +38,14 @@ class MetadataVectorStore:
             collection_name=self.collection_name,
             vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE),
         )
+        try:
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="topics",
+                field_schema="keyword",
+            )
+        except Exception:
+            pass
         for start in range(0, len(chunks), batch_size):
             batch = chunks[start : start + batch_size]
             vectors = self.embedding_model.encode(
@@ -102,6 +110,31 @@ class MetadataVectorStore:
                 )
             )
         return retrieved
+
+    def filtered_chunk_ids(self, topic_ids: list[str]) -> set[str]:
+        if not topic_ids:
+            return set()
+        from qdrant_client.models import FieldCondition, Filter, MatchAny
+
+        query_filter = Filter(
+            should=[FieldCondition(key="topics", match=MatchAny(any=topic_ids))]
+        )
+        matched: set[str] = set()
+        offset = None
+        while True:
+            points, offset = self.client.scroll(
+                collection_name=self.collection_name,
+                scroll_filter=query_filter,
+                limit=200,
+                offset=offset,
+                with_payload=True,
+            )
+            for point in points:
+                payload = point.payload or {}
+                matched.add(str(payload.get("chunk_id", point.id)))
+            if offset is None:
+                break
+        return matched
 
     def search_by_vector(
         self,

@@ -11,8 +11,9 @@ def test_metadata_prompt_includes_confusion_pair_few_shots():
     assert "枪毙" in prompt and "politics" in prompt
     assert "买牛" in prompt and "labor" in prompt
     assert "验血" in prompt and "medical" in prompt
+    assert "0–2 个" in prompt
     examples_block = prompt.split("示例", 1)[1].split("当前片段", 1)[0]
-    assert examples_block.count('{"characters"') == 10
+    assert examples_block.count('{"characters"') == 8
 
 
 def test_metadata_gen_token_budget():

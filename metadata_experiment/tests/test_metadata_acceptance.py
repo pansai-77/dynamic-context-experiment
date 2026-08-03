@@ -16,12 +16,20 @@ def test_acceptance_manifest_v3_has_40_unique_chunks():
         assert "category_hint" in sample
 
 
-def test_allowed_topics_v31_has_seven_event_topics():
+def test_allowed_topics_v32_has_seven_event_topics():
     payload = json.loads(settings.allowed_topics_file.read_text(encoding="utf-8"))
-    assert payload["version"] == "3.1"
+    assert payload["version"] == "3.2"
     ids = [item["id"] for item in payload["topics"]]
-    assert ids == ["war", "politics", "gambling", "family", "medical", "labor", "livelihood"]
+    assert set(ids) == {
+        "war",
+        "politics",
+        "gambling",
+        "family",
+        "medical",
+        "labor",
+        "livelihood",
+    }
     by_id = {item["id"]: item for item in payload["topics"]}
     assert by_id["family"]["label"] == "家庭关系与家庭事件"
-    assert "人民公社" in by_id["politics"]["description"]
-    assert "若片段核心是医疗过程" in by_id["medical"]["description"]
+    assert "土地改革" in by_id["politics"]["description"]
+    assert "验血" in by_id["medical"]["description"]
