@@ -8,6 +8,28 @@ from models import ChunkMetadata
 KEYWORD_COUNT = 3
 MAX_TOPICS = 2
 
+# Higher-priority topics come first when reordering dual labels (matches prompt v3.3).
+TOPIC_PRIORITY: dict[str, int] = {
+    "medical": 0,
+    "politics": 1,
+    "gambling": 2,
+    "war": 3,
+    "family": 4,
+    "livelihood": 5,
+    "labor": 6,
+}
+
+
+def order_topics_by_priority(topic_ids: list[str]) -> list[str]:
+    if len(topic_ids) <= 1:
+        return topic_ids
+    unique: list[str] = []
+    for topic_id in topic_ids:
+        if topic_id not in unique:
+            unique.append(topic_id)
+    ordered = sorted(unique, key=lambda topic_id: TOPIC_PRIORITY.get(topic_id, 99))
+    return ordered[:MAX_TOPICS]
+
 
 def extract_json_object(text: str) -> dict:
     stripped = text.strip()
@@ -47,7 +69,7 @@ def normalize_metadata_payload(
 
     metadata = ChunkMetadata(
         characters=[str(item).strip() for item in characters if str(item).strip()][:4],
-        topics=topic_ids[:MAX_TOPICS],
+        topics=order_topics_by_priority(topic_ids),
         keywords=keywords,
         importance=None,
         metadata_status="ok",

@@ -64,6 +64,30 @@ def test_metadata_generator_keeps_up_to_two_topics():
     assert metadata.topics == ["medical", "family"]
 
 
+def test_metadata_generator_reorders_topics_by_priority():
+    payload = {
+        "characters": ["家珍"],
+        "topics": ["labor", "family"],
+        "keywords": ["一", "二", "三"],
+    }
+    metadata, invalid = normalize_metadata_payload(payload, {"labor", "family"})
+    assert invalid == []
+    assert metadata is not None
+    assert metadata.topics == ["family", "labor"]
+
+
+def test_metadata_generator_reorders_politics_before_labor():
+    payload = {
+        "characters": ["福贵"],
+        "topics": ["labor", "politics"],
+        "keywords": ["一", "二", "三"],
+    }
+    metadata, invalid = normalize_metadata_payload(payload, {"labor", "politics"})
+    assert invalid == []
+    assert metadata is not None
+    assert metadata.topics == ["politics", "labor"]
+
+
 def test_extract_json_object_from_fenced_response():
     text = '```json\n{"topics":["family"],"characters":[],"keywords":["a","b","c"]}\n```'
     payload = extract_json_object(text)

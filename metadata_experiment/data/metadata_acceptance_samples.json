@@ -1,6 +1,6 @@
 {
-  "version": "3.2",
-  "ontology_version": "3.2",
+  "version": "3.4",
+  "ontology_version": "3.4",
   "description": "40-chunk acceptance set remapped to continuous chunk IDs (c0001-c0138). Pass if actual topics match any acceptable option exactly (order-insensitive).",
   "samples": [
     {
@@ -81,6 +81,9 @@
       "acceptable_topics": [
         [
           "family"
+        ],
+        [
+          "politics"
         ]
       ]
     },
@@ -108,6 +111,13 @@
       "acceptable_topics": [
         [
           "family"
+        ],
+        [
+          "family",
+          "labor"
+        ],
+        [
+          "labor"
         ]
       ]
     },
@@ -154,6 +164,16 @@
       "acceptable_topics": [
         [
           "medical"
+        ],
+        [
+          "family"
+        ],
+        [
+          "livelihood"
+        ],
+        [
+          "family",
+          "livelihood"
         ]
       ]
     },
@@ -199,6 +219,17 @@
       "acceptable_topics": [
         [
           "labor"
+        ],
+        [
+          "family"
+        ],
+        [
+          "family",
+          "labor"
+        ],
+        [
+          "livelihood",
+          "labor"
         ]
       ]
     },
@@ -217,6 +248,13 @@
       "acceptable_topics": [
         [
           "labor"
+        ],
+        [
+          "medical"
+        ],
+        [
+          "family",
+          "medical"
         ]
       ]
     },
@@ -274,6 +312,13 @@
       "acceptable_topics": [
         [
           "livelihood"
+        ],
+        [
+          "family",
+          "livelihood"
+        ],
+        [
+          "family"
         ]
       ]
     },
@@ -344,7 +389,7 @@
       ]
     },
     {
-      "chunk_id": "c0003",
+      "chunk_id": "c0014",
       "category_hint": "gambling",
       "acceptable_topics": [
         [],

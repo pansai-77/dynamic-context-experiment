@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from metadata_parsing import extract_json_object, failed_metadata, normalize_metadata_payload
 from models import ChunkMetadata, TopicDefinition
 from prompts import build_metadata_prompt
+from topic_refiner import refine_metadata_topics
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,7 @@ def generate_chunk_metadata(
 
         metadata, invalid_topic_ids = normalize_metadata_payload(payload, allowed_topic_ids)
         if metadata is not None:
+            metadata = refine_metadata_topics(metadata, chunk_text, allowed_topic_ids)
             return MetadataGenerationResult(
                 metadata=metadata,
                 success=True,
