@@ -1,0 +1,7 @@
+{
+  "set": "holdout",
+  "version": "1.0",
+  "ontology_version": "3.3",
+  "description": "Frozen holdout set for final metadata acceptance. Populate only after prompt/ontology freeze; do not tune prompt, ontology, or rules using these chunks.",
+  "samples": []
+}

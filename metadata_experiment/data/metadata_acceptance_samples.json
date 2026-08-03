@@ -1,7 +1,8 @@
 {
-  "version": "3.4",
-  "ontology_version": "3.4",
-  "description": "40-chunk acceptance set remapped to continuous chunk IDs (c0001-c0138). Pass if actual topics match any acceptable option exactly (order-insensitive).",
+  "set": "dev",
+  "version": "1.0",
+  "ontology_version": "3.3",
+  "description": "Development/calibration set (40 chunks, c0001-c0138). Used only to iterate prompt and ontology. Do not treat pass rate on this set as holdout generalization; use metadata_holdout_samples.json after prompt freeze.",
   "samples": [
     {
       "chunk_id": "c0039",
@@ -81,9 +82,6 @@
       "acceptable_topics": [
         [
           "family"
-        ],
-        [
-          "politics"
         ]
       ]
     },
@@ -111,13 +109,6 @@
       "acceptable_topics": [
         [
           "family"
-        ],
-        [
-          "family",
-          "labor"
-        ],
-        [
-          "labor"
         ]
       ]
     },
@@ -164,16 +155,6 @@
       "acceptable_topics": [
         [
           "medical"
-        ],
-        [
-          "family"
-        ],
-        [
-          "livelihood"
-        ],
-        [
-          "family",
-          "livelihood"
         ]
       ]
     },
@@ -219,17 +200,6 @@
       "acceptable_topics": [
         [
           "labor"
-        ],
-        [
-          "family"
-        ],
-        [
-          "family",
-          "labor"
-        ],
-        [
-          "livelihood",
-          "labor"
         ]
       ]
     },
@@ -248,13 +218,6 @@
       "acceptable_topics": [
         [
           "labor"
-        ],
-        [
-          "medical"
-        ],
-        [
-          "family",
-          "medical"
         ]
       ]
     },
@@ -312,13 +275,6 @@
       "acceptable_topics": [
         [
           "livelihood"
-        ],
-        [
-          "family",
-          "livelihood"
-        ],
-        [
-          "family"
         ]
       ]
     },

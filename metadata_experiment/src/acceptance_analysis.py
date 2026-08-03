@@ -30,9 +30,19 @@ def _primary_hint(sample: dict) -> str:
 
 
 def is_acceptable(actual_topics: list[str], acceptable_options: list[list[str]]) -> bool:
+    """Primary-topic pass: compare only topics[0] against each acceptable option."""
     actual = _normalize_topics(actual_topics)
     for option in acceptable_options:
         if actual == option:
+            return True
+    return False
+
+
+def is_topic_set_acceptable(actual_topics: list[str], acceptable_options: list[list[str]]) -> bool:
+    """Topic-set pass: compare full topic lists, order-insensitive."""
+    actual_set = sorted(dict.fromkeys(actual_topics))
+    for option in acceptable_options:
+        if sorted(dict.fromkeys(option)) == actual_set:
             return True
     return False
 
@@ -53,7 +63,7 @@ def analyze_acceptance_report(report_path: Path) -> dict:
     topic_predicted = Counter[str]()
 
     strict_pass = 0
-    lenient_pass = 0
+    topic_set_pass = 0
 
     for row in samples:
         category = row.get("category_hint") or row.get("category_id", "unknown")
@@ -65,22 +75,27 @@ def analyze_acceptance_report(report_path: Path) -> dict:
         topic_predicted[predicted] += 1
         confusion[(hint, predicted)] += 1
 
-        ok = is_acceptable(actual_list, acceptable_options)
-        if ok:
+        primary_ok = is_acceptable(actual_list, acceptable_options)
+        set_ok = is_topic_set_acceptable(actual_list, acceptable_options)
+        if primary_ok:
             strict_pass += 1
-            lenient_pass += 1
+        if set_ok:
+            topic_set_pass += 1
 
         if category not in by_category:
             by_category[category] = {
                 "total": 0,
-                "pass": 0,
+                "primary_pass": 0,
+                "topic_set_pass": 0,
                 "failures": [],
             }
         bucket = by_category[category]
         bucket["total"] += 1
-        if ok:
-            bucket["pass"] += 1
-        else:
+        if primary_ok:
+            bucket["primary_pass"] += 1
+        if set_ok:
+            bucket["topic_set_pass"] += 1
+        if not primary_ok:
             bucket["failures"].append(
                 {
                     "chunk_id": row["chunk_id"],
@@ -110,6 +125,10 @@ def analyze_acceptance_report(report_path: Path) -> dict:
         "total_samples": total,
         "pass_count": strict_pass,
         "pass_rate": round(strict_pass / total, 4) if total else 0.0,
+        "primary_pass_count": strict_pass,
+        "primary_pass_rate": round(strict_pass / total, 4) if total else 0.0,
+        "topic_set_pass_count": topic_set_pass,
+        "topic_set_pass_rate": round(topic_set_pass / total, 4) if total else 0.0,
         "war_as_primary": war_as_predicted,
         "war_rate": round(war_as_predicted / total, 4) if total else 0.0,
         "family_as_primary": topic_predicted.get("family", 0),

@@ -38,20 +38,38 @@ def text_preview(text: str, limit: int = 160) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run v3 fixed-chunk metadata acceptance (generate only, no Qdrant write)."
+        description="Run LLM-only metadata acceptance (generate only, no Qdrant write)."
+    )
+    parser.add_argument(
+        "--set",
+        choices=("dev", "holdout"),
+        default="dev",
+        help="Sample set to evaluate (default: dev calibration set).",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=None,
-        help="Output JSON path (default: metadata_experiment/results/acceptance_{timestamp}.json)",
+        help="Output JSON path (default: metadata_experiment/results/acceptance_{set}_{timestamp}.json)",
     )
     return parser.parse_args()
 
 
+def resolve_manifest_path(sample_set: str) -> Path:
+    if sample_set == "holdout":
+        return settings.metadata_holdout_samples_file
+    return settings.metadata_acceptance_samples_file
+
+
 def main() -> None:
     args = parse_args()
-    manifest = load_acceptance_manifest(settings.metadata_acceptance_samples_file)
+    manifest_path = resolve_manifest_path(args.set)
+    manifest = load_acceptance_manifest(manifest_path)
+    if not manifest.get("samples"):
+        raise RuntimeError(
+            f"No samples in {manifest_path.name}. "
+            "Populate the holdout set after prompt/ontology freeze."
+        )
     chunk_lookup = build_chunk_lookup()
     topics = load_allowed_topics(settings.allowed_topics_file)
     allowed_ids = {topic.id for topic in topics}
@@ -103,16 +121,26 @@ def main() -> None:
         raise RuntimeError(f"Missing chunk ids in corpus: {sorted(set(missing_chunks))}")
 
     timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-    output_path = args.output or (settings.results_dir / f"acceptance_{timestamp}.json")
+    output_path = args.output or (
+        settings.results_dir / f"acceptance_{args.set}_{timestamp}.json"
+    )
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     ontology_version = json.loads(settings.allowed_topics_file.read_text(encoding="utf-8")).get(
         "version", ""
     )
+    manifest_ontology_version = manifest.get("ontology_version", "")
+    if manifest_ontology_version and manifest_ontology_version != ontology_version:
+        raise RuntimeError(
+            f"Manifest ontology_version={manifest_ontology_version} "
+            f"does not match allowed_topics version={ontology_version}"
+        )
     payload = {
         "generated_at_utc": datetime.now(UTC).isoformat(),
+        "sample_set": manifest.get("set", args.set),
         "ontology_version": ontology_version,
         "manifest_version": manifest.get("version", ""),
+        "manifest_path": str(manifest_path),
         "total_samples": len(rows),
         "samples": rows,
     }
@@ -121,7 +149,14 @@ def main() -> None:
     analysis = analyze_acceptance_report(output_path)
     print(f"\nWrote acceptance report to {output_path}")
     print(format_confusion_table(analysis))
-    print(f"\nPass: {analysis['pass_count']}/{analysis['total_samples']} ({analysis['pass_rate']:.1%})")
+    print(
+        f"\nPrimary pass: {analysis['primary_pass_count']}/{analysis['total_samples']} "
+        f"({analysis['primary_pass_rate']:.1%})"
+    )
+    print(
+        f"Topic-set pass: {analysis['topic_set_pass_count']}/{analysis['total_samples']} "
+        f"({analysis['topic_set_pass_rate']:.1%})"
+    )
     print(f"war as primary: {analysis['war_as_primary']}/{analysis['total_samples']}")
 
 

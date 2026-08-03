@@ -3,13 +3,18 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from acceptance_analysis import analyze_acceptance_report, is_acceptable
+from acceptance_analysis import analyze_acceptance_report, is_acceptable, is_topic_set_acceptable
 
 
 def test_is_acceptable_supports_multiple_valid_labels():
     assert is_acceptable(["family"], [["medical"], ["family"]])
     assert is_acceptable([], [[], ["family"]])
     assert not is_acceptable(["war"], [["family"]])
+
+
+def test_is_topic_set_acceptable_is_order_insensitive():
+    assert is_topic_set_acceptable(["family", "medical"], [["medical", "family"]])
+    assert not is_topic_set_acceptable(["family", "medical"], [["family"]])
 
 
 def test_confusion_matrix_v3_format():

@@ -42,14 +42,24 @@ def main() -> None:
 
     print(format_confusion_table(analysis))
     print()
-    print(f"Pass: {analysis['pass_count']}/{analysis['total_samples']} ({analysis['pass_rate']:.1%})")
+    print(
+        f"Primary pass: {analysis['primary_pass_count']}/{analysis['total_samples']} "
+        f"({analysis['primary_pass_rate']:.1%})"
+    )
+    print(
+        f"Topic-set pass: {analysis['topic_set_pass_count']}/{analysis['total_samples']} "
+        f"({analysis['topic_set_pass_rate']:.1%})"
+    )
     print(f"war as primary: {analysis['war_as_primary']}/{analysis['total_samples']} ({analysis['war_rate']:.1%})")
     print(f"family as primary: {analysis['family_as_primary']}")
     print(f"livelihood as primary: {analysis['livelihood_as_primary']}")
     print()
-    print("Per category:")
+    print("Per category (primary / topic-set):")
     for category_id, bucket in analysis["by_category"].items():
-        print(f"  {category_id}: {bucket['pass']}/{bucket['total']}")
+        print(
+            f"  {category_id}: {bucket['primary_pass']}/{bucket['total']} primary, "
+            f"{bucket['topic_set_pass']}/{bucket['total']} topic-set"
+        )
 
     if args.output:
         args.output.write_text(json.dumps(analysis, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

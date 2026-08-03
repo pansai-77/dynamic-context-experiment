@@ -51,6 +51,7 @@ class MetadataSettings:
     index_build_report_file: Path = EXPERIMENT_DIR / "index_build_report.json"
     topic_coverage_report_file: Path = EXPERIMENT_DIR / "topic_coverage_report.json"
     metadata_acceptance_samples_file: Path = EXPERIMENT_DIR / "data" / "metadata_acceptance_samples.json"
+    metadata_holdout_samples_file: Path = EXPERIMENT_DIR / "data" / "metadata_holdout_samples.json"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
     chunk_strategy: str = os.getenv("CHUNK_STRATEGY", "continuous_sentence_aware")
