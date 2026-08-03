@@ -8,7 +8,13 @@ from src.vector_store import LocalVectorStore
 def main() -> None:
     pdf_files = resolve_pdf_files(settings.book_dir, settings.book_file)
     pages = extract_pages(settings.book_dir, settings.book_file)
-    chunks = chunk_pages(pages, settings.chunk_size, settings.chunk_overlap)
+    chunks = chunk_pages(
+        pages,
+        target_size=settings.chunk_target_size,
+        max_size=settings.chunk_max_size,
+        min_size=settings.chunk_min_size,
+        overlap=settings.chunk_overlap,
+    )
     print(f"Extracted {len(pages)} pages; created {len(chunks)} chunks.")
     store = LocalVectorStore(
         settings.qdrant_path, settings.collection_name, settings.embedding_model

@@ -76,8 +76,9 @@ def run_experiments(
     print(
         "Index metadata:",
         f"embedding={index_metadata.embedding_model},",
-        f"chunk_size={index_metadata.chunk_size},",
-        f"chunk_overlap={index_metadata.chunk_overlap},",
+        f"chunk_strategy={index_metadata.chunk_strategy},",
+        f"target_size={index_metadata.target_size},",
+        f"overlap={index_metadata.overlap},",
         f"sources={index_metadata.source_files}",
     )
     print("Warming up vector store...")
@@ -122,7 +123,10 @@ def run_experiments(
                 answer=generation.answer,
                 retrieved_chunks=len(retrieved),
                 retrieved_sources="; ".join(
-                    f"p{x.chunk.page_number}:{x.score:.3f}" for x in retrieved
+                    f"{x.chunk.chunk_id}:p{x.chunk.page_start}"
+                    + (f"-{x.chunk.page_end}" if x.chunk.page_end != x.chunk.page_start else "")
+                    + f":{x.score:.3f}"
+                    for x in retrieved
                 ),
             ))
     return pd.DataFrame([asdict(row) for row in rows])

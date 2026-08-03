@@ -13,6 +13,7 @@ from src.index_metadata import (
     write_index_metadata,
 )
 
+
 def _settings(tmp_path: Path) -> Settings:
     return Settings(
         root_dir=tmp_path,
@@ -23,9 +24,13 @@ def _settings(tmp_path: Path) -> Settings:
         results_dir=tmp_path / "results",
         collection_name="huozhe",
         embedding_model="BAAI/bge-small-zh-v1.5",
-        chunk_size=500,
-        chunk_overlap=80,
+        chunk_strategy="continuous_sentence_aware",
+        chunk_target_size=600,
+        chunk_max_size=800,
+        chunk_min_size=100,
+        chunk_overlap=100,
     )
+
 
 def test_write_and_read_index_metadata(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
@@ -34,10 +39,12 @@ def test_write_and_read_index_metadata(tmp_path: Path) -> None:
     loaded = read_index_metadata(settings.qdrant_path)
     assert loaded == metadata
 
+
 def test_verify_index_metadata_raises_when_missing(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
     with pytest.raises(FileNotFoundError, match="Index metadata not found"):
         verify_index_metadata(settings)
+
 
 def test_verify_index_metadata_raises_on_mismatch(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
@@ -45,13 +52,17 @@ def test_verify_index_metadata_raises_on_mismatch(tmp_path: Path) -> None:
         settings.qdrant_path,
         IndexMetadata(
             embedding_model="old-model",
-            chunk_size=500,
-            chunk_overlap=80,
+            chunk_strategy="continuous_sentence_aware",
+            target_size=600,
+            max_size=800,
+            min_size=100,
+            overlap=100,
             source_files=["活着.pdf"],
         ),
     )
     with pytest.raises(ValueError, match="does not match current settings"):
         verify_index_metadata(settings)
+
 
 def test_verify_index_metadata_raises_on_source_file_mismatch(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
@@ -59,13 +70,17 @@ def test_verify_index_metadata_raises_on_source_file_mismatch(tmp_path: Path) ->
         settings.qdrant_path,
         IndexMetadata(
             embedding_model=settings.embedding_model,
-            chunk_size=settings.chunk_size,
-            chunk_overlap=settings.chunk_overlap,
+            chunk_strategy=settings.chunk_strategy,
+            target_size=settings.chunk_target_size,
+            max_size=settings.chunk_max_size,
+            min_size=settings.chunk_min_size,
+            overlap=settings.chunk_overlap,
             source_files=["old-book.pdf"],
         ),
     )
     with pytest.raises(ValueError, match="source_files"):
         verify_index_metadata(settings)
+
 
 def test_verify_index_metadata_accepts_matching_config(tmp_path: Path) -> None:
     settings = _settings(tmp_path)

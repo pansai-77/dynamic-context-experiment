@@ -1,10 +1,16 @@
 from __future__ import annotations
-from .models import RetrievedChunk
+from .models import Chunk, RetrievedChunk
 
 SYSTEM_PROMPT = """你是一名严谨的研究助手。
 请严格按照用户的任务要求作答。
 不要编造事实或引用。
 回答应简洁、准确且完整。"""
+
+def _format_page_label(chunk: Chunk) -> str:
+    if chunk.page_start != chunk.page_end:
+        return f"第 {chunk.page_start}-{chunk.page_end} 页"
+    return f"第 {chunk.page_number} 页"
+
 
 def build_prompt(
     question: str,
@@ -32,7 +38,7 @@ def build_prompt(
     sections = []
     for index, item in enumerate(retrieved_chunks, start=1):
         sections.append(
-            f"[上下文 {index} | 第 {item.chunk.page_number} 页]\n"
+            f"[上下文 {index} | {_format_page_label(item.chunk)}]\n"
             f"{item.chunk.text}"
         )
     context = "\n\n".join(sections)

@@ -15,7 +15,13 @@ from topic_coverage import build_topic_coverage_report, topic_coverage_warnings
 def main() -> None:
     pdf_files = resolve_pdf_files(settings.book_dir, settings.book_file)
     pages = extract_pages(settings.book_dir, settings.book_file)
-    chunks = chunk_pages(pages, settings.chunk_size, settings.chunk_overlap)
+    chunks = chunk_pages(
+        pages,
+        target_size=settings.chunk_target_size,
+        max_size=settings.chunk_max_size,
+        min_size=settings.chunk_min_size,
+        overlap=settings.chunk_overlap,
+    )
     topics = load_allowed_topics(settings.allowed_topics_file)
     allowed_ids = {topic.id for topic in topics}
 

@@ -47,15 +47,19 @@ pip install -r requirements.txt
 
 ### 索引切块
 
-参数见 `pdf_loader.py` / `.env`。
+参数见 `src/pdf_loader.py` / `.env`。正文先跨页连续化，再按段落/句末边界切分。
 
 | 参数 | 值 | 说明 |
 | --- | --- | --- |
-| CHUNK_SIZE | 500 | 按字符切分，每块约 500 字 |
-| CHUNK_OVERLAP | 80 | 块间重叠约 80 字 |
+| CHUNK_STRATEGY | continuous_sentence_aware | 跨页连续 + 句段感知 |
+| CHUNK_TARGET_SIZE | 600 | 目标块长约 600 字 |
+| CHUNK_MAX_SIZE | 800 | 单块硬上限 |
+| CHUNK_MIN_SIZE | 100 | 尾块下限，过短则并入前块 |
+| CHUNK_OVERLAP | 100 | 相邻块重叠约 100 字 |
 | collection_name | huozhe | Qdrant 集合名 |
 
-> 实验中的 **Top-k** 指检索返回的 chunk **数量**，与 CHUNK_SIZE 是不同概念。
+> 开发阶段曾使用按页 500/80 切块试运行，未纳入正式结果。  
+> 实验中的 **Top-k** 指检索返回的 chunk **数量**，与 CHUNK_TARGET_SIZE 是不同概念。
 
 ### 知识库与问题集
 

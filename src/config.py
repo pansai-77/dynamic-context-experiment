@@ -25,8 +25,11 @@ class Settings:
     collection_name: str = "huozhe"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
-    chunk_size: int = int(os.getenv("CHUNK_SIZE", "500"))
-    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "80"))
+    chunk_strategy: str = os.getenv("CHUNK_STRATEGY", "continuous_sentence_aware")
+    chunk_target_size: int = int(os.getenv("CHUNK_TARGET_SIZE", "600"))
+    chunk_max_size: int = int(os.getenv("CHUNK_MAX_SIZE", "800"))
+    chunk_min_size: int = int(os.getenv("CHUNK_MIN_SIZE", "100"))
+    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "100"))
     max_new_tokens: int = int(os.getenv("MAX_NEW_TOKENS", "200"))
     temperature: float = float(os.getenv("TEMPERATURE", "0"))
     random_seed: int = int(os.getenv("RANDOM_SEED", "42"))

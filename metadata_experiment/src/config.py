@@ -53,8 +53,11 @@ class MetadataSettings:
     metadata_acceptance_samples_file: Path = EXPERIMENT_DIR / "data" / "metadata_acceptance_samples.json"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
-    chunk_size: int = int(os.getenv("CHUNK_SIZE", "500"))
-    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "80"))
+    chunk_strategy: str = os.getenv("CHUNK_STRATEGY", "continuous_sentence_aware")
+    chunk_target_size: int = int(os.getenv("CHUNK_TARGET_SIZE", "600"))
+    chunk_max_size: int = int(os.getenv("CHUNK_MAX_SIZE", "800"))
+    chunk_min_size: int = int(os.getenv("CHUNK_MIN_SIZE", "100"))
+    chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "100"))
     top_k: int = 4
     topic_routing_top_n: int = int(os.getenv("TOPIC_ROUTING_TOP_N", "2"))
     metadata_gen_max_retries: int = int(os.getenv("METADATA_GEN_MAX_RETRIES", "2"))

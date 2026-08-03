@@ -45,6 +45,10 @@ class RetrievalTiming:
     vector_search_time_ms: float = 0.0
     retrieval_total_ms: float = 0.0
 
+    @property
+    def search_only_ms(self) -> float:
+        return self.router_time_ms + self.filter_build_time_ms + self.vector_search_time_ms
+
 
 @dataclass
 class MetadataExperimentRow:
@@ -56,8 +60,13 @@ class MetadataExperimentRow:
     input_tokens: int
     output_tokens: int
     total_tokens: int
-    retrieval_time_ms: float
-    llm_time_ms: float
-    total_time_ms: float
+    embed_query_time_ms: float
+    router_time_ms: float
+    filter_time_ms: float
+    vector_search_time_ms: float
+    search_only_time_ms: float
+    online_retrieval_time_ms: float
+    generation_time_ms: float
+    end_to_end_time_ms: float
     answer: str
     score_0_3: Any = None

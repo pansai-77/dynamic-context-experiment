@@ -38,6 +38,8 @@ class LocalVectorStore:
                         "text": chunk.text,
                         "source_file": chunk.source_file,
                         "page_number": chunk.page_number,
+                        "page_start": chunk.page_start,
+                        "page_end": chunk.page_end,
                         "chunk_index": chunk.chunk_index,
                     },
                 )
@@ -65,12 +67,16 @@ class LocalVectorStore:
         retrieved = []
         for point in result_points:
             payload = point.payload or {}
+            page_start = int(payload.get("page_start", payload.get("page_number", 0)))
+            page_end = int(payload.get("page_end", page_start))
             retrieved.append(RetrievedChunk(
                 chunk=Chunk(
                     chunk_id=str(payload.get("chunk_id", point.id)),
                     text=str(payload.get("text", "")),
                     source_file=str(payload.get("source_file", "")),
-                    page_number=int(payload.get("page_number", 0)),
+                    page_number=page_start,
+                    page_start=page_start,
+                    page_end=page_end,
                     chunk_index=int(payload.get("chunk_index", 0)),
                 ),
                 score=float(point.score),

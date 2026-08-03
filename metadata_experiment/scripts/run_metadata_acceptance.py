@@ -21,7 +21,13 @@ def load_acceptance_manifest(path: Path) -> dict:
 
 def build_chunk_lookup() -> dict[str, object]:
     pages = extract_pages(settings.book_dir, settings.book_file)
-    chunks = chunk_pages(pages, settings.chunk_size, settings.chunk_overlap)
+    chunks = chunk_pages(
+        pages,
+        target_size=settings.chunk_target_size,
+        max_size=settings.chunk_max_size,
+        min_size=settings.chunk_min_size,
+        overlap=settings.chunk_overlap,
+    )
     return {chunk.chunk_id: chunk for chunk in chunks}
 
 

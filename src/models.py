@@ -8,6 +8,8 @@ class Chunk:
     text: str
     source_file: str
     page_number: int
+    page_start: int
+    page_end: int
     chunk_index: int
 
 @dataclass(frozen=True)

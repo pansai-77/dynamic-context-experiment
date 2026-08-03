@@ -14,7 +14,7 @@ from config import MetadataSettings, settings
 from index_metadata import verify_index_metadata
 from logic import resolve_methods, should_retrieve
 from metadata_retriever import MetadataVectorStore, build_router_from_settings
-from models import MetadataExperimentMethod, MetadataExperimentRow
+from models import MetadataExperimentMethod, MetadataExperimentRow, RetrievalTiming
 from src.llm_mlx import QwenMLX
 from src.prompts import build_prompt
 from src.results_io import filter_questions
@@ -46,14 +46,20 @@ def run_qa_experiments(
         question_type = str(question_row["Question Type"])
         question = str(question_row["Question"])
         use_retrieval = should_retrieve(question_type)
-        query_vector = vector_store.embed_query(question) if use_retrieval else None
+        embed_query_ms = 0.0
+        query_vector = None
+        if use_retrieval:
+            embed_started = time.perf_counter()
+            query_vector = vector_store.embed_query(question)
+            embed_query_ms = (time.perf_counter() - embed_started) * 1000
 
         for method in methods:
             run_number += 1
             print(f"[{run_number}/{total_runs}] {question_id} - {method.name}")
             total_started = time.perf_counter()
             retrieved = []
-            retrieval_ms = 0.0
+            timing = RetrievalTiming()
+            topic_ids: list[str] = []
             if use_retrieval and query_vector is not None:
                 if method.use_metadata_filter:
                     retrieved, timing, topic_ids = vector_store.search_with_metadata(
@@ -62,10 +68,8 @@ def run_qa_experiments(
                         top_k=cfg.top_k,
                         allow_topic_expansion=allow_topic_expansion,
                     )
-                    retrieval_ms = timing.retrieval_total_ms
                 else:
                     retrieved, timing = vector_store.search_full(query_vector, top_k=cfg.top_k)
-                    retrieval_ms = timing.retrieval_total_ms
 
                 if method.use_metadata_filter and not retrieved:
                     print(
@@ -73,9 +77,15 @@ def run_qa_experiments(
                         f"(topics={topic_ids})"
                     )
 
+            router_ms = timing.router_time_ms
+            filter_ms = timing.filter_build_time_ms
+            vector_search_ms = timing.vector_search_time_ms
+            search_only_ms = timing.search_only_ms
+            online_retrieval_ms = embed_query_ms + search_only_ms
+
             prompt = build_prompt(question, question_type, retrieved)
             generation = llm.answer(prompt)
-            total_ms = (time.perf_counter() - total_started) * 1000
+            end_to_end_ms = (time.perf_counter() - total_started) * 1000
             rows.append(
                 MetadataExperimentRow(
                     question_id=question_id,
@@ -86,9 +96,14 @@ def run_qa_experiments(
                     input_tokens=generation.input_tokens,
                     output_tokens=generation.output_tokens,
                     total_tokens=generation.total_tokens,
-                    retrieval_time_ms=round(retrieval_ms, 3),
-                    llm_time_ms=round(generation.llm_time_ms, 3),
-                    total_time_ms=round(total_ms, 3),
+                    embed_query_time_ms=round(embed_query_ms, 3),
+                    router_time_ms=round(router_ms, 3),
+                    filter_time_ms=round(filter_ms, 3),
+                    vector_search_time_ms=round(vector_search_ms, 3),
+                    search_only_time_ms=round(search_only_ms, 3),
+                    online_retrieval_time_ms=round(online_retrieval_ms, 3),
+                    generation_time_ms=round(generation.llm_time_ms, 3),
+                    end_to_end_time_ms=round(end_to_end_ms, 3),
                     answer=generation.answer,
                 )
             )
@@ -106,9 +121,14 @@ def format_detailed_dataframe(detailed: pd.DataFrame) -> pd.DataFrame:
         "input_tokens": "Input Tokens",
         "output_tokens": "Output Tokens",
         "total_tokens": "Total Tokens",
-        "retrieval_time_ms": "Retrieval Time(ms)",
-        "llm_time_ms": "LLM Time(ms)",
-        "total_time_ms": "Total Time(ms)",
+        "embed_query_time_ms": "Embed Query Time (ms)",
+        "router_time_ms": "Router Time (ms)",
+        "filter_time_ms": "Filter Time (ms)",
+        "vector_search_time_ms": "Vector Search Time (ms)",
+        "search_only_time_ms": "Search Only Time (ms)",
+        "online_retrieval_time_ms": "Online Retrieval Time (ms)",
+        "generation_time_ms": "Generation Time (ms)",
+        "end_to_end_time_ms": "End-to-End Time (ms)",
         "answer": "Answer",
         "score_0_3": "Score(0-3)",
     }
@@ -141,13 +161,23 @@ def export_run_config(
             "collection_name": cfg.collection_name,
             "embedding_model": cfg.embedding_model,
             "llm_model": cfg.llm_model,
-            "chunk_size": cfg.chunk_size,
-            "chunk_overlap": cfg.chunk_overlap,
+            "chunk_strategy": cfg.chunk_strategy,
+            "target_size": cfg.chunk_target_size,
+            "max_size": cfg.chunk_max_size,
+            "min_size": cfg.chunk_min_size,
+            "overlap": cfg.chunk_overlap,
             "top_k": cfg.top_k,
             "topic_routing_top_n": cfg.topic_routing_top_n,
             "allow_topic_expansion": allow_topic_expansion,
             "random_seed": cfg.random_seed,
         },
+        "timing_notes": (
+            "For each Book question, the query embedding was computed once and shared by "
+            "both methods to ensure identical vector input. The same embedding latency was "
+            "assigned to both methods when calculating their independent online retrieval "
+            "latency. End-to-End Time (ms) records the per-method wall clock for retrieval "
+            "plus generation and does not repeat the shared embedding step."
+        ),
     }
     output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 

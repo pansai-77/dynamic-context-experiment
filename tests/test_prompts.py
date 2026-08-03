@@ -4,11 +4,13 @@ from src.prompts import SYSTEM_PROMPT, build_prompt
 def _chunk(page_number: int = 12, text: str = "示例上下文") -> RetrievedChunk:
     return RetrievedChunk(
         chunk=Chunk(
-            chunk_id="p012-c001",
+            chunk_id="c0012",
             text=text,
             source_file="活着.pdf",
             page_number=page_number,
-            chunk_index=1,
+            page_start=page_number,
+            page_end=page_number,
+            chunk_index=12,
         ),
         score=0.8123,
     )
