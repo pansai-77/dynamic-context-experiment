@@ -56,7 +56,6 @@ def run_qa_experiments(
         for method in methods:
             run_number += 1
             print(f"[{run_number}/{total_runs}] {question_id} - {method.name}")
-            total_started = time.perf_counter()
             retrieved = []
             timing = RetrievalTiming()
             topic_ids: list[str] = []
@@ -85,7 +84,8 @@ def run_qa_experiments(
 
             prompt = build_prompt(question, question_type, retrieved)
             generation = llm.answer(prompt)
-            end_to_end_ms = (time.perf_counter() - total_started) * 1000
+            generation_ms = generation.llm_time_ms
+            end_to_end_ms = online_retrieval_ms + generation_ms
             rows.append(
                 MetadataExperimentRow(
                     question_id=question_id,
@@ -102,7 +102,7 @@ def run_qa_experiments(
                     vector_search_time_ms=round(vector_search_ms, 3),
                     search_only_time_ms=round(search_only_ms, 3),
                     online_retrieval_time_ms=round(online_retrieval_ms, 3),
-                    generation_time_ms=round(generation.llm_time_ms, 3),
+                    generation_time_ms=round(generation_ms, 3),
                     end_to_end_time_ms=round(end_to_end_ms, 3),
                     answer=generation.answer,
                 )
@@ -172,11 +172,13 @@ def export_run_config(
             "random_seed": cfg.random_seed,
         },
         "timing_notes": (
-            "For each Book question, the query embedding was computed once and shared by "
-            "both methods to ensure identical vector input. The same embedding latency was "
-            "assigned to both methods when calculating their independent online retrieval "
-            "latency. End-to-End Time (ms) records the per-method wall clock for retrieval "
-            "plus generation and does not repeat the shared embedding step."
+            "Timing definitions per method row: Search Only Time (ms) = Router + Filter "
+            "Build + Vector Search; Online Retrieval Time (ms) = Embed Query + Search Only; "
+            "End-to-End Time (ms) = Online Retrieval + Generation. For each Book question, "
+            "query embedding is computed once and shared by both methods to ensure identical "
+            "vector input; the same Embed Query Time is assigned to both methods as their "
+            "independent deployment cost. Filter Time (ms) records Qdrant Filter object "
+            "construction only; filtering executes inside Vector Search Time (ms)."
         ),
     }
     output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

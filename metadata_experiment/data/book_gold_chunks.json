@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "description": "Primary evidence chunks for Book questions (diagnostic only; not used in formal scoring).",
+  "questions": {
+    "Q01": {
+      "gold_chunk_ids": ["c0012", "c0013", "c0014", "c0017"],
+      "notes": "沉迷赌博、在赌坊输钱、输掉田地房屋。"
+    },
+    "Q02": {
+      "gold_chunk_ids": ["c0090", "c0091", "c0092"],
+      "notes": "有庆给县长女人献血、被过量抽血致死。"
+    },
+    "Q03": {
+      "gold_chunk_ids": ["c0120", "c0121", "c0122", "c0123"],
+      "notes": "凤霞分娩/生产时大出血死亡。"
+    },
+    "Q04": {
+      "gold_chunk_ids": ["c0053", "c0006"],
+      "notes": "晚年老牛名叫福贵；开篇老人对牛喊福贵。"
+    },
+    "Q05": {
+      "gold_chunk_ids": ["c0034", "c0035"],
+      "notes": "输光家产后家珍仍回到福贵身边、共同过苦日子。"
+    },
+    "Q06": {
+      "gold_chunk_ids": ["c0136", "c0137"],
+      "notes": "不忍看牛被宰、买牛干活和陪伴。"
+    },
+    "Q07": {
+      "gold_chunk_ids": ["c0054", "c0055", "c0056"],
+      "notes": "因贫穷把凤霞送给别人、为有庆上学省钱。"
+    },
+    "Q08": {
+      "gold_chunk_ids": ["c0051", "c0052"],
+      "notes": "龙二代福贵当地主被枪毙；若福贵仍是地主死的可能就是他。"
+    },
+    "Q09": {
+      "gold_chunk_ids": ["c0117", "c0118", "c0101"],
+      "notes": "家珍因有庆之死恨春生；后劝春生为有庆和自己活下去。"
+    },
+    "Q10": {
+      "gold_chunk_ids": ["c0052", "c0051"],
+      "notes": "输光后不再是地主；龙二被枪毙，福贵认为自己躲过此劫。"
+    }
+  }
+}

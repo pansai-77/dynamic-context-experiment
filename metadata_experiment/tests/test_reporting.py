@@ -53,6 +53,7 @@ def test_normalize_detailed_columns_zeros_non_book_retrieval_fields():
     assert normalized.loc[0, "Search Only Time (ms)"] == 0.0
     assert normalized.loc[0, "Retrieved Chunks"] == 0
     assert normalized.loc[0, "Generation Time (ms)"] == 100.0
+    assert normalized.loc[0, "End-to-End Time (ms)"] == 100.0
 
 
 def test_summarize_primary_accepts_legacy_retrieval_column_name():
@@ -64,7 +65,7 @@ def test_summarize_primary_accepts_legacy_retrieval_column_name():
             "Embed Query Time (ms)": [50.0],
             "Online Retrieval Time (ms)": [62.0],
             "Generation Time (ms)": [100.0],
-            "End-to-End Time (ms)": [112.0],
+            "End-to-End Time (ms)": [162.0],
             "Input Tokens": [1000],
             "Output Tokens": [20],
             "Total Tokens": [1020],
@@ -73,6 +74,31 @@ def test_summarize_primary_accepts_legacy_retrieval_column_name():
     summary = summarize_primary(detailed)
     assert summary.loc[0, "Avg Search Only Time (ms)"] == 12.0
     assert summary.loc[0, "Avg Online Retrieval Time (ms)"] == 62.0
+    assert summary.loc[0, "Avg End-to-End Time (ms)"] == 162.0
+
+
+def test_end_to_end_equals_online_retrieval_plus_generation():
+    detailed = pd.DataFrame(
+        {
+            "Method": ["Query-Aware Top-4"],
+            "Question Type": ["book"],
+            "Embed Query Time (ms)": [100.0],
+            "Router Time (ms)": [0.0],
+            "Filter Time (ms)": [0.0],
+            "Vector Search Time (ms)": [10.0],
+            "Search Only Time (ms)": [10.0],
+            "Online Retrieval Time (ms)": [110.0],
+            "Generation Time (ms)": [100.0],
+            "End-to-End Time (ms)": [210.0],
+            "Input Tokens": [1000],
+            "Output Tokens": [20],
+            "Total Tokens": [1020],
+        }
+    )
+    row = detailed.iloc[0]
+    assert row["End-to-End Time (ms)"] == pytest.approx(
+        row["Online Retrieval Time (ms)"] + row["Generation Time (ms)"]
+    )
 
 
 def test_summarize_primary_computes_latency_reduction():
@@ -87,7 +113,7 @@ def test_summarize_primary_computes_latency_reduction():
             "Search Only Time (ms)": [10.0, 8.03],
             "Online Retrieval Time (ms)": [110.0, 108.03],
             "Generation Time (ms)": [100.0, 95.0],
-            "End-to-End Time (ms)": [110.0, 103.03],
+            "End-to-End Time (ms)": [210.0, 203.03],
             "Input Tokens": [1000, 900],
             "Output Tokens": [20, 20],
             "Total Tokens": [1020, 920],
@@ -97,4 +123,6 @@ def test_summarize_primary_computes_latency_reduction():
     baseline = summary[summary["Method"] == "Query-Aware Top-4"].iloc[0]
     metadata = summary[summary["Method"] == "Query-Aware + Metadata Top-4"].iloc[0]
     assert baseline["Online Retrieval Latency Reduction"] == 0.0
+    assert baseline["End-to-End Latency Reduction"] == 0.0
     assert metadata["Online Retrieval Latency Reduction"] == pytest.approx(1.7909, rel=1e-3)
+    assert metadata["End-to-End Latency Reduction"] == pytest.approx(3.3190, rel=1e-3)

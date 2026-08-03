@@ -1,25 +1,25 @@
 {
-  "total_chunks": 293,
-  "metadata_ok_count": 285,
-  "metadata_failed_count": 8,
+  "total_chunks": 138,
+  "metadata_ok_count": 131,
+  "metadata_failed_count": 7,
   "empty_topic_ok_count": 0,
-  "avg_topics_per_chunk": 0.9727,
+  "avg_topics_per_chunk": 0.9493,
   "topic_counts": {
-    "family": 143,
-    "gambling": 17,
-    "labor": 52,
-    "livelihood": 1,
-    "medical": 21,
-    "politics": 21,
-    "war": 30
+    "family": 70,
+    "gambling": 5,
+    "labor": 30,
+    "livelihood": 0,
+    "medical": 10,
+    "politics": 4,
+    "war": 12
   },
   "topic_coverage": {
-    "family": 0.4881,
-    "gambling": 0.058,
-    "labor": 0.1775,
-    "livelihood": 0.0034,
-    "medical": 0.0717,
-    "politics": 0.0717,
-    "war": 0.1024
+    "family": 0.5072,
+    "gambling": 0.0362,
+    "labor": 0.2174,
+    "livelihood": 0.0,
+    "medical": 0.0725,
+    "politics": 0.029,
+    "war": 0.087
   }
 }

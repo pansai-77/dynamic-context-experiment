@@ -1,7 +1,10 @@
 {
   "embedding_model": "BAAI/bge-small-zh-v1.5",
-  "chunk_size": 500,
-  "chunk_overlap": 80,
+  "chunk_strategy": "continuous_sentence_aware",
+  "target_size": 600,
+  "max_size": 800,
+  "min_size": 100,
+  "overlap": 100,
   "source_files": [
     "活着.pdf"
   ],
