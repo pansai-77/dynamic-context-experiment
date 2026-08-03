@@ -76,17 +76,9 @@ pip install -r requirements.txt
 
 ## 实验概览
 
-| | 目录 | Index metadata | Collection | 结果 |
-|---|------|----------------|------------|------|
-| **实验一：Dynamic Context** | 根目录 `src/`、`scripts/`、`tests/` | `qdrant_storage/index_metadata.json` | `huozhe` | `results/` |
-| **实验二：Metadata RAG (Phase 1)** | `metadata_experiment/` | `metadata_experiment/index_metadata.json` | `huozhe_meta` | `metadata_experiment/results/` |
+实验一（Dynamic Context RAG）：比较 6 种 Context 检索策略对 Token、延迟与回答质量的影响。
 
-共用：`data/book/`、`data/questions/questions.csv`、`requirements.txt`、`qdrant_storage/`。
-
-实验一结论：Query-Aware Top-4 在质量、Token 与响应时间之间更均衡；Baseline Top-8 质量最高。  
-实验二在 Query-Aware Top-4 基线上比较 **Metadata Filter 有/无**，Primary 指标为 Time、Token、Book Score。
-
-实验二运行说明见 [`metadata_experiment/README.md`](metadata_experiment/README.md)。
+**结论摘要**：Query-Aware Top-4 在质量、Token 与响应时间之间更均衡；Baseline Top-8 质量最高。
 
 ---
 
