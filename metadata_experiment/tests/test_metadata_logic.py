@@ -1,5 +1,5 @@
 from metadata_experiment.metrics import filter_accuracy, parse_pipe_list, ranking_metrics
-from metadata_experiment.topics import annotate_chunk
+from metadata_experiment.topics import ALLOWED_TOPICS, FALLBACK_TOPIC, annotate_chunk, topic_names
 from src.models import Chunk
 
 
@@ -28,3 +28,15 @@ def test_chunk_annotation_adds_controlled_metadata():
     assert "有庆" in metadata["characters"]
     assert metadata["importance"] in {"low", "medium", "high"}
 
+
+def test_unmatched_chunk_uses_fallback_topic_not_family_life():
+    chunk = Chunk("c2", "一段无法匹配的叙述。", "活着.pdf", 1, 1, 1, 2)
+    metadata = annotate_chunk(chunk)
+    assert metadata["topics"] == [FALLBACK_TOPIC]
+    assert "家庭生活" not in metadata["topics"]
+
+
+def test_router_and_index_share_allowed_topics():
+    names = set(topic_names())
+    assert names == {topic.name for topic in ALLOWED_TOPICS}
+    assert FALLBACK_TOPIC in names

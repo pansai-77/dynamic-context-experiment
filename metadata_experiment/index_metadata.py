@@ -165,10 +165,10 @@ def verify_index_metadata(cfg: MetadataSettings = settings) -> MetadataIndexMani
 def verify_chunk_parity_with_exp1(cfg: MetadataSettings = settings) -> list[str]:
     exp1_metadata_path = cfg.exp1_qdrant_path / "index_metadata.json"
     if not exp1_metadata_path.exists():
-        raise FileNotFoundError(
-            f"Experiment 1 index metadata not found at {exp1_metadata_path}. "
-            "Run scripts/build_index.py for experiment 1 first."
-        )
+        return [
+            f"Experiment 1 index metadata not found at {exp1_metadata_path}; "
+            "skipped chunk parity check."
+        ]
 
     exp1_metadata = json.loads(exp1_metadata_path.read_text(encoding="utf-8"))
     mismatches: list[str] = []

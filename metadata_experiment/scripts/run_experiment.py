@@ -11,9 +11,8 @@ from metadata_experiment.run_metadata import create_run_directory, export_run_me
 
 
 TIMING_NOTES = [
-    "Method B performs query embedding twice: once in Router Time and once in Vector Time.",
-    "Retrieval Time = Router Time + Vector Time; do not compare Vector Time alone across methods.",
-    "Compare end-to-end Retrieval Time when reporting latency impact of metadata filtering.",
+    "Primary comparison metrics: Input Tokens, Total Time(ms), Score(0-3).",
+    "Method B performs query embedding twice; use Retrieval Time and Total Time for latency analysis.",
 ]
 
 

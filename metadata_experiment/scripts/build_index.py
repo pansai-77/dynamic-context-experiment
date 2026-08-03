@@ -54,12 +54,7 @@ def main() -> None:
     print(f"Manifest: {output_manifest_path}")
     print(f"Annotation catalog: {catalog_path}")
 
-    try:
-        parity_issues = verify_chunk_parity_with_exp1(settings)
-    except FileNotFoundError as exc:
-        print(f"Warning: skipped experiment 1 parity check ({exc}).")
-        return
-
+    parity_issues = verify_chunk_parity_with_exp1(settings)
     if parity_issues:
         print("Warning: metadata index differs from experiment 1 index:")
         for issue in parity_issues:

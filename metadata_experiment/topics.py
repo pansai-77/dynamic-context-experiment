@@ -7,6 +7,9 @@ from dataclasses import dataclass
 from src.models import Chunk
 
 
+FALLBACK_TOPIC = "其他/未分类"
+
+
 @dataclass(frozen=True)
 class TopicDefinition:
     name: str
@@ -14,9 +17,8 @@ class TopicDefinition:
     cues: tuple[str, ...]
 
 
-# Fixed before evaluation. The descriptions are embedded by the router; cues are
-# used only while building chunk payloads.
-TOPICS: tuple[TopicDefinition, ...] = (
+# Fixed before evaluation. Index annotation and query routing must both use this list.
+ALLOWED_TOPICS: tuple[TopicDefinition, ...] = (
     TopicDefinition("赌博败家", "福贵赌博、赌坊、输掉家产和徐家衰败", ("赌博", "赌钱", "赌场", "赌坊", "龙二", "家产", "田产")),
     TopicDefinition("家庭生活", "福贵、家珍与子女的家庭关系和共同生活", ("家珍", "凤霞", "有庆", "二喜", "苦根", "爹", "娘")),
     TopicDefinition("贫困生计", "贫困、劳动、种田、饥饿和维持生计", ("穷", "田", "地", "干活", "粮食", "饿", "米")),
@@ -32,24 +34,36 @@ TOPICS: tuple[TopicDefinition, ...] = (
     TopicDefinition("老牛陪伴", "福贵买下老牛、给牛取名以及晚年陪伴", ("老牛", "买牛", "宰牛", "牛", "福贵也老了")),
     TopicDefinition("死亡苦难", "亲人死亡、疾病、饥荒和人生苦难", ("死", "埋", "坟", "病", "苦", "哭")),
     TopicDefinition("活着信念", "面对苦难仍继续活着、忍耐和生命态度", ("活着", "活下去", "命", "日子", "熬")),
+    TopicDefinition(
+        FALLBACK_TOPIC,
+        "无法明确归入其他受控主题的片段",
+        (),
+    ),
 )
 
-TOPIC_BY_NAME = {topic.name: topic for topic in TOPICS}
+TOPICS = ALLOWED_TOPICS
+TOPIC_BY_NAME = {topic.name: topic for topic in ALLOWED_TOPICS}
 CHARACTERS = ("福贵", "家珍", "凤霞", "有庆", "二喜", "苦根", "龙二", "春生", "队长", "老全")
 
 
 def topic_names() -> list[str]:
-    return [topic.name for topic in TOPICS]
+    return [topic.name for topic in ALLOWED_TOPICS]
+
+
+def routable_topic_names() -> list[str]:
+    return topic_names()
 
 
 def topic_documents() -> list[str]:
-    return [f"{topic.name}：{topic.description}" for topic in TOPICS]
+    return [f"{topic.name}：{topic.description}" for topic in ALLOWED_TOPICS]
 
 
 def annotate_chunk(chunk: Chunk, max_topics: int = 4, max_keywords: int = 8) -> dict:
     topic_scores: list[tuple[str, int]] = []
     keyword_counts: Counter[str] = Counter()
-    for topic in TOPICS:
+    for topic in ALLOWED_TOPICS:
+        if topic.name == FALLBACK_TOPIC:
+            continue
         score = 0
         for cue in topic.cues:
             count = chunk.text.count(cue)
@@ -62,7 +76,7 @@ def annotate_chunk(chunk: Chunk, max_topics: int = 4, max_keywords: int = 8) -> 
     topic_scores.sort(key=lambda item: (-item[1], topic_names().index(item[0])))
     selected_topics = [name for name, _ in topic_scores[:max_topics]]
     if not selected_topics:
-        selected_topics = ["家庭生活"]
+        selected_topics = [FALLBACK_TOPIC]
 
     characters = [name for name in CHARACTERS if name in chunk.text]
     keywords = [word for word, _ in keyword_counts.most_common(max_keywords)]
@@ -74,4 +88,3 @@ def annotate_chunk(chunk: Chunk, max_topics: int = 4, max_keywords: int = 8) -> 
         "keywords": keywords,
         "importance": importance,
     }
-

@@ -28,14 +28,9 @@ def summarise(frame: pd.DataFrame) -> pd.DataFrame:
     return frame.groupby("Method", sort=False).agg(
         Questions=("Question ID", "count"),
         Avg_Input_Tokens=("Input Tokens", "mean"),
-        Avg_Router_Time_ms=("Router Time(ms)", "mean"),
-        Avg_Vector_Time_ms=("Vector Time(ms)", "mean"),
         Avg_Retrieval_Time_ms=("Retrieval Time(ms)", "mean"),
+        Avg_LLM_Time_ms=("LLM Time(ms)", "mean"),
         Avg_Total_Time_ms=("Total Time(ms)", "mean"),
-        Avg_Candidates_After=("Candidates After Filter", "mean"),
-        Hit_at_4=("Hit@4", "mean"),
-        MRR_at_4=("MRR@4", "mean"),
-        Filter_Accuracy=("Filter Accuracy", "mean"),
         Avg_Score=("Score(0-3)", "mean"),
     ).reset_index()
 
@@ -50,4 +45,3 @@ def create_summary(detailed_path: Path, summary_path: Path) -> None:
             subset = detailed[detailed["Question Type"].str.lower() == qtype.lower()]
             if not subset.empty:
                 summarise(subset).to_excel(writer, index=False, sheet_name=f"{qtype} Summary")
-

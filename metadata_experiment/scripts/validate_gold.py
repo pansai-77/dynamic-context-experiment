@@ -11,7 +11,9 @@ from metadata_experiment.logic import load_gold
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Validate gold annotations before experiment 2.")
+    parser = argparse.ArgumentParser(
+        description="Optional validation for gold_annotations.csv diagnostic fields."
+    )
     parser.add_argument(
         "--require-chunk-ids",
         action="store_true",
@@ -57,8 +59,7 @@ def main() -> None:
 
     if args.require_chunk_ids and missing_chunks:
         raise SystemExit(
-            "Gold Chunk IDs are required before formal experiment 2 runs. "
-            "Fill metadata_experiment/data/gold_annotations.csv using data/index_catalog.xlsx."
+            "Gold Chunk IDs are missing for one or more rows in gold_annotations.csv."
         )
 
     print("Gold annotation validation passed.")
