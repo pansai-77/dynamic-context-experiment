@@ -34,6 +34,37 @@ def set_random_seeds(seed: int) -> None:
     mx.random.seed(seed)
 
 
+def build_filter_diagnostics(
+    cfg: MetadataSettings,
+    vector_store: MetadataVectorStore,
+    total_chunks: int,
+    gold_ids: list[str],
+    predictions: list,
+) -> dict:
+    """Post-retrieval filter stats; must not run before timed B retrieval."""
+    top2 = predictions[: cfg.topic_routing_top_n]
+    top2_ids = [prediction.topic_id for prediction in top2]
+    filtered_ids = vector_store.filtered_chunk_ids(top2_ids)
+    candidates_after = len(filtered_ids)
+    score_gap = None
+    if len(predictions) >= 2:
+        score_gap = round(predictions[0].score - predictions[1].score, 4)
+    return {
+        "selected_topics": ", ".join(top2_ids),
+        "topic_scores": ", ".join(
+            f"{prediction.topic_id}:{prediction.score:.4f}" for prediction in top2
+        ),
+        "score_gap": score_gap,
+        "candidates_before": total_chunks,
+        "candidates_after": candidates_after,
+        "candidate_reduction_rate": round(1 - candidates_after / total_chunks, 4)
+        if total_chunks
+        else None,
+        "gold_chunk_ids": ", ".join(gold_ids),
+        "gold_retained_after_filter": any(chunk_id in filtered_ids for chunk_id in gold_ids),
+    }
+
+
 def run_qa_experiments(
     cfg: MetadataSettings,
     vector_store: MetadataVectorStore,
@@ -61,41 +92,16 @@ def run_qa_experiments(
         use_retrieval = should_retrieve(question_type)
         embed_query_ms = 0.0
         query_vector = None
-        book_context: dict | None = None
+        gold_ids: list[str] | None = None
         if use_retrieval:
             embed_started = time.perf_counter()
             query_vector = vector_store.embed_query(question)
             embed_query_ms = (time.perf_counter() - embed_started) * 1000
-
             if question_id in gold_by_question:
                 gold_ids = list(gold_by_question[question_id]["gold_chunk_ids"])
-                predictions, _ = router.route(query_vector)
-                top2 = predictions[: cfg.topic_routing_top_n]
-                top2_ids = [prediction.topic_id for prediction in top2]
-                filtered_ids = vector_store.filtered_chunk_ids(top2_ids)
-                candidates_after = len(filtered_ids)
-                score_gap = None
-                if len(predictions) >= 2:
-                    score_gap = round(predictions[0].score - predictions[1].score, 4)
-                book_context = {
-                    "gold_ids": gold_ids,
-                    "gold_chunk_ids": ", ".join(gold_ids),
-                    "selected_topics": ", ".join(top2_ids),
-                    "topic_scores": ", ".join(
-                        f"{prediction.topic_id}:{prediction.score:.4f}" for prediction in top2
-                    ),
-                    "score_gap": score_gap,
-                    "candidates_before": total_chunks,
-                    "candidates_after": candidates_after,
-                    "candidate_reduction_rate": round(
-                        1 - candidates_after / total_chunks, 4
-                    )
-                    if total_chunks
-                    else None,
-                    "gold_retained_after_filter": any(
-                        chunk_id in filtered_ids for chunk_id in gold_ids
-                    ),
-                }
+
+        question_rows: list[MetadataExperimentRow] = []
+        b_predictions = None
 
         for method in methods:
             run_number += 1
@@ -105,7 +111,7 @@ def run_qa_experiments(
             topic_ids: list[str] = []
             if use_retrieval and query_vector is not None:
                 if method.use_metadata_filter:
-                    retrieved, timing, topic_ids = vector_store.search_with_metadata(
+                    retrieved, timing, topic_ids, b_predictions = vector_store.search_with_metadata(
                         query_vector,
                         router,
                         top_k=cfg.top_k,
@@ -133,24 +139,9 @@ def run_qa_experiments(
 
             retrieved_ids = [item.chunk.chunk_id for item in retrieved]
             retrieved_scores = [round(item.score, 4) for item in retrieved]
-            diagnostics = {}
-            if book_context is not None:
-                gold_ids = book_context["gold_ids"]
+            diagnostics: dict = {}
+            if gold_ids is not None:
                 diagnostics = {
-                    "selected_topics": book_context["selected_topics"],
-                    "topic_scores": book_context["topic_scores"],
-                    "score_gap": book_context["score_gap"],
-                    "candidates_before": book_context["candidates_before"],
-                    "candidates_after": book_context["candidates_after"]
-                    if method.use_metadata_filter
-                    else book_context["candidates_before"],
-                    "candidate_reduction_rate": book_context["candidate_reduction_rate"]
-                    if method.use_metadata_filter
-                    else 0.0,
-                    "gold_chunk_ids": book_context["gold_chunk_ids"],
-                    "gold_retained_after_filter": book_context["gold_retained_after_filter"]
-                    if method.use_metadata_filter
-                    else None,
                     "retrieved_chunk_ids": ", ".join(retrieved_ids),
                     "retrieved_similarities": ", ".join(str(score) for score in retrieved_scores),
                     "hit_at_4": any(chunk_id in retrieved_ids for chunk_id in gold_ids),
@@ -158,7 +149,7 @@ def run_qa_experiments(
                     "mrr_at_4": round(mrr_at_k(retrieved_ids, gold_ids, cfg.top_k), 4),
                 }
 
-            rows.append(
+            question_rows.append(
                 MetadataExperimentRow(
                     question_id=question_id,
                     question_type=question_type,
@@ -180,6 +171,27 @@ def run_qa_experiments(
                     **diagnostics,
                 )
             )
+
+        if gold_ids is not None and b_predictions is not None:
+            filter_diag = build_filter_diagnostics(
+                cfg, vector_store, total_chunks, gold_ids, b_predictions
+            )
+            for row, method in zip(question_rows, methods):
+                row.selected_topics = filter_diag["selected_topics"]
+                row.topic_scores = filter_diag["topic_scores"]
+                row.score_gap = filter_diag["score_gap"]
+                row.candidates_before = filter_diag["candidates_before"]
+                row.gold_chunk_ids = filter_diag["gold_chunk_ids"]
+                if method.use_metadata_filter:
+                    row.candidates_after = filter_diag["candidates_after"]
+                    row.candidate_reduction_rate = filter_diag["candidate_reduction_rate"]
+                    row.gold_retained_after_filter = filter_diag["gold_retained_after_filter"]
+                else:
+                    row.candidates_after = filter_diag["candidates_before"]
+                    row.candidate_reduction_rate = 0.0
+                    row.gold_retained_after_filter = None
+
+        rows.extend(question_rows)
     return pd.DataFrame([asdict(row) for row in rows])
 
 
@@ -264,7 +276,10 @@ def export_run_config(
             "query embedding is computed once and shared by both methods to ensure identical "
             "vector input; the same Embed Query Time is assigned to both methods as their "
             "independent deployment cost. Filter Time (ms) records Qdrant Filter object "
-            "construction only; filtering executes inside Vector Search Time (ms)."
+            "construction only; filtering executes inside Vector Search Time (ms). "
+            "Router/filter candidate diagnostics (Selected Topics, Candidates After, "
+            "Gold Retained After Filter) are computed after timed A/B retrieval and do "
+            "not affect measured latency."
         ),
     }
     output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

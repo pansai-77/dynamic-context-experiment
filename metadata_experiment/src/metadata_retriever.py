@@ -13,7 +13,7 @@ from sentence_transformers import SentenceTransformer
 
 from src.models import Chunk, RetrievedChunk
 
-from models import ChunkMetadata, RetrievalTiming, TopicDefinition
+from models import ChunkMetadata, RetrievalTiming, TopicDefinition, TopicPrediction
 from prompts import load_allowed_topics
 from topic_router import TopicRouter
 
@@ -171,7 +171,7 @@ class MetadataVectorStore:
         router: TopicRouter,
         top_k: int,
         allow_topic_expansion: bool = False,
-    ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str]]:
+    ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str], list[TopicPrediction]]:
         if allow_topic_expansion:
             return self._search_with_metadata_expanded(query_vector, router, top_k)
 
@@ -185,7 +185,7 @@ class MetadataVectorStore:
                 vector_search_time_ms=0.0,
                 retrieval_total_ms=router_ms + filter_ms,
             )
-            return [], timing, topic_ids
+            return [], timing, topic_ids, predictions
 
         retrieved, search_ms = self.search_by_vector(
             query_vector,
@@ -199,17 +199,17 @@ class MetadataVectorStore:
             vector_search_time_ms=search_ms,
             retrieval_total_ms=total_ms,
         )
-        return retrieved, timing, topic_ids
+        return retrieved, timing, topic_ids, predictions
 
     def _search_with_metadata_expanded(
         self,
         query_vector: np.ndarray,
         router: TopicRouter,
         top_k: int,
-    ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str]]:
+    ) -> tuple[list[RetrievedChunk], RetrievalTiming, list[str], list[TopicPrediction]]:
         all_predictions, router_ms = router.rank_all(query_vector)
         if not all_predictions:
-            return [], RetrievalTiming(router_time_ms=router_ms), []
+            return [], RetrievalTiming(router_time_ms=router_ms), [], []
 
         max_topics = min(len(all_predictions), max(router.top_n + 2, router.top_n))
         attempt_limits = list(range(router.top_n, max_topics + 1))
@@ -218,6 +218,7 @@ class MetadataVectorStore:
         search_ms = 0.0
         filter_ms = 0.0
         topic_ids: list[str] = []
+        predictions_used = all_predictions[: router.top_n]
 
         for limit in attempt_limits:
             predictions = all_predictions[:limit]
@@ -230,6 +231,7 @@ class MetadataVectorStore:
                 top_k=top_k,
                 query_filter=query_filter,
             )
+            predictions_used = predictions
             if retrieved:
                 break
 
@@ -240,7 +242,7 @@ class MetadataVectorStore:
             vector_search_time_ms=search_ms,
             retrieval_total_ms=total_ms,
         )
-        return retrieved, timing, topic_ids
+        return retrieved, timing, topic_ids, predictions_used
 
 
 def topic_catalog_fingerprint(

@@ -7,7 +7,7 @@ from config import settings
 
 def test_acceptance_manifest_v3_has_40_unique_chunks():
     manifest = json.loads(settings.metadata_acceptance_samples_file.read_text(encoding="utf-8"))
-    assert manifest["version"] == "3.0"
+    assert manifest["version"] == "3.2"
     chunk_ids = [sample["chunk_id"] for sample in manifest["samples"]]
     assert len(chunk_ids) == 40
     assert len(set(chunk_ids)) == 40

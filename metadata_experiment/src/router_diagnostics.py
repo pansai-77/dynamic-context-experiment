@@ -135,7 +135,7 @@ def analyze_router_diagnostics(cfg: MetadataSettings = settings) -> tuple[pd.Dat
         gold_topics_in_top2 = any(topic in top2_ids for topic in gold_topics)
 
         full_chunks, _ = vector_store.search_full(query_vector, top_k=cfg.top_k)
-        meta_chunks, _, _ = vector_store.search_with_metadata(
+        meta_chunks, _, _, _ = vector_store.search_with_metadata(
             query_vector,
             router,
             top_k=cfg.top_k,

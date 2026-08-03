@@ -1,54 +1,384 @@
 {
-  "version": "3.0",
-  "ontology_version": "3.0",
-  "description": "40-chunk development set for v3 metadata acceptance. acceptable_topics lists valid label sets; pass if actual topics match any option exactly.",
+  "version": "3.2",
+  "ontology_version": "3.2",
+  "description": "40-chunk acceptance set remapped to continuous chunk IDs (c0001-c0138). Pass if actual topics match any acceptable option exactly (order-insensitive).",
   "samples": [
-    {"chunk_id": "p048-c002", "category_hint": "war", "acceptable_topics": [["war"]]},
-    {"chunk_id": "p052-c001", "category_hint": "war", "acceptable_topics": [["war"]]},
-    {"chunk_id": "p055-c002", "category_hint": "war", "acceptable_topics": [["war"]]},
-    {"chunk_id": "p046-c001", "category_hint": "war", "acceptable_topics": [["war"]]},
-    {"chunk_id": "p053-c002", "category_hint": "war", "acceptable_topics": [["war"]]},
-
-    {"chunk_id": "p122-c002", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p124-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p117-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p127-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p043-c002", "category_hint": "family", "acceptable_topics": [["family"]]},
-
-    {"chunk_id": "p063-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p084-c002", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p066-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p033-c001", "category_hint": "family", "acceptable_topics": [[], ["family"]]},
-    {"chunk_id": "p065-c001", "category_hint": "family", "acceptable_topics": [["family"]]},
-
-    {"chunk_id": "p102-c001", "category_hint": "medical", "acceptable_topics": [["medical"]]},
-    {"chunk_id": "p101-c002", "category_hint": "medical", "acceptable_topics": [["medical"]]},
-    {"chunk_id": "p104-c001", "category_hint": "medical", "acceptable_topics": [["medical"], ["family"]]},
-    {"chunk_id": "p111-c001", "category_hint": "medical", "acceptable_topics": [["medical"], ["family"]]},
-    {"chunk_id": "p137-c001", "category_hint": "medical", "acceptable_topics": [["medical"], ["family"]]},
-
-    {"chunk_id": "p109-c002", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-    {"chunk_id": "p154-c002", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-    {"chunk_id": "p151-c001", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-    {"chunk_id": "p119-c002", "category_hint": "labor", "acceptable_topics": [["labor"], ["family"]]},
-    {"chunk_id": "p038-c001", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-
-    {"chunk_id": "p096-c002", "category_hint": "livelihood", "acceptable_topics": [["livelihood"]]},
-    {"chunk_id": "p089-c002", "category_hint": "livelihood", "acceptable_topics": [["livelihood"]]},
-    {"chunk_id": "p092-c001", "category_hint": "livelihood", "acceptable_topics": [["livelihood"]]},
-    {"chunk_id": "p093-c001", "category_hint": "livelihood", "acceptable_topics": [["livelihood"]]},
-    {"chunk_id": "p036-c002", "category_hint": "livelihood", "acceptable_topics": [["gambling"], ["livelihood"]]},
-
-    {"chunk_id": "p059-c002", "category_hint": "politics", "acceptable_topics": [["politics"]]},
-    {"chunk_id": "p071-c001", "category_hint": "politics", "acceptable_topics": [["politics"]]},
-    {"chunk_id": "p129-c001", "category_hint": "politics", "acceptable_topics": [["politics"]]},
-    {"chunk_id": "p130-c001", "category_hint": "politics", "acceptable_topics": [["politics"]]},
-    {"chunk_id": "p128-c001", "category_hint": "politics", "acceptable_topics": [["politics"]]},
-
-    {"chunk_id": "p155-c002", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-    {"chunk_id": "p007-c002", "category_hint": "gambling", "acceptable_topics": [[], ["gambling"]]},
-    {"chunk_id": "p010-c001", "category_hint": "labor", "acceptable_topics": [["labor"]]},
-    {"chunk_id": "p141-c002", "category_hint": "family", "acceptable_topics": [["family"]]},
-    {"chunk_id": "p061-c001", "category_hint": "labor", "acceptable_topics": [["labor"]]}
+    {
+      "chunk_id": "c0039",
+      "category_hint": "war",
+      "acceptable_topics": [
+        [
+          "war"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0045",
+      "category_hint": "war",
+      "acceptable_topics": [
+        [
+          "war"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0048",
+      "category_hint": "war",
+      "acceptable_topics": [
+        [
+          "war"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0038",
+      "category_hint": "war",
+      "acceptable_topics": [
+        [
+          "war"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0044",
+      "category_hint": "war",
+      "acceptable_topics": [
+        [
+          "war"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0107",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0110",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0104",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0113",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0035",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0055",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0073",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0058",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0027",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [],
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0057",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0090",
+      "category_hint": "medical",
+      "acceptable_topics": [
+        [
+          "medical"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0088",
+      "category_hint": "medical",
+      "acceptable_topics": [
+        [
+          "medical"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0092",
+      "category_hint": "medical",
+      "acceptable_topics": [
+        [
+          "medical"
+        ],
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0098",
+      "category_hint": "medical",
+      "acceptable_topics": [
+        [
+          "medical"
+        ],
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0120",
+      "category_hint": "medical",
+      "acceptable_topics": [
+        [
+          "medical"
+        ],
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0095",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0136",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0134",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0105",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ],
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0031",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0085",
+      "category_hint": "livelihood",
+      "acceptable_topics": [
+        [
+          "livelihood"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0078",
+      "category_hint": "livelihood",
+      "acceptable_topics": [
+        [
+          "livelihood"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0082",
+      "category_hint": "livelihood",
+      "acceptable_topics": [
+        [
+          "livelihood"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0083",
+      "category_hint": "livelihood",
+      "acceptable_topics": [
+        [
+          "livelihood"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0029",
+      "category_hint": "livelihood",
+      "acceptable_topics": [
+        [
+          "gambling"
+        ],
+        [
+          "livelihood"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0050",
+      "category_hint": "politics",
+      "acceptable_topics": [
+        [
+          "politics"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0063",
+      "category_hint": "politics",
+      "acceptable_topics": [
+        [
+          "politics"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0114",
+      "category_hint": "politics",
+      "acceptable_topics": [
+        [
+          "politics"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0115",
+      "category_hint": "politics",
+      "acceptable_topics": [
+        [
+          "politics"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0062",
+      "category_hint": "politics",
+      "acceptable_topics": [
+        [
+          "politics"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0137",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0003",
+      "category_hint": "gambling",
+      "acceptable_topics": [
+        [],
+        [
+          "gambling"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0007",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0123",
+      "category_hint": "family",
+      "acceptable_topics": [
+        [
+          "family"
+        ]
+      ]
+    },
+    {
+      "chunk_id": "c0053",
+      "category_hint": "labor",
+      "acceptable_topics": [
+        [
+          "labor"
+        ]
+      ]
+    }
   ]
 }
