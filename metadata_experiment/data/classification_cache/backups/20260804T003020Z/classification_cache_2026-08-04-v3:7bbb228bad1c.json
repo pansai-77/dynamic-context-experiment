@@ -1,0 +1,82 @@
+{
+  "c0004": {
+    "topics": [
+      "活着信念"
+    ],
+    "raw_response": "{\"topics\": [\"活着信念\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0007": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生计\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0015": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0037": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0062": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生计\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0090": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0122": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0124": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0128": {
+    "topics": [
+      "二喜苦根"
+    ],
+    "raw_response": "{\"topics\": [\"二喜苦根\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  },
+  "c0135": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生计\"]}",
+    "prompt_version": "2026-08-04-v3",
+    "cache_version": "2026-08-04-v3:7bbb228bad1c"
+  }
+}

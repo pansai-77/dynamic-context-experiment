@@ -13,7 +13,7 @@ from .classification_prompts import (
     CLASSIFICATION_PROMPT_VERSION,
     build_chunk_classification_prompt_for_text,
 )
-from .metadata_quality import audit_content_warnings
+from .metadata_quality import collect_content_warnings
 from .topics import FALLBACK_TOPIC, TOPIC_BY_NAME, TOPIC_TAXONOMY_VERSION, normalize_topic_name
 
 if TYPE_CHECKING:
@@ -171,9 +171,16 @@ def parse_validated_topics(raw_response: str, allowed_names: set[str]) -> list[s
 
 def format_retry_message(error: str) -> str:
     return (
-        f"上一次回答未通过格式校验：{error}\n"
-        "请修正 JSON 格式后重新输出，不要输出解释。"
+        "上一次回答不是合法 JSON，或 JSON 结构不符合要求。\n"
+        "请按指定格式重新输出，不要输出解释。"
     )
+
+
+def is_retryable_parse_error(error: TopicParseError) -> bool:
+    message = str(error)
+    if message.startswith("illegal topic:"):
+        return False
+    return True
 
 
 class ChunkClassificationError(RuntimeError):
@@ -208,7 +215,7 @@ class ChunkTopicClassifier:
         if use_cache and self.cache is not None:
             cached = self.cache.get(chunk.chunk_id)
             if cached is not None:
-                warnings = tuple(audit_content_warnings(chunk.text, cached.topics))
+                warnings = collect_content_warnings(chunk.text, cached.topics)
                 return ChunkClassificationResult(
                     chunk_id=chunk.chunk_id,
                     raw_response=cached.raw_response,
@@ -229,7 +236,7 @@ class ChunkTopicClassifier:
             last_response = generation.answer
             try:
                 parsed_topics = parse_validated_topics(last_response, self.allowed_names)
-                warnings = tuple(audit_content_warnings(chunk.text, parsed_topics))
+                warnings = collect_content_warnings(chunk.text, parsed_topics)
                 if self.cache is not None:
                     self.cache.put(
                         chunk_id=chunk.chunk_id,
@@ -249,6 +256,13 @@ class ChunkTopicClassifier:
             except TopicParseError as exc:
                 last_error = str(exc)
                 structure_errors.append(last_error)
+                if not is_retryable_parse_error(exc):
+                    raise ChunkClassificationError(
+                        chunk.chunk_id,
+                        last_error,
+                        attempt,
+                        last_response,
+                    ) from exc
                 prompt = (
                     f"{build_chunk_classification_prompt_for_text(chunk.text)}\n\n"
                     f"{format_retry_message(last_error)}"

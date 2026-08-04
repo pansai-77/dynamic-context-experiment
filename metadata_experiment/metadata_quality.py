@@ -119,6 +119,18 @@ def audit_content_warnings(chunk_text: str, topics: list[str]) -> list[str]:
     return warnings
 
 
+def collect_content_warnings(chunk_text: str, topics: list[str]) -> tuple[str, ...]:
+    """Audit warnings only. Deduped; must not modify parsed topics."""
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for warning in audit_content_warnings(chunk_text, topics):
+        if warning in seen:
+            continue
+        seen.add(warning)
+        deduped.append(warning)
+    return tuple(deduped)
+
+
 def build_topic_to_chunk_ids(topics_by_chunk_id: dict[str, list[str]]) -> dict[str, list[str]]:
     mapping: dict[str, list[str]] = defaultdict(list)
     for chunk_id, topics in topics_by_chunk_id.items():

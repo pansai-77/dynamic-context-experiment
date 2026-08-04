@@ -1,0 +1,114 @@
+{
+  "c0001": {
+    "topics": [
+      "序言与创作背景"
+    ],
+    "raw_response": "{\"topics\": [\"序言与创作背景\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0002": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生计\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0004": {
+    "topics": [
+      "家庭生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭生活\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0007": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫穷生计\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0015": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0037": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0062": {
+    "topics": [
+      "贫困生计"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生计\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0090": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0122": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0124": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0128": {
+    "topics": [
+      "家庭生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭生活\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0135": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0136": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  },
+  "c0137": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.2",
+    "cache_version": "2026-08-04-v3.2:d8b7e4c901f9"
+  }
+}

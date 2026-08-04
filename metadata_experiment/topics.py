@@ -11,7 +11,7 @@ FALLBACK_TOPIC = "其他/未分类"
 PREFACE_TOPIC = "序言与创作背景"
 
 # Bump when topic names, descriptions, or taxonomy grouping change.
-TOPIC_TAXONOMY_VERSION = "2026-08-04-v3"
+TOPIC_TAXONOMY_VERSION = "2026-08-04-v4"
 
 SPECIFIC_TOPICS: tuple[str, ...] = (
     "赌博败家",
@@ -56,12 +56,12 @@ ALLOWED_TOPICS: tuple[TopicDefinition, ...] = (
     ),
     TopicDefinition(
         "家庭生活",
-        "家人日常相处、对话与共同生活；不含单一重大历史或死亡事件",
+        "仅用于家人日常相处、对话与共同生活；只有不存在更具体的具体主题时才使用；不含单一重大历史或死亡事件",
         ("家珍", "凤霞", "有庆", "二喜", "苦根", "爹", "娘"),
     ),
     TopicDefinition(
         "贫困生计",
-        "经济困难、挨饿、缺粮、为吃饭和维持生计发愁；核心是生存资源匮乏",
+        "仅当经济困难、饥饿、缺粮、为吃饭和维持生计发愁是文本核心内容时使用；核心是生存资源匮乏",
         ("穷", "粮食", "饿", "米", "讨饭", "借粮"),
     ),
     TopicDefinition(
@@ -91,7 +91,7 @@ ALLOWED_TOPICS: tuple[TopicDefinition, ...] = (
     ),
     TopicDefinition(
         "医疗献血",
-        "医院、医生、护士、抽血、献血、医疗事故",
+        "仅用于医院、医生、护士、抽血、献血、验血型、输血等医疗或献血场景；不适用于一般疾病、卧床、虚弱、死亡或非医疗语境",
         ("医院", "医生", "大夫", "护士", "献血", "抽血"),
     ),
     TopicDefinition(
