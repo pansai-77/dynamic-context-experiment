@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
-from .topics import BROAD_TOPICS, FALLBACK_TOPIC, PREFACE_TOPIC, SPECIFIC_TOPICS, topic_names
+from .topics import EVENT_TOPICS, FALLBACK_TOPIC, NARRATOR_TOPIC, PREFACE_TOPIC, topic_names
 
 
 DIAGNOSTIC_CHUNK_IDS = (
@@ -26,20 +26,24 @@ DIAGNOSTIC_CHUNK_IDS = (
 
 DIAGNOSTIC_CHUNK_EXPECTATIONS: dict[str, dict[str, object]] = {
     "c0004": {"must_equal": ["序言与创作背景"]},
-    "c0007": {"must_not_include": ["贫困生计", "赌博败家"], "may_include": ["家庭生活"]},
-    "c0015": {"must_include": ["赌博败家"], "may_include": ["家庭生活"]},
+    "c0007": {
+        "must_not_include": ["序言与创作背景"],
+        "may_include": ["徐家败落与父亲去世", "租田务农与求生"],
+    },
+    "c0015": {"must_include": ["赌博败家"]},
     "c0037": {"must_include": ["参军战争"]},
-    "c0062": {"must_include": ["人民公社"]},
-    "c0090": {"must_include": ["有庆经历", "医疗献血"]},
-    "c0122": {"must_include": ["凤霞经历", "医疗献血"]},
-    "c0124": {"must_include": ["家珍病逝"]},
-    "c0128": {"must_include": ["二喜苦根", "死亡苦难"]},
-    "c0135": {"must_include": ["二喜苦根", "死亡苦难"]},
-    "c0136": {"must_include": ["老牛陪伴"]},
-    "c0137": {"must_include": ["老牛陪伴"]},
+    "c0062": {"must_include": ["人民公社与大炼钢"]},
+    "c0090": {"must_include": ["有庆献血死亡"]},
+    "c0122": {"must_include": ["凤霞生产死亡"]},
+    "c0124": {"must_include": ["家珍患病离世"]},
+    "c0128": {"must_include": ["二喜意外死亡"]},
+    "c0135": {"must_include": ["苦根死亡"]},
+    "c0136": {"must_include": ["老牛与晚年"]},
+    "c0137": {"must_include": ["老牛与晚年"]},
 }
 
-BROAD_TOPIC_COVERAGE_WARN_RATIO = 0.50
+SINGLE_EVENT_COVERAGE_WARN_RATIO = 0.40
+PREFACE_COVERAGE_WARN_RATIO = 0.15
 
 COPYRIGHT_MARKERS = (
     "排版软件",
@@ -60,8 +64,20 @@ PREFACE_MARKERS = (
     "前言",
 )
 
-MEDICAL_CUES = ("医院", "医生", "大夫", "护士", "抽血", "献血", "验到", "血型")
+BLOOD_DONATION_CUES = ("医院", "医生", "大夫", "护士", "抽血", "献血", "验到", "血型")
 GAMBLING_CUES = ("赌坊", "赌钱", "赌场", "赌博", "赌")
+COMMUNE_CUES = ("吃食堂", "办了食堂", "村里办起了食堂", "炼钢", "砸锅", "大跃进")
+OLD_OX_CUES = ("买牛", "宰牛", "老牛", "福贵也老了")
+
+
+NARRATOR_MARKERS = (
+    "采集民歌",
+    "民歌",
+    "听他说",
+    "我遇到",
+    "向我讲述",
+    "田间",
+)
 
 
 @dataclass(frozen=True)
@@ -69,6 +85,15 @@ class DistributionQualityReport:
     warnings: tuple[str, ...]
     topic_counts: Counter[str]
     topic_to_chunk_ids: dict[str, list[str]]
+
+    @property
+    def blocking_warnings(self) -> tuple[str, ...]:
+        """Dominance warnings that should block index writes unless overridden."""
+        return tuple(
+            warning
+            for warning in self.warnings
+            if "情节事件" in warning and "超过" in warning and "阈值" in warning
+        )
 
 
 @dataclass(frozen=True)
@@ -94,8 +119,30 @@ def audit_content_warnings(chunk_text: str, topics: list[str]) -> list[str]:
         if PREFACE_TOPIC not in topics:
             warnings.append("text appears to be preface/author background without preface topic")
 
-    if "医疗献血" in topics and not _contains_any(chunk_text, MEDICAL_CUES):
-        warnings.append("topic 医疗献血 assigned without clear medical/blood-donation vocabulary")
+    if PREFACE_TOPIC in topics and "福贵" in chunk_text and not any(
+        marker in chunk_text for marker in PREFACE_MARKERS
+    ):
+        warnings.append("novel narrative chunk tagged as preface topic")
+
+    if NARRATOR_TOPIC in topics and any(marker in chunk_text for marker in PREFACE_MARKERS):
+        warnings.append("author preface chunk tagged as narrator frame topic")
+
+    if any(marker in chunk_text for marker in NARRATOR_MARKERS) and "福贵" in chunk_text:
+        if (
+            NARRATOR_TOPIC not in topics
+            and PREFACE_TOPIC not in topics
+            and FALLBACK_TOPIC not in topics
+        ):
+            warnings.append("text appears to be narrator frame but 叙述者见闻 is absent")
+
+    if "徐家败落与父亲去世" in topics and _contains_any(chunk_text, OLD_OX_CUES):
+        warnings.append("topic 徐家败落与父亲去世 assigned but text mentions old ox / buying ox")
+
+    if "租田务农与求生" in topics and _contains_any(chunk_text, OLD_OX_CUES):
+        warnings.append("topic 租田务农与求生 assigned but text mentions buying/working with the old ox")
+
+    if "有庆献血死亡" in topics and not _contains_any(chunk_text, BLOOD_DONATION_CUES):
+        warnings.append("topic 有庆献血死亡 assigned without clear blood-donation vocabulary")
 
     if "赌博败家" in topics and not _contains_any(chunk_text, GAMBLING_CUES):
         warnings.append("topic 赌博败家 assigned without clear gambling vocabulary")
@@ -104,17 +151,17 @@ def audit_content_warnings(chunk_text: str, topics: list[str]) -> list[str]:
         if "参军战争" not in topics and FALLBACK_TOPIC not in topics and PREFACE_TOPIC not in topics:
             warnings.append("text mentions conscription/wartime service but 参军战争 is absent")
 
-    if _contains_any(chunk_text, ("吃食堂", "办了食堂", "村里办起了食堂", "炼钢", "砸锅")):
-        if "人民公社" not in topics and FALLBACK_TOPIC not in topics and PREFACE_TOPIC not in topics:
-            warnings.append("text mentions commune/canteen activity but 人民公社 is absent")
+    if _contains_any(chunk_text, COMMUNE_CUES):
+        if "人民公社与大炼钢" not in topics and FALLBACK_TOPIC not in topics and PREFACE_TOPIC not in topics:
+            warnings.append("text mentions commune/canteen activity but 人民公社与大炼钢 is absent")
 
-    broad_hits = [topic for topic in topics if topic in BROAD_TOPICS]
-    specific_hits = [topic for topic in topics if topic in SPECIFIC_TOPICS]
-    if broad_hits and not specific_hits and _contains_any(
-        chunk_text,
-        ("壮丁", "抽血", "献血", "食堂", "砸锅", "水泥板", "买牛", "赌坊"),
-    ):
-        warnings.append("only broad topics assigned despite specific-event cues in text")
+    if _contains_any(chunk_text, OLD_OX_CUES):
+        if "老牛与晚年" not in topics and FALLBACK_TOPIC not in topics and PREFACE_TOPIC not in topics:
+            warnings.append("text mentions buying/working with the old ox but 老牛与晚年 is absent")
+
+    event_hits = [topic for topic in topics if topic in EVENT_TOPICS]
+    if not event_hits and PREFACE_TOPIC not in topics and FALLBACK_TOPIC not in topics:
+        warnings.append("chunk has no event topic assigned")
 
     return warnings
 
@@ -158,19 +205,19 @@ def evaluate_distribution_quality(
     if zero_count_topics:
         warnings.append(f"以下允许主题计数为 0：{', '.join(zero_count_topics)}")
 
-    for topic in BROAD_TOPICS:
+    for topic in EVENT_TOPICS:
         covered_chunks = len(topic_to_chunk_ids.get(topic, []))
-        if total_chunks and covered_chunks / total_chunks > BROAD_TOPIC_COVERAGE_WARN_RATIO:
+        if total_chunks and covered_chunks / total_chunks > SINGLE_EVENT_COVERAGE_WARN_RATIO:
             warnings.append(
-                f"宽泛主题“{topic}”覆盖 {covered_chunks}/{total_chunks} "
-                f"({covered_chunks / total_chunks:.1%})，超过 {BROAD_TOPIC_COVERAGE_WARN_RATIO:.0%} 阈值"
+                f"情节事件“{topic}”覆盖 {covered_chunks}/{total_chunks} "
+                f"({covered_chunks / total_chunks:.1%})，超过 {SINGLE_EVENT_COVERAGE_WARN_RATIO:.0%} 阈值"
             )
 
-    suspicious_medical = len(topic_to_chunk_ids.get("医疗献血", []))
-    if total_chunks and suspicious_medical / total_chunks > 0.20:
+    preface_chunks = len(topic_to_chunk_ids.get(PREFACE_TOPIC, []))
+    if total_chunks and preface_chunks / total_chunks > PREFACE_COVERAGE_WARN_RATIO:
         warnings.append(
-            f"“医疗献血”覆盖 {suspicious_medical}/{total_chunks} "
-            f"({suspicious_medical / total_chunks:.1%})，可能存在异常泛滥"
+            f"“{PREFACE_TOPIC}”覆盖 {preface_chunks}/{total_chunks} "
+            f"({preface_chunks / total_chunks:.1%})，超过 {PREFACE_COVERAGE_WARN_RATIO:.0%} 阈值"
         )
 
     return DistributionQualityReport(

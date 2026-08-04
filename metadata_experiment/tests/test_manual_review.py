@@ -21,8 +21,8 @@ from metadata_experiment.manual_review import (
 
 
 def test_parse_manual_topics_field_accepts_pipe_separated_values():
-    topics = parse_manual_topics_field("序言与创作背景|老牛陪伴")
-    assert topics == ["序言与创作背景", "老牛陪伴"]
+    topics = parse_manual_topics_field("序言与创作背景|老牛与晚年")
+    assert topics == ["序言与创作背景", "老牛与晚年"]
 
 
 def test_parse_manual_topics_field_rejects_illegal_topic():
@@ -65,7 +65,7 @@ def test_merge_topics_with_manual_overrides(tmp_path: Path):
     manual_path = tmp_path / "manual.csv"
     manual_path.write_text(
         "chunk_id,topics,notes\n"
-        "c0006,序言与创作背景|老牛陪伴,manual fix\n",
+        "c0006,序言与创作背景|老牛与晚年,manual fix\n",
         encoding="utf-8",
     )
     overrides = load_manual_topic_overrides(manual_path)
@@ -76,7 +76,7 @@ def test_merge_topics_with_manual_overrides(tmp_path: Path):
         all_chunk_ids=["c0001", "c0006"],
     )
     assert topics["c0001"] == ["序言与创作背景"]
-    assert topics["c0006"] == ["序言与创作背景", "老牛陪伴"]
+    assert topics["c0006"] == ["序言与创作背景", "老牛与晚年"]
     assert sources["c0006"] == "manual"
 
 

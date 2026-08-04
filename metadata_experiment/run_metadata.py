@@ -47,6 +47,34 @@ def create_run_directory(results_dir: Path, run_at: datetime | None = None) -> P
     return run_dir
 
 
+def is_run_directory(path: Path) -> bool:
+    return path.is_dir() and RUN_DIR_PATTERN.fullmatch(path.name) is not None
+
+
+def find_latest_run_directory(results_dir: Path) -> Path:
+    run_dirs = sorted(
+        (path for path in results_dir.iterdir() if is_run_directory(path)),
+        key=lambda path: path.name,
+        reverse=True,
+    )
+    if not run_dirs:
+        raise FileNotFoundError(
+            f"No timestamped run directories found under {results_dir}. "
+            "Run metadata_experiment/scripts/run_experiment.py first."
+        )
+    return run_dirs[0]
+
+
+def resolve_run_directory(run_dir: Path | None, results_dir: Path) -> Path:
+    if run_dir is None:
+        return find_latest_run_directory(results_dir)
+    if not run_dir.is_absolute():
+        run_dir = results_dir / run_dir
+    if not is_run_directory(run_dir):
+        raise ValueError(f"Not a timestamped run directory: {run_dir}")
+    return run_dir
+
+
 def build_run_metadata(
     settings: MetadataSettings,
     methods: list[str],

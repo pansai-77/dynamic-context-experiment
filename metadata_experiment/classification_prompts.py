@@ -2,51 +2,101 @@ from __future__ import annotations
 
 from .topics import (
     ALLOWED_TOPICS,
-    BROAD_TOPICS,
+    EVENT_TOPICS,
     META_TOPICS,
-    SPECIFIC_TOPICS,
     format_topic_definitions,
     topic_names,
 )
 
-CLASSIFICATION_PROMPT_VERSION = "2026-08-04-v3.3-zero-shot"
+CLASSIFICATION_PROMPT_VERSION = "2026-08-04-v5.1.1"
 
 
 def format_allowed_topic_definitions() -> str:
     sections = [
-        "具体主题：",
-        format_topic_definitions(SPECIFIC_TOPICS),
+        "情节事件：",
+        format_topic_definitions(EVENT_TOPICS),
         "",
-        "宽泛主题：",
-        format_topic_definitions(BROAD_TOPICS),
-        "",
-        "序言与元数据主题：",
+        "元数据：",
         format_topic_definitions(META_TOPICS),
     ]
     return "\n".join(sections)
 
 
+def format_allowed_topic_names() -> str:
+    return "、".join(f"“{name}”" for name in topic_names())
+
+
 def build_chunk_classification_prompt(chunk_text: str) -> str:
     return (
-        "请阅读以下文本块，从允许的主题列表中选择最相关的主题。\n\n"
-        "分类原则：\n"
-        "- 只根据当前文本块的主要内容分类，不要猜测前后文；\n"
-        "- 默认返回 1 个主题；只有文本确实同时包含两个独立且重要的内容时，才返回 2 个；\n"
-        "- 优先选择最能代表主要内容的具体主题；只有没有更准确的具体主题时才使用宽泛主题；\n"
-        "- 如果具体主题已经能够覆盖主要内容，不要再同时返回语义重叠的宽泛主题；\n"
-        "- 只能从允许列表中选择；topics 中的每个值必须逐字复制列表中的某一个主题；\n"
-        "- 不得自行创建事件名称、人物行为描述或概括性短语；只能使用允许列表中的正式主题名称；\n"
-        "- “其他/未分类”仅用于版权页、目录、出版信息、页眉页脚、乱码、残缺文本，或确实无法归入任何允许主题的内容；\n"
-        "- “其他/未分类”不能与其他主题同时返回；\n"
-        "- 只返回合法 JSON，不要输出解释。\n\n"
-        f"允许主题（共 {len(topic_names())} 个）：\n{format_allowed_topic_definitions()}\n\n"
-        f"文本：\n{chunk_text}\n\n"
-        '返回格式：\n{"topics": ["主题1"]}'
+        "你正在执行封闭集合文本分类。请判断文本块的主要内容，"
+        "从允许的情节事件或元数据主题中选择 1-2 个，名称必须逐字复制。\n\n"
+        "必须遵守：\n"
+        "1. topics 中的每个值必须来自允许主题名称列表；\n"
+        "2. 不得改写、缩写、扩展、组合或创造任何主题名称；\n"
+        "3. 默认只返回 1 个主题；仅当 chunk 同时包含两个彼此独立、"
+        "都占明显篇幅的情节事件时，才返回 2 个；\n"
+        "4. 只根据当前文本块分类，不推测前后文；\n"
+        "5. 只输出合法 JSON，不输出解释。\n\n"
+        "判断顺序：\n"
+        "1. PDF 版权页、目录、页眉页脚、乱码 → “其他/未分类”；\n"
+        "2. 作者自序、创作观念、《老黑奴》、文学现实等创作背景 → “序言与创作背景”；"
+        "小说正文叙事（含福贵、家珍、有庆等人物故事）一律不得选此项；\n"
+        "3. 否则选择最能概括本 chunk 主线的一个情节事件；\n"
+        "4. “叙述者见闻”仅用于叙述者“我”在乡间遇见福贵、听其讲述的框形叙事；"
+        "福贵口述的人生故事不得选此项；作者自序仍选“序言与创作背景”；\n"
+        "5. “徐家败落与父亲去世”不含日常租田、买老牛；租田选“租田务农与求生”，买牛选“老牛与晚年”；\n"
+        "6. “其他/未分类”不能与任何其他主题同时返回。\n\n"
+        "已删除、不得使用的旧标签：家庭生活、贫困生计、死亡苦难、活着信念、"
+        "医疗献血、凤霞经历、有庆经历、老牛陪伴 等 v4 名称。\n\n"
+        f"允许主题名称（共 {len(topic_names())} 个）：\n"
+        f"{format_allowed_topic_names()}\n\n"
+        "主题定义：\n"
+        f"{format_allowed_topic_definitions()}\n\n"
+        "待分类文本：\n"
+        f"{chunk_text}\n\n"
+        '返回格式示例：{"topics": ["赌博败家"]}\n'
+        '跨事件边界时最多两个：{"topics": ["凤霞婚姻", "凤霞生产死亡"]}'
     )
 
 
 def build_chunk_classification_prompt_for_text(chunk_text: str) -> str:
     return build_chunk_classification_prompt(chunk_text)
+
+
+def build_single_topic_classification_prompt(
+    chunk_text: str,
+    *,
+    dual_candidates: tuple[str, str] | None = None,
+) -> str:
+    candidate_note = ""
+    if dual_candidates is not None:
+        candidate_note = (
+            f"\n上一次你返回了两个主题：{dual_candidates[0]} 与 {dual_candidates[1]}。"
+            "现在必须只保留最能概括本 chunk 主线的一个。\n"
+        )
+    return (
+        "你正在执行封闭集合文本分类。请判断文本块的主要内容，"
+        "从允许的情节事件或元数据主题中选择且仅选择 1 个主题，名称必须逐字复制。\n\n"
+        "必须遵守：\n"
+        "1. topics 数组必须且只能包含 1 个主题名称；\n"
+        "2. 每个值必须来自允许主题名称列表；\n"
+        "3. 不得改写、缩写、扩展、组合或创造任何主题名称；\n"
+        "4. 只根据当前文本块分类，不推测前后文；\n"
+        "5. 只输出合法 JSON，不输出解释。\n"
+        f"{candidate_note}\n"
+        "判断顺序：\n"
+        "1. PDF 版权页、目录、页眉页脚、乱码 → “其他/未分类”；\n"
+        "2. 作者自序、创作观念、《老黑奴》、文学现实等创作背景 → “序言与创作背景”；\n"
+        "3. 叙述者“我”在乡间遇见福贵、听其讲述 → “叙述者见闻”；\n"
+        "4. 否则选择最能概括本 chunk 主线的一个情节事件。\n\n"
+        f"允许主题名称（共 {len(topic_names())} 个）：\n"
+        f"{format_allowed_topic_names()}\n\n"
+        "主题定义：\n"
+        f"{format_allowed_topic_definitions()}\n\n"
+        "待分类文本：\n"
+        f"{chunk_text}\n\n"
+        '返回格式示例：{"topics": ["赌博败家"]}'
+    )
 
 
 def classification_prompt_metadata() -> dict[str, object]:

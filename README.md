@@ -65,7 +65,7 @@ pip install -r requirements.txt
 
 | 项目 | 路径 |
 | --- | --- |
-| 知识库 | `data/book/活着.pdf` |
+| 知识库 | `data/book/活着.pdf`（138 个向量片段） |
 | 问题集 | `data/questions/questions.csv`（20 题：Book 10 / General 5 / Rewrite 5） |
 
 | 参数 | 值 | 说明 |

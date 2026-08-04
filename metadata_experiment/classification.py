@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from .classification_prompts import (
     CLASSIFICATION_PROMPT_VERSION,
     build_chunk_classification_prompt_for_text,
+    build_single_topic_classification_prompt,
 )
 from .metadata_quality import collect_content_warnings
 from .topics import FALLBACK_TOPIC, TOPIC_BY_NAME, TOPIC_TAXONOMY_VERSION, normalize_topic_name
@@ -23,6 +24,9 @@ if TYPE_CHECKING:
 
 class TopicParseError(ValueError):
     pass
+
+
+DUAL_TOPIC_RESOLUTION_PREFIX = "dual topic resolution failed"
 
 
 @dataclass(frozen=True)
@@ -143,7 +147,12 @@ def extract_json_object(text: str) -> dict:
     return payload
 
 
-def parse_validated_topics(raw_response: str, allowed_names: set[str]) -> list[str]:
+def parse_validated_topics(
+    raw_response: str,
+    allowed_names: set[str],
+    *,
+    max_topics: int = 2,
+) -> list[str]:
     payload = extract_json_object(raw_response)
     topics = payload.get("topics")
     if not isinstance(topics, list) or not topics:
@@ -167,8 +176,8 @@ def parse_validated_topics(raw_response: str, allowed_names: set[str]) -> list[s
             raise TopicParseError("fallback topic must be the only topic")
         return normalized
 
-    if not 1 <= len(normalized) <= 2:
-        raise TopicParseError(f"expected 1-2 topics, got {len(normalized)}")
+    if not 1 <= len(normalized) <= max_topics:
+        raise TopicParseError(f"expected 1-{max_topics} topics, got {len(normalized)}")
     return normalized
 
 
@@ -204,20 +213,109 @@ class ChunkTopicClassifier:
         *,
         max_retries: int = 3,
         cache: ClassificationCache | None = None,
+        allow_dual_topics: bool = False,
     ) -> None:
         self.llm = llm
         self.max_retries = max_retries
         self.allowed_names = set(TOPIC_BY_NAME)
         self.cache = cache
         self.cache_version = cache.cache_version if cache else None
+        self.allow_dual_topics = allow_dual_topics
+
+    def _build_success_result(
+        self,
+        chunk: Chunk,
+        *,
+        raw_response: str,
+        parsed_topics: list[str],
+        final_topics: list[str],
+        attempts: int,
+        prompt: str,
+        prompt_kind: str,
+        structure_errors: tuple[str, ...],
+        cache_hit: bool = False,
+    ) -> ChunkClassificationResult:
+        warnings = collect_content_warnings(chunk.text, final_topics)
+        if self.cache is not None and not cache_hit:
+            self.cache.put(
+                chunk_id=chunk.chunk_id,
+                topics=final_topics,
+                raw_response=raw_response,
+            )
+        return ChunkClassificationResult(
+            chunk_id=chunk.chunk_id,
+            raw_response=raw_response,
+            parsed_topics=parsed_topics,
+            validation_warnings=warnings,
+            final_topics=final_topics,
+            attempts=attempts,
+            prompt=prompt,
+            prompt_kind=prompt_kind,
+            cache_hit=cache_hit,
+            cache_version=self.cache_version,
+            structure_errors=structure_errors,
+        )
+
+    def _resolve_dual_topics(
+        self,
+        chunk: Chunk,
+        dual_topics: list[str],
+        *,
+        attempts: int,
+        structure_errors: list[str],
+        initial_response: str,
+    ) -> ChunkClassificationResult:
+        if len(dual_topics) != 2:
+            raise ChunkClassificationError(
+                chunk.chunk_id,
+                f"expected exactly 2 topics before single-topic retry, got {dual_topics}",
+                attempts,
+                initial_response,
+            )
+
+        single_prompt = build_single_topic_classification_prompt(
+            chunk.text,
+            dual_candidates=(dual_topics[0], dual_topics[1]),
+        )
+        generation = self.llm.answer(single_prompt)
+        last_response = generation.answer
+        try:
+            parsed_topics = parse_validated_topics(
+                last_response,
+                self.allowed_names,
+                max_topics=1,
+            )
+        except TopicParseError as exc:
+            reason = (
+                f"{DUAL_TOPIC_RESOLUTION_PREFIX}: {exc}; "
+                f"initial dual topics={dual_topics}"
+            )
+            structure_errors.append(reason)
+            raise ChunkClassificationError(
+                chunk.chunk_id,
+                reason,
+                attempts + 1,
+                last_response,
+            ) from exc
+
+        return self._build_success_result(
+            chunk,
+            raw_response=last_response,
+            parsed_topics=parsed_topics,
+            final_topics=list(parsed_topics),
+            attempts=attempts + 1,
+            prompt=single_prompt,
+            prompt_kind="single_topic_retry",
+            structure_errors=tuple(structure_errors),
+        )
 
     def classify(self, chunk: Chunk, *, use_cache: bool = True) -> ChunkClassificationResult:
-        prompt = build_chunk_classification_prompt_for_text(chunk.text)
+        general_prompt = build_chunk_classification_prompt_for_text(chunk.text)
         structure_errors: list[str] = []
 
         if use_cache and self.cache is not None:
             cached = self.cache.get(chunk.chunk_id)
-            if cached is not None:
+            if cached is not None and (self.allow_dual_topics or len(cached.topics) == 1):
                 warnings = collect_content_warnings(chunk.text, cached.topics)
                 return ChunkClassificationResult(
                     chunk_id=chunk.chunk_id,
@@ -226,36 +324,42 @@ class ChunkTopicClassifier:
                     validation_warnings=warnings,
                     final_topics=list(cached.topics),
                     attempts=0,
-                    prompt=prompt,
+                    prompt=general_prompt,
                     cache_hit=True,
                     cache_version=cached.cache_version,
                 )
 
+        prompt = general_prompt
         last_error = "unknown error"
         last_response = ""
+        attempts = 0
 
         for attempt in range(1, self.max_retries + 1):
+            attempts = attempt
             generation = self.llm.answer(prompt)
             last_response = generation.answer
             try:
                 parsed_topics = parse_validated_topics(last_response, self.allowed_names)
-                warnings = collect_content_warnings(chunk.text, parsed_topics)
-                if self.cache is not None:
-                    self.cache.put(
-                        chunk_id=chunk.chunk_id,
-                        topics=parsed_topics,
+                if len(parsed_topics) == 1 or self.allow_dual_topics:
+                    return self._build_success_result(
+                        chunk,
                         raw_response=last_response,
+                        parsed_topics=parsed_topics,
+                        final_topics=list(parsed_topics),
+                        attempts=attempts,
+                        prompt=general_prompt,
+                        prompt_kind="general",
+                        structure_errors=tuple(structure_errors),
                     )
-                return ChunkClassificationResult(
-                    chunk_id=chunk.chunk_id,
-                    raw_response=last_response,
-                    parsed_topics=parsed_topics,
-                    validation_warnings=warnings,
-                    final_topics=list(parsed_topics),
-                    attempts=attempt,
-                    prompt=prompt,
-                    structure_errors=tuple(structure_errors),
+                return self._resolve_dual_topics(
+                    chunk,
+                    parsed_topics,
+                    attempts=attempts,
+                    structure_errors=structure_errors,
+                    initial_response=last_response,
                 )
+            except ChunkClassificationError:
+                raise
             except TopicParseError as exc:
                 last_error = str(exc)
                 structure_errors.append(last_error)
@@ -263,7 +367,7 @@ class ChunkTopicClassifier:
                     raise ChunkClassificationError(
                         chunk.chunk_id,
                         last_error,
-                        attempt,
+                        attempts,
                         last_response,
                     ) from exc
                 prompt = (
@@ -274,14 +378,14 @@ class ChunkTopicClassifier:
         raise ChunkClassificationError(
             chunk.chunk_id,
             last_error,
-            self.max_retries,
+            attempts,
             last_response,
         )
 
 
 def build_classification_cache(settings) -> ClassificationCache:
     cache_version = compute_cache_version(
-        llm_model=settings.llm_model,
+        llm_model=settings.classification_llm_model,
         temperature=settings.temperature,
         max_new_tokens=settings.classification_max_new_tokens,
     )
@@ -292,9 +396,9 @@ def build_classification_cache(settings) -> ClassificationCache:
 def create_topic_classifier(settings) -> ChunkTopicClassifier:
     from src.llm_mlx import QwenMLX
 
-    print(f"Loading Qwen model ({settings.llm_model}) for chunk classification...")
+    print(f"Loading Qwen model ({settings.classification_llm_model}) for chunk classification...")
     llm = QwenMLX(
-        settings.llm_model,
+        settings.classification_llm_model,
         settings.classification_max_new_tokens,
         settings.temperature,
     )
@@ -306,4 +410,5 @@ def create_topic_classifier(settings) -> ChunkTopicClassifier:
         llm,
         max_retries=settings.classification_max_retries,
         cache=cache,
+        allow_dual_topics=settings.classification_allow_dual_topics,
     )

@@ -22,6 +22,7 @@ from metadata_experiment.manual_review import (
 )
 from metadata_experiment.metadata_quality import (
     QualitySampleRecord,
+    evaluate_distribution_quality,
     format_quality_sample_report,
     load_or_create_quality_sample,
 )
@@ -54,6 +55,11 @@ def parse_args() -> argparse.Namespace:
         "--quality-sample",
         action="store_true",
         help="Run fixed-seed quality sample check excluding development diagnostic chunks.",
+    )
+    parser.add_argument(
+        "--force-write-index",
+        action="store_true",
+        help="Write the index even when distribution dominance warnings are present.",
     )
     parser.add_argument(
         "--no-cache",
@@ -235,6 +241,17 @@ def main() -> None:
                 "--write-index --use-manual-overrides if you still want manual review."
             )
         return
+
+    distribution = evaluate_distribution_quality(indexed_topics)
+    if distribution.blocking_warnings and not args.force_write_index:
+        print()
+        print("Blocking distribution warnings detected:")
+        for warning in distribution.blocking_warnings:
+            print(f"  - {warning}")
+        raise SystemExit(
+            "Index write blocked due to topic dominance warnings. "
+            "Fix classifications/manual overrides or rerun with --force-write-index."
+        )
 
     catalog_path = settings.experiment_dir / "data" / "index_catalog.xlsx"
     run_full_index_build(

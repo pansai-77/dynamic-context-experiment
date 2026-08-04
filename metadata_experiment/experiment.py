@@ -89,7 +89,12 @@ def run_experiment(
 
     print("Warming up retrieval and topic router...")
     store.search("预热检索", top_k=1)
-    router.route("预热路由", settings.router_top_n)
+    router.route(
+        "预热路由",
+        settings.router_top_n,
+        adaptive_top2=settings.router_adaptive_top2,
+        top2_score_gap=settings.router_top2_score_gap,
+    )
 
     from src.llm_mlx import QwenMLX
     from src.prompts import build_prompt
@@ -122,7 +127,12 @@ def run_experiment(
             if use_retrieval:
                 before = total_candidates
                 if method == METHOD_B:
-                    routed_topics, router_ms = router.route(question, settings.router_top_n)
+                    routed_topics, router_ms = router.route(
+                        question,
+                        settings.router_top_n,
+                        adaptive_top2=settings.router_adaptive_top2,
+                        top2_score_gap=settings.router_top2_score_gap,
+                    )
                     retrieved, vector_ms = store.search(
                         question, settings.retrieval_top_k, routed_topics
                     )

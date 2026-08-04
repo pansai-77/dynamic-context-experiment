@@ -22,6 +22,9 @@ from metadata_experiment.run_metadata import (
     build_run_metadata,
     create_run_directory,
     export_run_metadata,
+    find_latest_run_directory,
+    is_run_directory,
+    resolve_run_directory,
 )
 from src.models import Chunk
 
@@ -64,7 +67,7 @@ def test_expected_manifest_uses_sorted_chunk_ids(tmp_path: Path):
         Chunk("c0002", "text", "活着.pdf", 1, 1, 1, 2),
         Chunk("c0001", "text", "活着.pdf", 1, 1, 1, 1),
     ]
-    manifest = expected_manifest(cfg, chunks, ["家庭生活"])
+    manifest = expected_manifest(cfg, chunks, ["租田务农与求生"])
     assert manifest.chunk_ids == ["c0001", "c0002"]
     assert manifest.source_files == ["活着.pdf"]
 
@@ -78,8 +81,8 @@ def test_cache_rejects_stale_topic_vocabulary(tmp_path: Path):
     cache_dir = tmp_path / "cache"
     cache = ClassificationCache(cache_dir, cache_version)
     cache._entries["c0001"] = {
-        "topics": ["老牛晚年陪伴"],
-        "raw_response": '{"topics": ["老牛晚年陪伴"]}',
+        "topics": ["贫困生计"],
+        "raw_response": '{"topics": ["贫困生计"]}',
         "prompt_version": CLASSIFICATION_PROMPT_VERSION,
         "cache_version": cache_version,
     }
@@ -95,7 +98,7 @@ def test_verify_index_metadata_detects_stale_taxonomy(tmp_path: Path, monkeypatc
     )
     write_index_manifest(
         manifest_path(cfg.qdrant_path),
-        _sample_manifest(topic_taxonomy_version="2026-08-04-v5"),
+        _sample_manifest(topic_taxonomy_version="2026-08-04-v4"),
     )
     monkeypatch.setattr(
         "metadata_experiment.index_metadata.list_collection_chunk_ids",
@@ -171,3 +174,29 @@ def test_create_run_directory_uses_timestamp_format(tmp_path: Path) -> None:
     run_dir = create_run_directory(results_dir, datetime(2026, 8, 4, 9, 35, 12))
     assert run_dir.name == "20260804_093512"
     assert run_dir.exists()
+
+
+def test_find_latest_run_directory_picks_newest_timestamp(tmp_path: Path) -> None:
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    (results_dir / "20260804_093512").mkdir()
+    (results_dir / "20260804_211643").mkdir()
+    latest = find_latest_run_directory(results_dir)
+    assert latest.name == "20260804_211643"
+
+
+def test_resolve_run_directory_accepts_relative_name(tmp_path: Path) -> None:
+    results_dir = tmp_path / "results"
+    results_dir.mkdir()
+    (results_dir / "20260804_211643").mkdir()
+    resolved = resolve_run_directory(Path("20260804_211643"), results_dir)
+    assert resolved == results_dir / "20260804_211643"
+
+
+def test_is_run_directory_rejects_non_timestamp_names(tmp_path: Path) -> None:
+    path = tmp_path / "not-a-run"
+    path.mkdir()
+    assert not is_run_directory(path)
+    valid = tmp_path / "20260804_211643"
+    valid.mkdir()
+    assert is_run_directory(valid)

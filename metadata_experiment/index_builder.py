@@ -174,7 +174,7 @@ def print_pre_build_quality_report(
     indexed_topics: dict[str, list[str]],
 ) -> None:
     cache_version = compute_cache_version(
-        llm_model=settings.llm_model,
+        llm_model=settings.classification_llm_model,
         temperature=settings.temperature,
         max_new_tokens=settings.classification_max_new_tokens,
     )

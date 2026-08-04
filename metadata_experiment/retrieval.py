@@ -29,15 +29,32 @@ class TopicRouter:
             router_topic_documents(), normalize_embeddings=True, show_progress_bar=False
         )
 
-    def route(self, query: str, top_n: int = 2) -> tuple[list[str], float]:
+    def route(
+        self,
+        query: str,
+        top_n: int = 1,
+        *,
+        adaptive_top2: bool = False,
+        top2_score_gap: float = 0.05,
+    ) -> tuple[list[str], float]:
         started = time.perf_counter()
         query_vector = self.embedding_model.encode(
             query, normalize_embeddings=True, show_progress_bar=False
         )
         scores = np.asarray(self.topic_vectors) @ np.asarray(query_vector)
-        indices = np.argsort(-scores)[:top_n]
+        ranked_indices = np.argsort(-scores)
+        selected_indices = [int(ranked_indices[0])]
+
+        if top_n >= 2:
+            selected_indices = [int(index) for index in ranked_indices[:top_n]]
+        elif adaptive_top2 and len(ranked_indices) >= 2:
+            top1 = int(ranked_indices[0])
+            top2 = int(ranked_indices[1])
+            if float(scores[top1] - scores[top2]) <= top2_score_gap:
+                selected_indices.append(top2)
+
         elapsed_ms = (time.perf_counter() - started) * 1000
-        return [self.names[int(index)] for index in indices], elapsed_ms
+        return [self.names[index] for index in selected_indices], elapsed_ms
 
 
 class MetadataVectorStore:
@@ -96,7 +113,7 @@ class MetadataVectorStore:
 
     @staticmethod
     def topic_filter(topics: list[str]) -> Filter:
-        # OR semantics: keep chunks whose payload topics intersect routed Top-2.
+        # OR semantics: keep chunks whose payload topics intersect routed topics.
         return Filter(must=[FieldCondition(key="topics", match=MatchAny(any=topics))])
 
     def candidate_count(self, topics: list[str]) -> int:

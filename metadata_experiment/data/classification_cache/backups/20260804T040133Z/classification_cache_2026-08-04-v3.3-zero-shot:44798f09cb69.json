@@ -1,0 +1,138 @@
+{
+  "c0001": {
+    "topics": [
+      "序言与创作背景"
+    ],
+    "raw_response": "{\"topics\": [\"序言与创作背景\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0006": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0008": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0009": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0010": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0012": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0013": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0014": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0015": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0016": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0017": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0018": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0019": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0020": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0023": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0024": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  },
+  "c0025": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:44798f09cb69"
+  }
+}

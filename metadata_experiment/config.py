@@ -33,12 +33,24 @@ class MetadataSettings:
     collection_name: str = "huozhe_meta"
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
     llm_model: str = os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
+    classification_llm_model: str = (
+        os.getenv("CLASSIFICATION_LLM_MODEL") or os.getenv("LLM_MODEL", "mlx-community/Qwen2.5-3B-Instruct-4bit")
+    )
     chunk_strategy: str = os.getenv("CHUNK_STRATEGY", "continuous_sentence_aware")
     chunk_target_size: int = int(os.getenv("CHUNK_TARGET_SIZE", "600"))
     chunk_max_size: int = int(os.getenv("CHUNK_MAX_SIZE", "800"))
     chunk_min_size: int = int(os.getenv("CHUNK_MIN_SIZE", "100"))
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "100"))
-    router_top_n: int = int(os.getenv("METADATA_ROUTER_TOP_N", "2"))
+    router_top_n: int = int(os.getenv("METADATA_ROUTER_TOP_N", "1"))
+    router_adaptive_top2: bool = os.getenv("METADATA_ROUTER_ADAPTIVE_TOP2", "false").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    router_top2_score_gap: float = float(os.getenv("METADATA_ROUTER_TOP2_SCORE_GAP", "0.05"))
+    classification_allow_dual_topics: bool = os.getenv(
+        "METADATA_CLASSIFICATION_ALLOW_DUAL_TOPICS", "false"
+    ).lower() in {"1", "true", "yes"}
     retrieval_top_k: int = 4
     classification_max_new_tokens: int = int(
         os.getenv("METADATA_CLASSIFICATION_MAX_NEW_TOKENS", "128")
