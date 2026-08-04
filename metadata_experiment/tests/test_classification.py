@@ -29,7 +29,7 @@ def test_general_prompt_is_closed_set_zero_shot():
     assert "broader parent topic" not in prompt
     assert "示例（虚构摘要" not in prompt
     assert "化验室取血" not in prompt
-    assert "仅用于医院、医生、护士、抽血、献血、验血型、输血等医疗或献血场景" in prompt
+    assert "贫困生计" in prompt
 
 
 def test_audit_helpers_only_emit_warnings():
@@ -47,6 +47,19 @@ def test_parse_validated_topics_accepts_json():
     raw = '{"topics": ["有庆经历", "医疗献血"]}'
     topics = parse_validated_topics(raw, set(TOPIC_BY_NAME))
     assert topics == ["有庆经历", "医疗献血"]
+
+
+def test_parse_validated_topics_rejects_retired_v5_topic_names():
+    raw = '{"topics": ["贫困生存压力"]}'
+    with pytest.raises(TopicParseError, match="illegal topic"):
+        parse_validated_topics(raw, set(TOPIC_BY_NAME))
+
+
+def test_normalize_topic_name_only_strips_whitespace():
+    from metadata_experiment.topics import normalize_topic_name
+
+    assert normalize_topic_name(" 贫困生计 ") == "贫困生计"
+    assert normalize_topic_name("贫困生存压力") == "贫困生存压力"
 
 
 def test_parse_validated_topics_rejects_illegal_topic():

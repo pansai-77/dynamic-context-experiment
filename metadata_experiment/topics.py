@@ -139,16 +139,9 @@ ALLOWED_TOPICS: tuple[TopicDefinition, ...] = (
 TOPICS = ALLOWED_TOPICS
 TOPIC_BY_NAME = {topic.name: topic for topic in ALLOWED_TOPICS}
 
-# Common LLM misspellings or near-synonyms mapped to canonical ALLOWED_TOPICS names.
-TOPIC_ALIASES: dict[str, str] = {
-    "贫穷生计": "贫困生计",
-    "贫困生活": "贫困生计",
-}
-
 
 def normalize_topic_name(name: str) -> str:
-    cleaned = name.strip()
-    return TOPIC_ALIASES.get(cleaned, cleaned)
+    return name.strip()
 
 
 CHARACTERS = ("福贵", "家珍", "凤霞", "有庆", "二喜", "苦根", "龙二", "春生", "队长", "老全")

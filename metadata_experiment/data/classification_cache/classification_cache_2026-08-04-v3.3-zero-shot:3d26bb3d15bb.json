@@ -1,0 +1,850 @@
+{
+  "c0001": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0002": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0003": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0004": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0005": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0009": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0010": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0012": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0013": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0014": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0015": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0016": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0017": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0020": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0023": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0024": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0025": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0026": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0027": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0028": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0030": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0034": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0035": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0036": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0037": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0038": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0039": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0040": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0041": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0042": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0043": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0044": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0045": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0046": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0047": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0048": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0049": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0050": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0051": {
+    "topics": [
+      "土地改革与龙二"
+    ],
+    "raw_response": "{\"topics\": [\"土地改革与龙二\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0052": {
+    "topics": [
+      "参军战争"
+    ],
+    "raw_response": "{\"topics\": [\"参军战争\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0053": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0055": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0061": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0062": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0063": {
+    "topics": [
+      "人民公社与饥荒"
+    ],
+    "raw_response": "{\"topics\": [\"人民公社与饥荒\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0064": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0065": {
+    "topics": [
+      "人民公社与饥荒"
+    ],
+    "raw_response": "{\"topics\": [\"人民公社与饥荒\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0067": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0069": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0070": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0071": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0072": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0073": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0075": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0077": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0078": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0079": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0080": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0081": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0082": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0084": {
+    "topics": [
+      "凤霞婚育身亡"
+    ],
+    "raw_response": "{\"topics\": [\"凤霞婚育身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0086": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0087": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0089": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0090": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0091": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0092": {
+    "topics": [
+      "春生文革与自杀"
+    ],
+    "raw_response": "{\"topics\": [\"春生文革与自杀\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0093": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0094": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0095": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0096": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0097": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0098": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0099": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0100": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0101": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0103": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0105": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0107": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0108": {
+    "topics": [
+      "家庭日常生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭日常生活\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0109": {
+    "topics": [
+      "凤霞婚育身亡"
+    ],
+    "raw_response": "{\"topics\": [\"凤霞婚育身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0110": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0112": {
+    "topics": [
+      "凤霞婚育身亡"
+    ],
+    "raw_response": "{\"topics\": [\"凤霞婚育身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0113": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0114": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0115": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0116": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0117": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0118": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0119": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0120": {
+    "topics": [
+      "有庆献血身亡"
+    ],
+    "raw_response": "{\"topics\": [\"有庆献血身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0121": {
+    "topics": [
+      "凤霞婚育身亡"
+    ],
+    "raw_response": "{\"topics\": [\"凤霞婚育身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0122": {
+    "topics": [
+      "凤霞婚育身亡"
+    ],
+    "raw_response": "{\"topics\": [\"凤霞婚育身亡\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0123": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0124": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0125": {
+    "topics": [
+      "家珍患病离世"
+    ],
+    "raw_response": "{\"topics\": [\"家珍患病离世\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0126": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0128": {
+    "topics": [
+      "二喜苦根悲剧"
+    ],
+    "raw_response": "{\"topics\": [\"二喜苦根悲剧\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0129": {
+    "topics": [
+      "二喜苦根悲剧"
+    ],
+    "raw_response": "{\"topics\": [\"二喜苦根悲剧\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0130": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0131": {
+    "topics": [
+      "二喜苦根悲剧"
+    ],
+    "raw_response": "{\"topics\": [\"二喜苦根悲剧\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0132": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0133": {
+    "topics": [
+      "活着与生命态度"
+    ],
+    "raw_response": "{\"topics\": [\"活着与生命态度\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0135": {
+    "topics": [
+      "二喜苦根悲剧"
+    ],
+    "raw_response": "{\"topics\": [\"二喜苦根悲剧\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0136": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  },
+  "c0138": {
+    "topics": [
+      "贫困生存压力"
+    ],
+    "raw_response": "{\"topics\": [\"贫困生存压力\"]}",
+    "prompt_version": "2026-08-04-v3.3-zero-shot",
+    "cache_version": "2026-08-04-v3.3-zero-shot:3d26bb3d15bb"
+  }
+}

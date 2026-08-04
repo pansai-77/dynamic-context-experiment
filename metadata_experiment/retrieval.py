@@ -96,6 +96,7 @@ class MetadataVectorStore:
 
     @staticmethod
     def topic_filter(topics: list[str]) -> Filter:
+        # OR semantics: keep chunks whose payload topics intersect routed Top-2.
         return Filter(must=[FieldCondition(key="topics", match=MatchAny(any=topics))])
 
     def candidate_count(self, topics: list[str]) -> int:

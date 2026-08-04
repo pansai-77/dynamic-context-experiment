@@ -5,6 +5,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from .config import MetadataSettings, settings
+from .classification_prompts import CLASSIFICATION_PROMPT_VERSION
+from .topics import TOPIC_TAXONOMY_VERSION, topic_names
 
 
 MANIFEST_FILENAME = "metadata_index_manifest.json"
@@ -23,6 +25,8 @@ class MetadataIndexManifest:
     source_files: list[str]
     chunk_ids: list[str]
     topics: list[str]
+    topic_taxonomy_version: str
+    classification_prompt_version: str
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -55,6 +59,8 @@ def read_index_manifest(path: Path) -> MetadataIndexManifest | None:
         source_files=[str(name) for name in payload.get("source_files", [])],
         chunk_ids=[str(chunk_id) for chunk_id in payload.get("chunk_ids", [])],
         topics=[str(topic) for topic in payload.get("topics", [])],
+        topic_taxonomy_version=str(payload.get("topic_taxonomy_version", "")),
+        classification_prompt_version=str(payload.get("classification_prompt_version", "")),
     )
 
 
@@ -105,6 +111,8 @@ def expected_manifest(
         source_files=sorted(source_files),
         chunk_ids=sorted(chunk.chunk_id for chunk in chunks),
         topics=topics,
+        topic_taxonomy_version=TOPIC_TAXONOMY_VERSION,
+        classification_prompt_version=CLASSIFICATION_PROMPT_VERSION,
     )
 
 
@@ -117,6 +125,24 @@ def verify_index_metadata(cfg: MetadataSettings = settings) -> MetadataIndexMani
         )
 
     mismatches: list[str] = []
+    if stored.topic_taxonomy_version != TOPIC_TAXONOMY_VERSION:
+        mismatches.append(
+            "topic_taxonomy_version: "
+            f"index={stored.topic_taxonomy_version!r}, "
+            f"config={TOPIC_TAXONOMY_VERSION!r}"
+        )
+    if stored.classification_prompt_version != CLASSIFICATION_PROMPT_VERSION:
+        mismatches.append(
+            "classification_prompt_version: "
+            f"index={stored.classification_prompt_version!r}, "
+            f"config={CLASSIFICATION_PROMPT_VERSION!r}"
+        )
+    expected_topics = sorted(topic_names())
+    if sorted(stored.topics) != expected_topics:
+        mismatches.append(
+            "topics: index vocabulary differs from topics.py "
+            f"(index={len(stored.topics)}, config={len(expected_topics)})"
+        )
     if stored.embedding_model != cfg.embedding_model:
         mismatches.append(
             f"embedding_model: index={stored.embedding_model!r}, config={cfg.embedding_model!r}"

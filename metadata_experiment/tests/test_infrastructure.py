@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import csv
 import json
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 
+from metadata_experiment.classification import ClassificationCache, compute_cache_version
+from metadata_experiment.classification_prompts import CLASSIFICATION_PROMPT_VERSION
 from metadata_experiment.config import MetadataSettings
-from metadata_experiment.metrics import load_gold
 from metadata_experiment.index_metadata import (
     MetadataIndexManifest,
     expected_manifest,
@@ -17,6 +17,7 @@ from metadata_experiment.index_metadata import (
     verify_index_metadata,
     write_index_manifest,
 )
+from metadata_experiment.topics import TOPIC_TAXONOMY_VERSION, topic_names
 from metadata_experiment.run_metadata import (
     build_run_metadata,
     create_run_directory,
@@ -36,7 +37,9 @@ def _sample_manifest(**overrides) -> MetadataIndexManifest:
         "chunk_overlap": 100,
         "source_files": ["活着.pdf"],
         "chunk_ids": ["c0001", "c0002"],
-        "topics": ["家庭生活"],
+        "topics": topic_names(),
+        "topic_taxonomy_version": TOPIC_TAXONOMY_VERSION,
+        "classification_prompt_version": CLASSIFICATION_PROMPT_VERSION,
     }
     payload.update(overrides)
     return MetadataIndexManifest(**payload)
@@ -66,6 +69,42 @@ def test_expected_manifest_uses_sorted_chunk_ids(tmp_path: Path):
     assert manifest.source_files == ["活着.pdf"]
 
 
+def test_cache_rejects_stale_topic_vocabulary(tmp_path: Path):
+    cache_version = compute_cache_version(
+        llm_model="mlx-community/Qwen2.5-3B-Instruct-4bit",
+        temperature=0.0,
+        max_new_tokens=128,
+    )
+    cache_dir = tmp_path / "cache"
+    cache = ClassificationCache(cache_dir, cache_version)
+    cache._entries["c0001"] = {
+        "topics": ["老牛晚年陪伴"],
+        "raw_response": '{"topics": ["老牛晚年陪伴"]}',
+        "prompt_version": CLASSIFICATION_PROMPT_VERSION,
+        "cache_version": cache_version,
+    }
+    assert cache.get("c0001") is None
+
+
+def test_verify_index_metadata_detects_stale_taxonomy(tmp_path: Path, monkeypatch):
+    cfg = MetadataSettings(
+        root_dir=tmp_path,
+        experiment_dir=tmp_path / "metadata_experiment",
+        book_file=tmp_path / "data/book/活着.pdf",
+        qdrant_path=tmp_path / "qdrant_storage_metadata",
+    )
+    write_index_manifest(
+        manifest_path(cfg.qdrant_path),
+        _sample_manifest(topic_taxonomy_version="2026-08-04-v5"),
+    )
+    monkeypatch.setattr(
+        "metadata_experiment.index_metadata.list_collection_chunk_ids",
+        lambda *_args, **_kwargs: ["c0001", "c0002"],
+    )
+    with pytest.raises(ValueError, match="topic_taxonomy_version"):
+        verify_index_metadata(cfg)
+
+
 def test_verify_index_metadata_detects_setting_mismatch(tmp_path: Path, monkeypatch):
     cfg = MetadataSettings(
         root_dir=tmp_path,
@@ -85,25 +124,6 @@ def test_verify_index_metadata_detects_setting_mismatch(tmp_path: Path, monkeypa
 
     with pytest.raises(ValueError, match="chunk_target_size"):
         verify_index_metadata(cfg)
-
-
-def test_gold_loader_keeps_blank_chunk_ids_empty(tmp_path: Path):
-    gold_file = tmp_path / "gold_annotations.csv"
-    with gold_file.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=["Question ID", "Gold Topics", "Gold Chunk IDs"],
-        )
-        writer.writeheader()
-        writer.writerow({
-            "Question ID": "Q01",
-            "Gold Topics": "老牛陪伴",
-            "Gold Chunk IDs": "",
-        })
-
-    gold = load_gold(gold_file)
-    assert gold["Q01"]["topics"] == ["老牛陪伴"]
-    assert gold["Q01"]["chunks"] == []
 
 
 def test_build_run_metadata_includes_settings_and_notes(tmp_path: Path) -> None:

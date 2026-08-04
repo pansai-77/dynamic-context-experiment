@@ -26,9 +26,6 @@ COLUMN_NAMES = {
     "answer": "Answer",
     "retrieved_chunks": "Retrieved Chunks",
     "retrieved_sources": "Retrieved Sources",
-    "hit_at_4": "Hit@4",
-    "mrr_at_4": "MRR@4",
-    "filter_accuracy": "Filter Accuracy",
     "score_0_3": "Score(0-3)",
     "notes": "Notes",
 }

@@ -28,8 +28,7 @@ metadata_experiment/
 ├── scripts/
 │   ├── build_index.py
 │   ├── run_experiment.py
-│   ├── diagnose_classification.py
-│   └── validate_gold.py
+│   └── diagnose_classification.py
 └── tests/
     ├── test_classification.py
     ├── test_retrieval_and_logic.py
@@ -38,7 +37,7 @@ metadata_experiment/
 
 ## Metadata schema
 
-Each chunk stores a flat `topics` list with 1-2 values from the controlled 17-topic vocabulary.
+Each chunk stores a flat `topics` list with 1-2 values from the controlled **v4** 17-topic vocabulary in `topics.py` (`TOPIC_TAXONOMY_VERSION = 2026-08-04-v4`).
 
 Formal index builds accept **format validation only**:
 
@@ -67,18 +66,39 @@ Do not treat 12/12 diagnostic pass as a build gate. Do not add per-chunk keyword
 python metadata_experiment/scripts/build_index.py --quality-sample
 ```
 
-2. Classify all chunks:
+2. Classify all chunks, continuing after LLM failures:
 
 ```bash
-python metadata_experiment/scripts/build_index.py
+python metadata_experiment/scripts/build_index.py --continue-on-failure
 ```
 
-3. Review `metadata_experiment/data/original_metadata.csv`, distribution warnings, and audit warnings.
-4. Write the index:
+This writes:
+
+- `metadata_experiment/data/original_metadata.csv` for LLM-success chunks
+- `metadata_experiment/data/classification_failures.csv` for failed chunks
+- `metadata_experiment/data/manual_topic_overrides.template.csv` as a fill-in helper
+
+3. Copy failed rows into `metadata_experiment/data/manual_topic_overrides.csv` and fill `topics`
+   using exact controlled vocabulary names. Multiple topics use `|`, for example:
+
+```csv
+chunk_id,topics,notes
+c0006,序言与创作背景|老牛陪伴,framework + wealthy-family flashback
+```
+
+4. Review `original_metadata.csv`, distribution warnings, audit warnings, and manual overrides.
+5. Write the index:
 
 ```bash
-python metadata_experiment/scripts/build_index.py --write-index
+python metadata_experiment/scripts/build_index.py --write-index --use-manual-overrides
 ```
+
+Manual overrides are accepted only for chunks that failed LLM classification. They use the same
+1-2 topic validation as LLM output. Use exact v4 names from `topics.py`; names outside the
+controlled vocabulary are rejected as classification failures.
+
+After any taxonomy change, rebuild the index so Qdrant payload topics and
+`metadata_index_manifest.json` match `TOPIC_TAXONOMY_VERSION`.
 
 ## Run experiment
 
@@ -94,4 +114,6 @@ Primary Guide metrics:
 - Total Time
 - Score(0-3)
 
-Optional diagnostic columns such as Hit@4, MRR@4, Filter Accuracy, and candidate counts may appear in detailed logs, but they are not Guide-required success criteria.
+Detailed results also record Router Time, candidate chunk counts before/after filter, and token usage.
+
+Index manifests store `topic_taxonomy_version` and `classification_prompt_version`. `run_experiment.py` refuses stale indexes whose topic vocabulary does not match `topics.py`.

@@ -27,7 +27,6 @@ class MetadataSettings:
     book_dir: Path = ROOT_DIR / "data" / "book"
     book_file: Path | None = field(default_factory=_book_file)
     questions_file: Path = ROOT_DIR / "data" / "questions" / "questions.csv"
-    gold_file: Path = EXPERIMENT_DIR / "data" / "gold_annotations.csv"
     qdrant_path: Path = ROOT_DIR / "qdrant_storage_metadata"
     exp1_qdrant_path: Path = ROOT_DIR / "qdrant_storage"
     results_dir: Path = EXPERIMENT_DIR / "results"
@@ -51,6 +50,11 @@ class MetadataSettings:
     quality_sample_size: int = int(os.getenv("METADATA_QUALITY_SAMPLE_SIZE", "20"))
     quality_sample_file: Path = EXPERIMENT_DIR / "data" / "quality_sample_chunks.json"
     original_metadata_file: Path = EXPERIMENT_DIR / "data" / "original_metadata.csv"
+    manual_topic_overrides_file: Path = EXPERIMENT_DIR / "data" / "manual_topic_overrides.csv"
+    manual_topic_overrides_template_file: Path = (
+        EXPERIMENT_DIR / "data" / "manual_topic_overrides.template.csv"
+    )
+    classification_failures_file: Path = EXPERIMENT_DIR / "data" / "classification_failures.csv"
 
 
 settings = MetadataSettings()

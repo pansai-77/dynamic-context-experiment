@@ -11,7 +11,14 @@ from metadata_experiment.index_builder import (
     print_pre_build_quality_report,
     run_full_index_build,
     seed_everything,
-    topics_from_results,
+)
+from metadata_experiment.manual_review import (
+    ManualReviewError,
+    export_classification_failures,
+    export_manual_override_template,
+    format_manual_review_summary,
+    load_manual_topic_overrides,
+    merge_topics_with_manual_overrides,
 )
 from metadata_experiment.metadata_quality import (
     QualitySampleRecord,
@@ -32,6 +39,16 @@ def parse_args() -> argparse.Namespace:
         "--write-index",
         action="store_true",
         help="After metadata generation, write Qdrant index, catalog, and manifest.",
+    )
+    parser.add_argument(
+        "--continue-on-failure",
+        action="store_true",
+        help="Keep classifying after LLM failures and export failure/manual-review CSV files.",
+    )
+    parser.add_argument(
+        "--use-manual-overrides",
+        action="store_true",
+        help="Apply manual_topic_overrides.csv to failed chunks before writing the index.",
     )
     parser.add_argument(
         "--quality-sample",
@@ -93,8 +110,14 @@ def main() -> None:
         run_quality_sample(use_cache=not args.no_cache)
         return
 
+    if args.write_index and not args.use_manual_overrides:
+        raise SystemExit(
+            "Full index writes require --use-manual-overrides after reviewing "
+            f"{settings.manual_topic_overrides_file.name}."
+        )
+
     if args.write_index and not args.limit_chunks:
-        print("Building full metadata index.")
+        print("Building full metadata index with manual review overrides.")
     if args.limit_chunks is not None and args.limit_chunks <= 0:
         raise SystemExit("--limit-chunks must be a positive integer.")
 
@@ -109,19 +132,77 @@ def main() -> None:
     if args.limit_chunks:
         chunks = chunks[: args.limit_chunks]
 
+    continue_on_failure = args.continue_on_failure or args.use_manual_overrides
     classifier = create_topic_classifier(settings)
-    results = classify_chunks(
+    results, failures = classify_chunks(
         chunks,
         classifier,
         show_details=args.verbose or (args.limit_chunks is not None and args.limit_chunks <= 3),
         use_cache=not args.no_cache,
+        continue_on_failure=continue_on_failure,
     )
 
-    indexed_topics = topics_from_results(results)
+    chunk_by_id = {chunk.chunk_id: chunk for chunk in chunks}
+    manual_overrides = (
+        load_manual_topic_overrides(settings.manual_topic_overrides_file)
+        if args.use_manual_overrides
+        else {}
+    )
+
+    if failures:
+        export_classification_failures(
+            settings.classification_failures_file,
+            failures,
+            text_by_chunk_id={chunk_id: chunk.text for chunk_id, chunk in chunk_by_id.items()},
+        )
+        export_manual_override_template(
+            settings.manual_topic_overrides_template_file,
+            failures,
+        )
+        print()
+        print(f"Classification failures exported to: {settings.classification_failures_file}")
+        print(
+            "Manual override template exported to: "
+            f"{settings.manual_topic_overrides_template_file}"
+        )
+        print(
+            "Fill topics in "
+            f"{settings.manual_topic_overrides_file} "
+            "(copy rows from the template file if needed)."
+        )
+
+    if args.use_manual_overrides:
+        try:
+            indexed_topics, sources = merge_topics_with_manual_overrides(
+                results,
+                failures,
+                manual_overrides,
+                all_chunk_ids=[chunk.chunk_id for chunk in chunks],
+            )
+        except ManualReviewError as exc:
+            raise SystemExit(str(exc)) from exc
+    else:
+        indexed_topics = {result.chunk_id: list(result.final_topics) for result in results}
+        sources = {result.chunk_id: "llm" for result in results}
+        if failures:
+            print()
+            print(format_manual_review_summary(
+                results=results,
+                failures=failures,
+                manual_overrides=manual_overrides,
+            ))
+            print()
+            print(
+                "Next step: fill topics in "
+                f"{settings.manual_topic_overrides_file}, then rerun with "
+                "--write-index --use-manual-overrides."
+            )
+
     export_original_metadata(
         settings.original_metadata_file,
         topics_by_chunk_id=indexed_topics,
         raw_outputs={result.chunk_id: result.raw_response for result in results},
+        sources=sources,
     )
     print_pre_build_quality_report(results, settings, indexed_topics=indexed_topics)
     export_classification_audit(
@@ -129,10 +210,30 @@ def main() -> None:
         settings.experiment_dir / "data" / "classification_audit.json",
     )
 
+    if args.use_manual_overrides:
+        print()
+        print(format_manual_review_summary(
+            results=results,
+            failures=failures,
+            manual_overrides=manual_overrides,
+            topics_by_chunk_id=indexed_topics,
+            source_by_chunk_id=sources,
+        ))
+
     if args.limit_chunks and not args.write_index:
         print()
         print("Metadata generation test complete.")
         print(f"Original metadata saved to: {settings.original_metadata_file}")
+        return
+
+    if not args.write_index:
+        if not failures:
+            print()
+            print("LLM classification completed without failures.")
+            print(
+                "Review original_metadata.csv, then rerun with "
+                "--write-index --use-manual-overrides if you still want manual review."
+            )
         return
 
     catalog_path = settings.experiment_dir / "data" / "index_catalog.xlsx"

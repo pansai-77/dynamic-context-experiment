@@ -10,15 +10,7 @@ import pandas as pd
 
 from .config import MetadataSettings
 from .index_metadata import verify_chunk_parity_with_exp1, verify_index_metadata
-from .metrics import (
-    METHOD_A,
-    METHOD_B,
-    METHODS,
-    filter_accuracy,
-    load_gold,
-    ranking_metrics,
-    should_retrieve,
-)
+from .metrics import METHOD_A, METHOD_B, METHODS, should_retrieve
 from .retrieval import MetadataVectorStore, TopicRouter
 
 
@@ -44,9 +36,6 @@ class MetadataExperimentRow:
     answer: str
     retrieved_chunks: int
     retrieved_sources: str
-    hit_at_4: float | None
-    mrr_at_4: float | None
-    filter_accuracy: float | None
     score_0_3: Any = None
     notes: str = ""
 
@@ -91,8 +80,6 @@ def run_experiment(
         f"sources={index_manifest.source_files}",
     )
 
-    gold = load_gold(settings.gold_file)
-
     print(f"Loading embedding model ({settings.embedding_model}) and vector store...")
     store = MetadataVectorStore(
         settings.qdrant_path, settings.collection_name, settings.embedding_model
@@ -120,7 +107,6 @@ def run_experiment(
         qtype = str(question_row["Question Type"])
         question = str(question_row["Question"])
         use_retrieval = should_retrieve(qtype)
-        annotation = gold.get(qid, {"topics": [], "chunks": []})
 
         for method in METHODS:
             run_number += 1
@@ -148,13 +134,6 @@ def run_experiment(
             generation = llm.answer(build_prompt(question, qtype, retrieved))
             total_ms = (time.perf_counter() - started) * 1000
 
-            retrieved_ids = [item.chunk.chunk_id for item in retrieved]
-            hit, mrr = ranking_metrics(retrieved_ids, annotation["chunks"])
-            accuracy = (
-                filter_accuracy(routed_topics, annotation["topics"])
-                if method == METHOD_B and use_retrieval
-                else None
-            )
             rows.append(MetadataExperimentRow(
                 question_id=qid,
                 question_type=qtype,
@@ -181,9 +160,6 @@ def run_experiment(
                     + f":{item.score:.3f}"
                     for item in retrieved
                 ),
-                hit_at_4=hit,
-                mrr_at_4=mrr,
-                filter_accuracy=accuracy,
             ))
 
     store.close()

@@ -30,6 +30,7 @@ from .index_metadata import (
     verify_chunk_parity_with_exp1,
     write_index_manifest,
 )
+from .manual_review import ChunkClassificationFailure
 from .metadata_quality import evaluate_distribution_quality, format_distribution_report
 from .topics import annotate_auxiliary_metadata, topic_names
 from .retrieval import MetadataVectorStore
@@ -85,9 +86,10 @@ def export_original_metadata(
     *,
     topics_by_chunk_id: dict[str, list[str]],
     raw_outputs: dict[str, str] | None = None,
+    sources: dict[str, str] | None = None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fieldnames = ["chunk_id", "raw_output", "parsed_topics", "final_topics"]
+    fieldnames = ["chunk_id", "source", "raw_output", "parsed_topics", "final_topics"]
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
@@ -95,6 +97,7 @@ def export_original_metadata(
             topics = topics_by_chunk_id[chunk_id]
             writer.writerow({
                 "chunk_id": chunk_id,
+                "source": (sources or {}).get(chunk_id, "llm"),
                 "raw_output": (raw_outputs or {}).get(chunk_id, ""),
                 "parsed_topics": " | ".join(topics),
                 "final_topics": " | ".join(topics),
@@ -122,8 +125,10 @@ def classify_chunks(
     *,
     show_details: bool = False,
     use_cache: bool = True,
-) -> list[ChunkClassificationResult]:
+    continue_on_failure: bool = False,
+) -> tuple[list[ChunkClassificationResult], list[ChunkClassificationFailure]]:
     results: list[ChunkClassificationResult] = []
+    failures: list[ChunkClassificationFailure] = []
     total = len(chunks)
 
     for index, chunk in enumerate(chunks, start=1):
@@ -133,7 +138,16 @@ def classify_chunks(
         except ChunkClassificationError as exc:
             if exc.last_response:
                 print(f"  Last raw response: {exc.last_response}")
-            raise
+            if not continue_on_failure:
+                raise
+            print(f"  FAILURE: {exc.reason}", flush=True)
+            failures.append(ChunkClassificationFailure(
+                chunk_id=chunk.chunk_id,
+                reason=exc.reason,
+                last_response=exc.last_response,
+                attempts=exc.attempts,
+            ))
+            continue
 
         results.append(result)
         if show_details:
@@ -146,7 +160,7 @@ def classify_chunks(
             print(f"  Warnings: {list(result.validation_warnings) or '-'}")
             print(f"  Final: {result.final_topics}")
 
-    return results
+    return results, failures
 
 
 def topics_from_results(results: list[ChunkClassificationResult]) -> dict[str, list[str]]:

@@ -98,9 +98,12 @@ class ClassificationCache:
         payload = self._entries.get(chunk_id)
         if not payload or payload.get("cache_version") != self.cache_version:
             return None
+        topics = list(payload["topics"])
+        if not topics or any(topic not in TOPIC_BY_NAME for topic in topics):
+            return None
         return ClassificationCacheEntry(
             chunk_id=chunk_id,
-            topics=list(payload["topics"]),
+            topics=topics,
             raw_response=str(payload["raw_response"]),
             prompt_version=str(payload["prompt_version"]),
             cache_version=str(payload["cache_version"]),
