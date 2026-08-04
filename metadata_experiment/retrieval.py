@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 from uuid import NAMESPACE_URL, uuid5
 
+import numpy as np
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance,
@@ -17,7 +18,26 @@ from sentence_transformers import SentenceTransformer
 
 from src.models import Chunk, RetrievedChunk
 
-from .topics import annotate_chunk
+from .topics import router_topic_documents, routable_topic_names
+
+
+class TopicRouter:
+    def __init__(self, embedding_model: SentenceTransformer) -> None:
+        self.embedding_model = embedding_model
+        self.names = routable_topic_names()
+        self.topic_vectors = self.embedding_model.encode(
+            router_topic_documents(), normalize_embeddings=True, show_progress_bar=False
+        )
+
+    def route(self, query: str, top_n: int = 2) -> tuple[list[str], float]:
+        started = time.perf_counter()
+        query_vector = self.embedding_model.encode(
+            query, normalize_embeddings=True, show_progress_bar=False
+        )
+        scores = np.asarray(self.topic_vectors) @ np.asarray(query_vector)
+        indices = np.argsort(-scores)[:top_n]
+        elapsed_ms = (time.perf_counter() - started) * 1000
+        return [self.names[int(index)] for index in indices], elapsed_ms
 
 
 class MetadataVectorStore:
@@ -27,7 +47,15 @@ class MetadataVectorStore:
         self.collection_name = collection_name
         self.embedding_model = SentenceTransformer(embedding_model_name)
 
-    def rebuild(self, chunks: list[Chunk], batch_size: int = 64) -> None:
+    def close(self) -> None:
+        self.client.close()
+
+    def rebuild(
+        self,
+        chunks: list[Chunk],
+        chunk_payloads: dict[str, dict],
+        batch_size: int = 64,
+    ) -> None:
         if self.client.collection_exists(self.collection_name):
             self.client.delete_collection(self.collection_name)
         vector_size = self.embedding_model.get_sentence_embedding_dimension()
@@ -44,6 +72,8 @@ class MetadataVectorStore:
             )
             points = []
             for chunk, vector in zip(batch, vectors):
+                if chunk.chunk_id not in chunk_payloads:
+                    raise KeyError(f"Missing payload for chunk {chunk.chunk_id}")
                 payload = {
                     "chunk_id": chunk.chunk_id,
                     "text": chunk.text,
@@ -52,7 +82,7 @@ class MetadataVectorStore:
                     "page_start": chunk.page_start,
                     "page_end": chunk.page_end,
                     "chunk_index": chunk.chunk_index,
-                    **annotate_chunk(chunk),
+                    **chunk_payloads[chunk.chunk_id],
                 }
                 points.append(PointStruct(
                     id=str(uuid5(NAMESPACE_URL, chunk.chunk_id)),
@@ -108,4 +138,3 @@ class MetadataVectorStore:
                 score=float(point.score),
             ))
         return retrieved, elapsed_ms
-

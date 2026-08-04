@@ -62,27 +62,30 @@ def list_collection_chunk_ids(qdrant_path: Path, collection_name: str) -> list[s
     from qdrant_client import QdrantClient
 
     client = QdrantClient(path=str(qdrant_path))
-    if not client.collection_exists(collection_name):
-        raise FileNotFoundError(
-            f"Qdrant collection {collection_name!r} not found under {qdrant_path}."
-        )
+    try:
+        if not client.collection_exists(collection_name):
+            raise FileNotFoundError(
+                f"Qdrant collection {collection_name!r} not found under {qdrant_path}."
+            )
 
-    chunk_ids: list[str] = []
-    offset = None
-    while True:
-        records, offset = client.scroll(
-            collection_name=collection_name,
-            limit=256,
-            offset=offset,
-            with_payload=["chunk_id"],
-            with_vectors=False,
-        )
-        for record in records:
-            payload = record.payload or {}
-            chunk_ids.append(str(payload.get("chunk_id", record.id)))
-        if offset is None:
-            break
-    return sorted(chunk_ids)
+        chunk_ids: list[str] = []
+        offset = None
+        while True:
+            records, offset = client.scroll(
+                collection_name=collection_name,
+                limit=256,
+                offset=offset,
+                with_payload=["chunk_id"],
+                with_vectors=False,
+            )
+            for record in records:
+                payload = record.payload or {}
+                chunk_ids.append(str(payload.get("chunk_id", record.id)))
+            if offset is None:
+                break
+        return sorted(chunk_ids)
+    finally:
+        client.close()
 
 
 def expected_manifest(
@@ -162,7 +165,10 @@ def verify_index_metadata(cfg: MetadataSettings = settings) -> MetadataIndexMani
     return stored
 
 
-def verify_chunk_parity_with_exp1(cfg: MetadataSettings = settings) -> list[str]:
+def verify_chunk_parity_with_exp1(
+    cfg: MetadataSettings = settings,
+    meta_chunk_ids: list[str] | None = None,
+) -> list[str]:
     exp1_metadata_path = cfg.exp1_qdrant_path / "index_metadata.json"
     if not exp1_metadata_path.exists():
         return [
@@ -185,7 +191,10 @@ def verify_chunk_parity_with_exp1(cfg: MetadataSettings = settings) -> list[str]
         if exp1_metadata.get(field) != cfg_value:
             mismatches.append(f"{field} differs from experiment 1 index")
 
-    meta_chunk_ids = list_collection_chunk_ids(cfg.qdrant_path, cfg.collection_name)
+    if meta_chunk_ids is None:
+        meta_chunk_ids = list_collection_chunk_ids(cfg.qdrant_path, cfg.collection_name)
+    else:
+        meta_chunk_ids = sorted(meta_chunk_ids)
     exp1_chunk_ids = list_collection_chunk_ids(cfg.exp1_qdrant_path, EXP1_COLLECTION)
     if meta_chunk_ids != exp1_chunk_ids:
         only_meta = sorted(set(meta_chunk_ids) - set(exp1_chunk_ids))

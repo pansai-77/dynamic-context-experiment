@@ -1,0 +1,110 @@
+{
+  "c0004": {
+    "topics": [
+      "家庭生活"
+    ],
+    "raw_response": "{\"topics\": [\"家庭生活\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0007": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0015": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0037": {
+    "topics": [
+      "赌博败家"
+    ],
+    "raw_response": "{\"topics\": [\"赌博败家\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0062": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0090": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0122": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0124": {
+    "topics": [
+      "家珍病逝"
+    ],
+    "raw_response": "{\"topics\": [\"家珍病逝\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0128": {
+    "topics": [
+      "有庆经历"
+    ],
+    "raw_response": "{\"topics\": [\"有庆经历\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0135": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0136": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  },
+  "c0137": {
+    "topics": [
+      "医疗献血"
+    ],
+    "raw_response": "{\"topics\": [\"医疗献血\"]}",
+    "prompt_version": "2026-08-04-v2",
+    "cache_version": "2026-08-04-v2:45497e76a929",
+    "prompt_kind": "general"
+  }
+}

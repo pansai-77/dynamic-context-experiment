@@ -28,7 +28,12 @@ def main() -> None:
     summary_path = run_dir / "summary_results.xlsx"
     run_config_path = run_dir / "run_config.json"
 
+    print(f"Run directory: {run_dir}")
+    print("Running experiment 2 (Query-Aware Top-4 A/B)...")
+
     frame = run_experiment(settings, args.limit, question_ids)
+
+    print("Exporting results...")
     export_detailed(frame, detailed_path)
     create_summary(detailed_path, summary_path)
     export_run_metadata(
@@ -39,7 +44,6 @@ def main() -> None:
         notes=TIMING_NOTES,
     )
 
-    print(f"Run directory: {run_dir}")
     print(f"Detailed results: {detailed_path}")
     print(f"Summary results: {summary_path}")
     print(f"Run metadata: {run_config_path}")

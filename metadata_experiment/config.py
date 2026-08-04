@@ -41,10 +41,16 @@ class MetadataSettings:
     chunk_overlap: int = int(os.getenv("CHUNK_OVERLAP", "100"))
     router_top_n: int = int(os.getenv("METADATA_ROUTER_TOP_N", "2"))
     retrieval_top_k: int = 4
+    classification_max_new_tokens: int = int(
+        os.getenv("METADATA_CLASSIFICATION_MAX_NEW_TOKENS", "128")
+    )
+    classification_max_retries: int = int(os.getenv("METADATA_CLASSIFICATION_MAX_RETRIES", "3"))
     max_new_tokens: int = int(os.getenv("MAX_NEW_TOKENS", "200"))
     temperature: float = float(os.getenv("TEMPERATURE", "0"))
     random_seed: int = int(os.getenv("RANDOM_SEED", "16"))
+    quality_sample_size: int = int(os.getenv("METADATA_QUALITY_SAMPLE_SIZE", "20"))
+    quality_sample_file: Path = EXPERIMENT_DIR / "data" / "quality_sample_chunks.json"
+    original_metadata_file: Path = EXPERIMENT_DIR / "data" / "original_metadata.csv"
 
 
 settings = MetadataSettings()
-

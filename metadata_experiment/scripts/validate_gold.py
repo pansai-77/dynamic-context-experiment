@@ -7,7 +7,7 @@ import _bootstrap  # noqa: F401
 
 from metadata_experiment.config import settings
 from metadata_experiment.index_metadata import manifest_path, read_index_manifest
-from metadata_experiment.logic import load_gold
+from metadata_experiment.metrics import load_gold
 
 
 def main() -> None:

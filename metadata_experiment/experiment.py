@@ -5,19 +5,21 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any
 
-import mlx.core as mx
 import numpy as np
 import pandas as pd
 
-from src.llm_mlx import QwenMLX
-from src.prompts import build_prompt
-
 from .config import MetadataSettings
 from .index_metadata import verify_chunk_parity_with_exp1, verify_index_metadata
-from .logic import METHOD_B, METHODS, load_gold, should_retrieve
-from .metrics import filter_accuracy, ranking_metrics
-from .router import TopicRouter
-from .vector_store import MetadataVectorStore
+from .metrics import (
+    METHOD_A,
+    METHOD_B,
+    METHODS,
+    filter_accuracy,
+    load_gold,
+    ranking_metrics,
+    should_retrieve,
+)
+from .retrieval import MetadataVectorStore, TopicRouter
 
 
 @dataclass
@@ -50,6 +52,8 @@ class MetadataExperimentRow:
 
 
 def _seed_everything(seed: int) -> None:
+    import mlx.core as mx
+
     random.seed(seed)
     np.random.seed(seed)
     mx.random.seed(seed)
@@ -88,18 +92,29 @@ def run_experiment(
     )
 
     gold = load_gold(settings.gold_file)
+
+    print(f"Loading embedding model ({settings.embedding_model}) and vector store...")
     store = MetadataVectorStore(
         settings.qdrant_path, settings.collection_name, settings.embedding_model
     )
     total_candidates = store.total_candidates()
     router = TopicRouter(store.embedding_model)
-    # Warm-up outside timed measurements.
+
+    print("Warming up retrieval and topic router...")
     store.search("预热检索", top_k=1)
     router.route("预热路由", settings.router_top_n)
+
+    from src.llm_mlx import QwenMLX
+    from src.prompts import build_prompt
+
+    print(f"Loading Qwen model ({settings.llm_model})...")
     llm = QwenMLX(settings.llm_model, settings.max_new_tokens, settings.temperature)
+    print("Warming up Qwen model...")
     llm.warm_up()
 
     rows: list[MetadataExperimentRow] = []
+    total_runs = len(questions) * len(METHODS)
+    run_number = 0
     for _, question_row in questions.iterrows():
         qid = str(question_row["Question ID"])
         qtype = str(question_row["Question Type"])
@@ -108,6 +123,8 @@ def run_experiment(
         annotation = gold.get(qid, {"topics": [], "chunks": []})
 
         for method in METHODS:
+            run_number += 1
+            print(f"[{run_number}/{total_runs}] {qid} - {method}", flush=True)
             started = time.perf_counter()
             routed_topics: list[str] = []
             router_ms = 0.0
@@ -120,16 +137,17 @@ def run_experiment(
                 before = total_candidates
                 if method == METHOD_B:
                     routed_topics, router_ms = router.route(question, settings.router_top_n)
-                    after = store.candidate_count(routed_topics)
                     retrieved, vector_ms = store.search(
                         question, settings.retrieval_top_k, routed_topics
                     )
+                    after = store.candidate_count(routed_topics)
                 else:
-                    after = total_candidates
                     retrieved, vector_ms = store.search(question, settings.retrieval_top_k)
+                    after = total_candidates
 
             generation = llm.answer(build_prompt(question, qtype, retrieved))
             total_ms = (time.perf_counter() - started) * 1000
+
             retrieved_ids = [item.chunk.chunk_id for item in retrieved]
             hit, mrr = ranking_metrics(retrieved_ids, annotation["chunks"])
             accuracy = (
@@ -167,5 +185,6 @@ def run_experiment(
                 mrr_at_4=mrr,
                 filter_accuracy=accuracy,
             ))
-    return pd.DataFrame(asdict(row) for row in rows)
 
+    store.close()
+    return pd.DataFrame(asdict(row) for row in rows)
